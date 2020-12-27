@@ -7,6 +7,8 @@ type Props = {
   item: Product
 }
 function ProductCard({ item }: Props) {
+  if (!item) return null
+
   const { name, type, variants, defaultVariant } = item
   if (type === 'folder' || type === 'document') return null
 
