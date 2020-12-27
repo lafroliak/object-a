@@ -2,7 +2,12 @@ module.exports = {
   preset: 'ts-jest/presets/js-with-ts',
   setupFiles: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
-    '^@src/(.*)$': '<rootDir>/src/$1',
+    '^@components/(.*)$': '<rootDir>/src/components/$1',
+    '^@layouts/(.*)$': '<rootDir>/src/layouts/$1',
+    '^@lib/(.*)$': '<rootDir>/src/lib/$1',
+    '^@stores/(.*)$': '<rootDir>/src/stores/$1',
+    '^@styles/(.*)$': '<rootDir>/src/styles/$1',
+    '^@typings/(.*)$': '<rootDir>/src/typings/$1',
   },
   coveragePathIgnorePatterns: ['/node_modules/'],
   globals: {

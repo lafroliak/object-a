@@ -1,0 +1,15 @@
+# dependencies
+/node_modules
+.next
+.vscode
+
+# testing
+/coverage
+
+# production
+/dist
+/build
+/out
+
+#cache
+/.cache

@@ -1,8 +1,27 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React from 'react'
+import { ReactNode } from 'react'
 import { AppProps } from 'next/app'
-import '@src/css/tailwind.css'
+import { useEffectOnce } from 'react-use'
 
-const App = ({ Component, pageProps }: AppProps) => <Component {...pageProps} />
+import useBasket from '@stores/useBasket'
+import '@styles/tailwind.css'
+
+function App({
+  Component,
+  pageProps,
+}: AppProps & {
+  Component: AppProps['Component'] & {
+    getLayout: ((comp: ReactNode) => ReactNode) | undefined
+  }
+}) {
+  const getLayout = Component.getLayout || ((page: ReactNode) => page)
+
+  const setSession = useBasket((state) => state.setSession)
+
+  useEffectOnce(() => {
+    setSession()
+  })
+
+  return getLayout(<Component {...pageProps} />)
+}
 
 export default App

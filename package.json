@@ -1,5 +1,5 @@
 {
-  "name": "next-boilerplate-typescript-jest",
+  "name": "object-a",
   "private": true,
   "scripts": {
     "dev": "next",
@@ -17,11 +17,19 @@
     "production:clean": "rimraf out/"
   },
   "dependencies": {
+    "@stripe/stripe-js": "^1.11.0",
     "dotenv": "^8.2.0",
+    "framer-motion": "^3.1.1",
+    "immer": "^8.0.0",
+    "nanoid": "^3.1.20",
     "next": "^10.0.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "tailwindcss": "^2.0.1"
+    "react-query": "^3",
+    "react-use": "^15.3.4",
+    "tailwindcss": "^2.0.2",
+    "use-shopping-cart": "^2.3.0",
+    "zustand": "^3.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

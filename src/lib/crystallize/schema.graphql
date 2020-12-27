@@ -1,0 +1,410 @@
+directive @key(fields: String!) on OBJECT | INTERFACE
+
+directive @extends on OBJECT | INTERFACE
+
+directive @external on OBJECT | FIELD_DEFINITION
+
+directive @requires(fields: String!) on FIELD_DEFINITION
+
+directive @provides(fields: String!) on FIELD_DEFINITION
+
+type _Service {
+  """
+  The sdl representing the federated service capabilities. Includes federation
+  directives, removes federation types, and includes rest of full schema after
+  schema directives have been applied
+  """
+  sdl: String
+}
+
+type BooleanContent {
+  value: Boolean
+}
+
+type Component {
+  id: String!
+  name: String!
+  type: ComponentType!
+  meta: [MetaProperty!]
+  metaProperty(key: String!): String
+  content: ComponentContent
+}
+
+union ComponentContent = ImageContent | ItemRelationsContent | GridRelationsContent | BooleanContent | DatetimeContent | LocationContent | SingleLineContent | RichTextContent | VideoContent | ParagraphCollectionContent | PropertiesTableContent
+
+enum ComponentType {
+  boolean
+  datetime
+  singleLine
+  richText
+  images
+  itemRelations
+  gridRelations
+  location
+  paragraphCollection
+  propertiesTable
+  videos
+}
+
+scalar Datetime
+
+type DatetimeContent {
+  datetime: Datetime
+}
+
+type Document implements Item {
+  id: ID!
+  version: ItemVersion!
+  name: String
+  type: String
+  shape: Shape!
+  language: String
+  path: String
+  components(ids: [String!]): [Component!]
+  component(id: String!): Component
+  children: [Item!]
+  subtree(before: String, after: String, first: Int, last: Int, sort: SortDirection = asc, sortField: ItemSortField = treePosition): SubtreeConnection!
+  topics: [Topic!]
+  relatingItems: [Item!]
+  createdAt: Datetime
+  updatedAt: Datetime
+  publishedAt: Datetime
+}
+
+type Folder implements Item {
+  id: ID!
+  version: ItemVersion!
+  name: String
+  type: String
+  shape: Shape!
+  language: String
+  path: String
+  components(ids: [String!]): [Component!]
+  component(id: String!): Component
+  children: [Item!]
+  subtree(before: String, after: String, first: Int, last: Int, sort: SortDirection = asc, sortField: ItemSortField = treePosition): SubtreeConnection!
+  topics: [Topic!]
+  relatingItems: [Item!]
+  createdAt: Datetime
+  updatedAt: Datetime
+  publishedAt: Datetime
+}
+
+type Grid {
+  id: ID!
+  name: String
+  language: String!
+  meta: [MetaProperty!]
+  metaProperty(key: String!): String
+  rows: [GridRow!]!
+  createdAt: Datetime
+}
+
+type GridColumn {
+  meta: [MetaProperty!]
+  metaProperty(key: String!): String
+  layout: GridColumnLayout
+  itemId: ID
+  itemType: String
+  item: Item
+}
+
+type GridColumnLayout {
+  colspan: Int
+  rowspan: Int
+}
+
+type GridRelationsContent {
+  grids: [Grid!]
+}
+
+type GridRow {
+  meta: [MetaProperty!]
+  metaProperty(key: String!): String
+  columns: [GridColumn!]!
+}
+
+type Image {
+  url: String!
+  key: String!
+  altText: String
+  caption: RichTextContent
+  meta: [MetaProperty!]
+  metaProperty(key: String!): String
+  variants: [ImageVariant!]
+  createdAt: Datetime
+}
+
+type ImageContent {
+  images: [Image!]
+}
+
+type ImageVariant {
+  url: String!
+  key: String!
+  width: Int!
+  height: Int
+}
+
+interface Item {
+  id: ID!
+  version: ItemVersion!
+  name: String
+  type: String
+  shape: Shape!
+  language: String
+  path: String
+  components(ids: [String!]): [Component!]
+  component(id: String!): Component
+  children: [Item!]
+  subtree(before: String, after: String, first: Int, last: Int, sort: SortDirection = asc, sortField: ItemSortField = treePosition): SubtreeConnection!
+  topics: [Topic!]
+  relatingItems: [Item!]
+  createdAt: Datetime
+  updatedAt: Datetime
+  publishedAt: Datetime
+}
+
+type ItemRelationsContent {
+  items: [Item!]
+}
+
+enum ItemSortField {
+  treePosition
+}
+
+type ItemVersion {
+  id: ID!
+  label: VersionLabel!
+  createdAt: Datetime
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type LocationContent {
+  lat: Float
+  long: Float
+}
+
+type MetaProperty {
+  key: String!
+  value: String
+}
+
+type PageInfo {
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+  startCursor: String!
+  endCursor: String!
+  totalNodes: Int!
+}
+
+type ParagraphCollectionContent {
+  paragraphs: [ParagraphContent!]
+}
+
+type ParagraphContent {
+  title: SingleLineContent
+  body: RichTextContent
+  images: [Image!]
+  videos: [Video!]
+}
+
+type Product implements Item {
+  id: ID!
+  version: ItemVersion!
+  name: String
+  type: String
+  shape: Shape!
+  language: String
+  path: String
+  components(ids: [String!]): [Component!]
+  component(id: String!): Component
+  vatType: VatInfo
+  isVirtual: Boolean
+  isSubscriptionOnly: Boolean
+  variants: [ProductVariant!]
+  defaultVariant: ProductVariant
+  children: [Item!]
+  subtree(before: String, after: String, first: Int, last: Int, sort: SortDirection = asc, sortField: ItemSortField = treePosition): SubtreeConnection!
+  topics: [Topic!]
+  relatingItems: [Item!]
+  createdAt: Datetime
+  updatedAt: Datetime
+  publishedAt: Datetime
+}
+
+type ProductPriceVariant {
+  identifier: String!
+  name: String
+  price: Float
+  currency: String
+}
+
+type ProductVariant {
+  id: ID!
+  name: String
+  image: Image @deprecated(reason: "The `image` property is deprecated and will be removed in a future release. Use the `images` property instead.")
+  images: [Image!]
+  sku: String!
+  price(identifier: String = "default"): Float
+  priceVariants: [ProductPriceVariant!]
+  stock: Int
+  attributes: [ProductVariantAttribute]
+  subscriptionPlans: [ProductVariantSubscriptionPlan]
+  isDefault: Boolean
+}
+
+type ProductVariantAttribute {
+  attribute: String!
+  value: String
+}
+
+type ProductVariantSubscriptionPlan {
+  id: ID!
+  name: String
+  initialPeriod: Int
+  initialPeriodUnit: SubscriptionPlanPeriodUnit
+  recurringPeriod: Int
+  recurringPeriodUnit: SubscriptionPlanPeriodUnit
+  initialPrice: Float
+  recurringPrice: Float
+  meta: [MetaProperty!]
+  metaProperty(key: String!): String
+}
+
+type PropertiesTableContent {
+  sections: [PropertiesTableSection!]
+}
+
+type PropertiesTableSection {
+  title: String
+  properties: [PropertiesTableValue!]
+}
+
+type PropertiesTableValue {
+  key: String!
+  value: String
+}
+
+type Query {
+  _service: _Service!
+  grid(id: ID!, language: String): Grid
+  catalogue(path: String = "/", language: String, version: VersionLabel = published): Item
+  tree(path: String = "/", language: String): [Item] @deprecated(reason: "`tree` query is deprecated and will be removed in a future release. Use the `catalogue` query instead.")
+  tenant(language: String): Tenant
+  topics(name: String, ancestry: [String!], language: String): [Topic!]!
+  version: VersionInfo
+}
+
+type RichTextContent {
+  json: [JSON!]
+  html: [String!]
+  plainText: [String!]
+}
+
+type Shape {
+  id: ID!
+  name: String
+  meta: [MetaProperty!]
+  metaProperty(key: String!): String
+  createdAt: Datetime
+}
+
+type SingleLineContent {
+  text: String
+}
+
+enum SortDirection {
+  asc
+  desc
+}
+
+enum SubscriptionPlanPeriodUnit {
+  day
+  week
+  month
+  year
+}
+
+type SubtreeConnection {
+  edges: [SubtreeEdge!]
+  pageInfo: PageInfo!
+}
+
+type SubtreeEdge {
+  cursor: String!
+  node: Item!
+}
+
+type Tenant {
+  id: ID!
+  identifier: String!
+  name: String
+  logo: Image
+  language: String
+  defaults: TenantDefaults
+  isTrial: Boolean
+  createdAt: Datetime
+}
+
+type TenantDefaults {
+  language: String
+  currency: String
+}
+
+type Topic {
+  id: ID!
+  name: String!
+  language: String
+  parentId: ID
+  parent: Topic
+  children: [Topic!]
+  items(before: String, after: String, first: Int, last: Int, sort: SortDirection = desc, sortField: TopicItemSortField = createdAt): TopicItemConnection!
+  createdAt: Datetime
+}
+
+type TopicItemConnection {
+  edges: [TopicItemEdge!]
+  pageInfo: PageInfo!
+}
+
+type TopicItemEdge {
+  cursor: String!
+  node: Item!
+}
+
+enum TopicItemSortField {
+  createdAt
+}
+
+type VatInfo {
+  name: String
+  percent: Float
+}
+
+type VersionInfo {
+  apiVersion: String!
+  commitSha: String!
+}
+
+enum VersionLabel {
+  published
+  draft
+}
+
+type Video {
+  id: String!
+  playlists: [String!]
+  playlist(type: String!): String
+  title: String
+  thumbnails: [Image!]
+}
+
+type VideoContent {
+  videos: [Video!]
+}
+
