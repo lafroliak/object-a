@@ -1,4 +1,5 @@
 import { GetStaticPathsResult, GetStaticPropsContext, InferGetStaticPropsType } from 'next'
+import dynamic from 'next/dynamic'
 
 import AddToBasket from '@components/AddToBasket'
 import IfElse from '@components/IfElse'
@@ -9,6 +10,8 @@ import { Product } from '@lib/crystallize/types'
 import { isImage } from '@lib/crystallize/isType'
 import productQuery from '@lib/crystallize/graph/queries/productQuery'
 import documentQuery from '@lib/crystallize/graph/queries/documentQuery'
+
+const Sequencer = dynamic(import('@components/Sequencer'), { ssr: false })
 
 export async function getStaticProps(context: GetStaticPropsContext<{ catalogue: Array<string> }>) {
   const { params, preview } = context
@@ -87,13 +90,16 @@ function CataloguePage({ catalogue }: InferGetStaticPropsType<typeof getStaticPr
             {(content) => (
               <IfElse predicate={content?.images}>
                 {(images) => (
-                  <>
-                    {images.map((img) => (
-                      <div key={img.url}>
-                        <img src={img.variants?.find((i) => i.width === 500)?.url || ''} alt={img.altText || ''} />
-                      </div>
-                    ))}
-                  </>
+                  <div className="relative w-screen h-screen bg-black">
+                    <Sequencer list={images.map((x) => x.url)} />
+                  </div>
+                  // <>
+                  //   {images.map((img) => (
+                  //     <div key={img.url}>
+                  //       <img src={img.variants?.find((i) => i.width === 500)?.url || ''} alt={img.altText || ''} />
+                  //     </div>
+                  //   ))}
+                  // </>
                 )}
               </IfElse>
             )}
