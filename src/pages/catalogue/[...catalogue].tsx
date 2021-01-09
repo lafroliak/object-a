@@ -90,7 +90,7 @@ function CataloguePage({ catalogue }: InferGetStaticPropsType<typeof getStaticPr
             {(content) => (
               <IfElse predicate={content?.images}>
                 {(images) => (
-                  <div className="relative w-screen h-screen bg-black">
+                  <div className={`relative w-screen h-screen bg-${catalogue?.topics?.[0].name}`}>
                     <Sequencer list={images.map((x) => x.url)} />
                   </div>
                   // <>
