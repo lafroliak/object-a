@@ -6,6 +6,8 @@ import { simplyFetchFromGraph } from '@lib/crystallize/graph'
 import fragments from '@lib/crystallize/graph/fragments'
 import ProductCard from '@components/ProductCard'
 import { getLayout } from '@layouts/HomeLayout'
+import CollapsableImage from '@components/CollapsableImage'
+import ProductImage from '@components/ProductImage'
 
 export async function getStaticProps(context: GetStaticPropsContext) {
   const { preview } = context
