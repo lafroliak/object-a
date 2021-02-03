@@ -22,7 +22,16 @@
       "@stores/*": ["./src/stores/*"],
       "@styles/*": ["./src/styles/*"],
       "@typings/*": ["./src/typings/*"]
-    }
+    },
+    "plugins": [{
+      "name": "typescript-plugin-css-modules",
+      "options": {
+        "classnameTransform": "dashesOnly",
+        "dotenvOptions": {},
+        "postCssOptions": {},
+        "rendererOptions": {}
+      }
+    }]
   },
   "exclude": ["node_modules"],
   "include": ["next-env.d.ts", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]

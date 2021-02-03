@@ -1,12 +1,12 @@
-import { MouseEvent, MutableRefObject, useCallback, useEffect, useRef } from 'react'
-
-import { Option } from '@typings/utils'
 import sortByKey from '@lib/sortByKey'
+import { Option } from '@typings/utils'
+import { MutableRefObject, useCallback, useEffect, useRef } from 'react'
 
 type Props = {
   image: Option<string>
   cref: MutableRefObject<HTMLCanvasElement | null>
   sp?: number
+  start?: number
 }
 
 type State = {
@@ -20,7 +20,7 @@ type State = {
   tiles: { x: number; y: number }[]
 }
 
-export default function useCollapseImage({ image, cref, sp = 16 }: Props) {
+export default function useCollapseImage({ image, cref, sp = 16, start }: Props) {
   const clearRenderRef = useRef(false)
   const state = useRef<State>({} as State)
 
@@ -243,7 +243,7 @@ export default function useCollapseImage({ image, cref, sp = 16 }: Props) {
         //   cx?.fillRect(...spx([x, y, 1, 1]))
         // }
 
-        const threshold = cells - Math.round(cells / 2)
+        const threshold = cells - Math.round(cells * (start || Math.random() * (0.3 - 0.01) + 0.01))
         state.current.threshold = threshold
         state.current.cells = cells
         state.current.ordered = ordered
@@ -255,7 +255,7 @@ export default function useCollapseImage({ image, cref, sp = 16 }: Props) {
 
         render()
       }
-      img.src = `${src}?${new Date().getTime()}`
+      img.src = `${src}?cache=true`
       img.setAttribute('crossOrigin', '*')
     },
     [cref, render, sp],
@@ -265,17 +265,5 @@ export default function useCollapseImage({ image, cref, sp = 16 }: Props) {
     if (image) loadImage(image)
   }, [image, loadImage])
 
-  function setThreshold(e: MouseEvent<HTMLCanvasElement>) {
-    if (cref.current) {
-      const rect = cref.current.getBoundingClientRect()
-      const percent = (e.clientX - rect.left) / cref.current.width
-      const { cells } = state.current
-      const newThresh = cells - Math.min(cells, Math.max(0, Math.round(percent * cells)))
-      state.current.threshold = newThresh
-
-      render()
-    }
-  }
-
-  return [state.current, setThreshold] as const
+  return [state, render] as const
 }

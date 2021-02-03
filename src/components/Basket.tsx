@@ -1,19 +1,21 @@
-import { memo } from 'react'
-import { motion } from 'framer-motion'
-
 import useBasket from '@stores/useBasket'
-import ProductCard from './ProductCard'
+import useDrawer from '@stores/useDrawer'
+import { motion } from 'framer-motion'
+import { memo } from 'react'
+
+import IfElse from './IfElse'
 
 function Basket() {
-  const opened = useBasket((state) => state.opened)
+  const opened = useDrawer((state) => state.opened)
   const items = useBasket((state) => state.items)
   const totals = useBasket((state) => state.totals)
+  const clearItems = useBasket((state) => state.clearItems)
 
   return (
-    <motion.div animate={{ opacity: opened ? 1 : 0 }}>
+    <motion.div animate={{ opacity: !!opened ? 1 : 0 }}>
       <div>
         {items.map((item) => (
-          <ProductCard item={item} key={item.id} />
+          <div key={item.id}>{`${item.name}`}</div>
         ))}
       </div>
       <div className="font-bold">
@@ -22,6 +24,17 @@ function Basket() {
         {' items for '}
         {totals().net} {totals().currency}
       </div>
+      <IfElse predicate={totals().quantity > 0}>
+        {() => (
+          <button
+            type="button"
+            className="cursor-pointer focus:outline-none"
+            onClick={clearItems}
+          >
+            [clean basket]
+          </button>
+        )}
+      </IfElse>
     </motion.div>
   )
 }

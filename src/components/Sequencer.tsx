@@ -1,6 +1,5 @@
-import { memo, useEffect, useRef } from 'react'
-
 import S from '@lib/sequencer/sequencer'
+import { memo, useEffect, useRef } from 'react'
 import { useWindowSize } from 'react-use'
 
 type Props = {

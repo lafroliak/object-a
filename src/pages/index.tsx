@@ -1,13 +1,12 @@
-import React from 'react'
-import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
-import Link from 'next/link'
-
+import Body from '@components/Body'
+import IfElse from '@components/IfElse'
+import Intro from '@components/Intro'
+import Products from '@components/Products'
+import { getLayout } from '@layouts/HomeLayout'
 import { simplyFetchFromGraph } from '@lib/crystallize/graph'
 import fragments from '@lib/crystallize/graph/fragments'
-import ProductCard from '@components/ProductCard'
-import { getLayout } from '@layouts/HomeLayout'
-import CollapsableImage from '@components/CollapsableImage'
-import ProductImage from '@components/ProductImage'
+import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
+import React from 'react'
 
 export async function getStaticProps(context: GetStaticPropsContext) {
   const { preview } = context
@@ -43,22 +42,64 @@ export async function getStaticProps(context: GetStaticPropsContext) {
   }
 }
 
-function HomePage({ catalogue }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const { SITE_NAME } = process.env
-
+function HomePage({
+  catalogue,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <>
-      <h1 className="text-xl text-gray-900">{SITE_NAME}</h1>
-      <div>
-        {catalogue?.map((item) => (
-          <Link key={item.id} href={item.path ? `/catalogue${item.path}` : '/'}>
-            <a>
-              <ProductCard item={item} />
-            </a>
-          </Link>
-        ))}
-      </div>
-    </>
+    <div className="py-12 space-y-12">
+      {catalogue?.map((item) => (
+        <IfElse
+          key={item.id}
+          predicate={
+            item.type === 'document' &&
+            item.components?.find((x) => x?.name === 'Intro')
+              ? item
+              : undefined
+          }
+        >
+          {(prop) => <Intro item={prop} />}
+        </IfElse>
+      ))}
+      {catalogue?.map((item) => (
+        <IfElse
+          key={item.id}
+          predicate={
+            item.type === 'document' &&
+            item.components?.find((x) => x?.name === 'Products')
+              ? item
+              : undefined
+          }
+        >
+          {(prop) => <Products item={prop} row={0} />}
+        </IfElse>
+      ))}
+      {catalogue?.map((item) => (
+        <IfElse
+          key={item.id}
+          predicate={
+            item.type === 'document' &&
+            item.components?.find((x) => x?.name === 'Body')
+              ? item
+              : undefined
+          }
+        >
+          {(prop) => <Body item={prop} />}
+        </IfElse>
+      ))}
+      {catalogue?.map((item) => (
+        <IfElse
+          key={item.id}
+          predicate={
+            item.type === 'document' &&
+            item.components?.find((x) => x?.name === 'Products')
+              ? item
+              : undefined
+          }
+        >
+          {(prop) => <Products item={prop} row={1} />}
+        </IfElse>
+      ))}
+    </div>
   )
 }
 

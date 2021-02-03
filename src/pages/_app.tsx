@@ -1,13 +1,16 @@
-import { ReactNode } from 'react'
-import { AppProps } from 'next/app'
-import { useEffectOnce } from 'react-use'
+import 'tailwindcss/tailwind.css'
+import '@styles/global.css'
 
 import useBasket from '@stores/useBasket'
-import '@styles/tailwind.css'
+import { AnimatePresence } from 'framer-motion'
+import { AppProps } from 'next/app'
+import { ReactNode } from 'react'
+import { useEffectOnce } from 'react-use'
 
 function App({
   Component,
   pageProps,
+  router,
 }: AppProps & {
   Component: AppProps['Component'] & {
     getLayout: ((comp: ReactNode) => ReactNode) | undefined
@@ -21,7 +24,11 @@ function App({
     setSession()
   })
 
-  return getLayout(<Component {...pageProps} />)
+  return getLayout(
+    <AnimatePresence initial={false} exitBeforeEnter>
+      <Component {...pageProps} key={router.pathname} />
+    </AnimatePresence>,
+  )
 }
 
 export default App

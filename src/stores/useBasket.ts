@@ -1,9 +1,8 @@
-import create from 'zustand'
-import { persist } from 'zustand/middleware'
-import { nanoid } from 'nanoid'
-
 import { Product } from '@lib/crystallize/types'
 import { Option } from '@typings/utils'
+import { nanoid } from 'nanoid'
+import create from 'zustand'
+import { persist } from 'zustand/middleware'
 
 const dummyStorageApi = {
   getItem: () => null,
@@ -25,15 +24,12 @@ type State = {
   clearItems: () => void
   addItem: (item: Product) => void
   deleteItem: (itemID: string) => void
-  buyNow: (item: Product) => void
-  totals: () => { gross: number; net: number; quantity: number; currency: Option<string> }
-
-  /**
-   * `opened` – Opened/Closed basket panels
-   */
-  opened: boolean
-  toggle: () => void
-  close: () => void
+  totals: () => {
+    gross: number
+    net: number
+    quantity: number
+    currency: Option<string>
+  }
 }
 
 export default create<State>(
@@ -45,16 +41,24 @@ export default create<State>(
 
       items: [],
       clearItems: () => set({ items: [] }, true),
-      addItem: (item) => set({ items: [...get().items, item] }),
-      deleteItem: (itemID) => set({ items: get().items.filter((item) => item.id !== itemID) }),
-      buyNow: (item) => set({ items: [item], opened: true }),
+      addItem: (item) =>
+        set({
+          items: get().items.includes(item)
+            ? get().items
+            : [...get().items, item],
+        }),
+      deleteItem: (itemID) =>
+        set({ items: get().items.filter((item) => item.id !== itemID) }),
       totals: () =>
         get().items.reduce(
           (acc, curr) => {
             const quantity = 1
-            const variant = curr.variants ? curr.variants.find((v) => v.isDefault) : curr.defaultVariant
+            const variant = curr.variants
+              ? curr.variants.find((v) => v.isDefault)
+              : curr.defaultVariant
             const priceVariants = variant?.priceVariants
-            const { price, currency } = priceVariants?.find((pv) => pv.identifier === 'default') || {}
+            const { price, currency } =
+              priceVariants?.find((pv) => pv.identifier === 'default') || {}
             if (price) {
               acc.gross += price * 1
               acc.net += price * quantity
@@ -65,14 +69,11 @@ export default create<State>(
           },
           { gross: 0, net: 0, quantity: 0, currency: null as Option<string> },
         ),
-
-      opened: false,
-      toggle: () => set({ opened: !get().opened }),
-      close: () => set({ opened: false }),
     }),
     {
       name: 'basket',
-      storage: typeof window !== 'undefined' ? window.sessionStorage : dummyStorageApi,
+      getStorage: () =>
+        typeof window !== 'undefined' ? window.sessionStorage : dummyStorageApi,
     },
   ),
 )

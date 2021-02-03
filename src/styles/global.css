@@ -1,0 +1,10 @@
+html {
+  height: -webkit-fill-available;
+}
+
+body {
+  @apply bg-gray-100;
+  min-height: 100vh;
+  /* mobile viewport bug fix */
+  min-height: -webkit-fill-available;
+}

@@ -1,14 +1,15 @@
+import Drawers from '@components/Drawers'
 import { PropsWithChildren, ReactNode } from 'react'
 
-import Header from '@components/Header'
-import BasketDrawer from '@components/BasketDrawer'
+import * as styles from './MainLayout.module.css'
 
 function MainLayout({ children }: PropsWithChildren<unknown>) {
   return (
     <>
-      <Header />
-      <main className="p-4">{children}</main>
-      <BasketDrawer />
+      <Drawers />
+      <div className={styles['main-container']}>
+        <main className={styles.main}>{children}</main>
+      </div>
     </>
   )
 }
