@@ -15,7 +15,12 @@ type Props = {
 }
 
 function CrystallizeContent({ content }: Props) {
-  return <CrystallizeContentTransformer {...content} overrides={commonTransfomerOverrides} />
+  return (
+    <CrystallizeContentTransformer
+      {...content}
+      overrides={commonTransfomerOverrides}
+    />
+  )
 }
 
 export default memo(CrystallizeContent)

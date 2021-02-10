@@ -18,7 +18,10 @@ interface Props {
  */
 export function safePathQuery({ variables, ...rest }: Partial<Props>) {
   if (variables && 'path' in variables) {
-    const safePath = (variables.path || '').split('?')[0].split('#')[0].replace(/\/$/, '')
+    const safePath = (variables.path || '')
+      .split('?')[0]
+      .split('#')[0]
+      .replace(/\/$/, '')
 
     return {
       variables: {

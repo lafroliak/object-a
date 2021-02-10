@@ -3,12 +3,16 @@ require('dotenv').config()
 
 const ENV_VARS = {
   SITE_NAME: process.env.SITE_NAME,
+  SITE_URL: process.env.SITE_URL,
 }
 
 module.exports = {
   env: ENV_VARS,
   publicRuntimeConfig: ENV_VARS,
   poweredByHeader: false,
+  images: {
+    domains: ['media.crystallize.com'],
+  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if

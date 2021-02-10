@@ -1,11 +1,12 @@
 import { Product } from '@lib/crystallize/types'
 import { Option } from '@typings/utils'
 import clsx from 'clsx'
-import { motion, useMotionValue } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { memo, useState } from 'react'
 
 import CollapsableImage from './CollapsableImage'
 import IfElse from './IfElse'
+import * as styles from './ProductCard.module.css'
 
 type Props = {
   item: Option<Product>
@@ -15,7 +16,7 @@ type Props = {
 function ProductCard({ item, index = 0 }: Props) {
   const [isHovered, setHovered] = useState(false)
   const [isTap, setTap] = useState(false)
-  const x = useMotionValue(0)
+  // const x = useMotionValue(0)
 
   if (!item) return null
 
@@ -23,15 +24,11 @@ function ProductCard({ item, index = 0 }: Props) {
   if (type === 'folder' || type === 'document') return null
 
   const variant = variants ? variants.find((v) => v.isDefault) : defaultVariant
-  const priceVariants = variant?.priceVariants
   const images = variant?.images
 
   const image = (images?.[0] || variant?.image)?.variants?.find(
     (img) => img.width === 500 && !img.url.includes('webp'),
   )
-
-  const { price, currency } =
-    priceVariants?.find((pv) => pv.identifier === 'default') || {}
 
   return (
     <motion.div
@@ -43,14 +40,14 @@ function ProductCard({ item, index = 0 }: Props) {
       onMouseLeave={() => setHovered(false)}
       onMouseDown={() => setTap(true)}
       onMouseUp={() => setTap(false)}
-      className={clsx('w-full flex flex-col md:flex-row items-center', {
-        'md:flex-row-reverse': index % 2 === 0,
+      className={clsx('grid place-items-center', styles.card, {
+        [styles.reversed]: index % 2 === 0,
         'cursor-pointer': isHovered,
       })}
     >
       <IfElse predicate={image?.url}>
         {(prop) => (
-          <div>
+          <div className={clsx(styles.image, 'grid w-full place-items-end')}>
             <CollapsableImage
               image={prop}
               isHovered={isHovered}
@@ -66,25 +63,22 @@ function ProductCard({ item, index = 0 }: Props) {
           show: {
             opacity: 1,
             transition: {
-              delayChildren: 0.2,
+              delayChildren: 0.1,
             },
           },
         }}
         initial="hidden"
         animate={isHovered ? 'show' : 'hidden'}
-        className={clsx('h-1px bg-gray-400 flex-1')}
+        className={clsx(styles.line, 'w-full h-1px bg-gray-400')}
       />
       <motion.div
-        className="flex flex-col justify-center flex-no-shrink"
+        className={styles.name}
         initial={false}
         animate={{ opacity: isHovered ? 1 : 0 }}
         transition={{ delay: 0.25 }}
       >
         <IfElse predicate={name}>
           {(prop) => <h3>[objekt {prop.toLocaleLowerCase()}]</h3>}
-        </IfElse>
-        <IfElse predicate={{ price, currency }}>
-          {(prop) => <div>{`${prop.price} ${prop.currency}`}</div>}
         </IfElse>
       </motion.div>
     </motion.div>

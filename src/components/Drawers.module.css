@@ -41,7 +41,7 @@
     grid-area: three;
   }
 
-  @media (max-width: 767px) {
+  @screen sm {
     grid-template-rows: 2.5rem 1fr 1fr 2.5rem 2.5rem;
     grid-template-columns: 2.5rem 1fr 2.5rem;
     grid-template-areas:
@@ -71,7 +71,7 @@
     }
 
     &.opened-bottom {
-      grid-template-rows: 2.5rem 1fr 2.5rem 1fr 2.5rem;
+      grid-template-rows: 2.5rem 1fr 2.5rem minmax(16rem, 1fr) 2.5rem;
       grid-template-areas:
         'l top r'
         'one two three'
@@ -104,7 +104,7 @@
     }
   }
 
-  @media (min-width: 768px) {
+  @screen md {
     grid-template-rows: 3.125rem 1fr 1fr 1fr 3.125rem;
     grid-template-columns: 3.125rem 1fr 1fr 1fr 3.125rem;
     grid-template-areas:
@@ -134,7 +134,7 @@
     }
 
     &.opened-bottom {
-      grid-template-rows: 3.125rem 1fr 1fr 3.125rem 1fr 3.125rem;
+      grid-template-rows: 3.125rem 1fr 1fr 3.125rem minmax(16rem, 1fr) 3.125rem;
       grid-template-areas:
         'l top top top r'
         'left one two three right'
@@ -173,7 +173,11 @@
 .content-top {
   @apply border-b;
 
-  &:hover {
+  &.opened {
+    @apply border-gray-400;
+  }
+
+  &.opened:hover {
     @apply border-gray-500;
   }
 
@@ -189,8 +193,10 @@
 }
 
 .drawer {
-  &:hover {
-    @apply border-gray-500;
+  @screen md {
+    &:not(.top.opened):hover {
+      @apply border-gray-500 border-opacity-100;
+    }
   }
 
   &::after {
@@ -226,20 +232,27 @@
     @apply hidden;
   }
 
-  &.right.opened {
+  &.top {
+    @apply border-b;
+  }
+  &.right {
     @apply border-l;
   }
-
-  &.bottom.opened {
+  &.bottom {
     @apply border-t;
   }
-
-  &.left.opened {
+  &.left {
     @apply border-r;
+  }
+
+  &.right.opened,
+  &.bottom.opened,
+  &.left.opened {
+    @apply border-opacity-100;
   }
 }
 
-@media (max-width: 767px) {
+@screen sm {
   .right:not(.opened) {
     @apply fixed right-0 top-10 bottom-20 w-4 bg-opacity-0;
     grid-area: none;
@@ -250,7 +263,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@screen md {
   .text-vertical {
     @apply inline-block transform rotate-180;
     writing-mode: vertical-rl;

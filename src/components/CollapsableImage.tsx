@@ -9,7 +9,12 @@ type Props = {
   isTap?: boolean
   inverted?: boolean
 }
-function CollapsableImage({ image, isHovered = true, isTap = false, inverted = false }: Props) {
+function CollapsableImage({
+  image,
+  isHovered = true,
+  isTap = false,
+  inverted = false,
+}: Props) {
   const cref = useRef<HTMLCanvasElement>(null)
   const [min] = useState(() => Math.random() * (0.2 - 0.1) + 0.1)
 
@@ -24,17 +29,30 @@ function CollapsableImage({ image, isHovered = true, isTap = false, inverted = f
   const value = useSpring(target, 170, 26)
 
   useEffect(() => {
-    state.current.threshold = Math.max(0, Math.min(state.current.cells, Math.round(value)))
+    state.current.threshold = Math.max(
+      0,
+      Math.min(state.current.cells, Math.round(value)),
+    )
     render()
-  }, [value, state.current.cells])
+  }, [value, state, render])
 
   useEffect(() => {
     if (state.current.cells) {
-      const percent = isTap ? (inverted ? 0 : min) : isHovered ? (inverted ? min : 1) : inverted ? 1 : min
+      const percent = isTap
+        ? inverted
+          ? 0
+          : min
+        : isHovered
+        ? inverted
+          ? min
+          : 1
+        : inverted
+        ? 1
+        : min
       const newThresh = state.current.cells - percent * state.current.cells
       setTarget(newThresh)
     }
-  }, [state.current.cells, min, isHovered, isTap, inverted])
+  }, [state, min, isHovered, isTap, inverted])
 
   if (!image) return null
 

@@ -1,16 +1,12 @@
 import Drawers from '@components/Drawers'
 import { PropsWithChildren, ReactNode } from 'react'
 
-import * as styles from './MainLayout.module.css'
-
 function MainLayout({ children }: PropsWithChildren<unknown>) {
   return (
-    <>
+    <div>
       <Drawers />
-      <div className={styles['main-container']}>
-        <main className={styles.main}>{children}</main>
-      </div>
-    </>
+      {children}
+    </div>
   )
 }
 

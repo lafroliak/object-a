@@ -13,7 +13,8 @@ module.exports = {
     },
     screens: {
       xs: { max: '639px' },
-      sm: { min: '640px' },
+      // sm: { min: '640px' },
+      sm: { max: '767px' },
       md: { min: '768px' },
       lg: { min: '1024px' },
       xl: { min: '1280px' },
@@ -25,7 +26,11 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        'jet-brain-mono': ['JetBrains Mono Variables', 'JetBrains Mono', ...fontFamily.mono],
+        'jet-brain-mono': [
+          'JetBrains Mono Variables',
+          'JetBrains Mono',
+          ...fontFamily.mono,
+        ],
         'jet-brain-static': ['JetBrains Mono', ...fontFamily.mono],
       },
       height: {
@@ -38,5 +43,5 @@ module.exports = {
     },
   },
   variants: {},
-  plugins: [],
+  plugins: [require('@tailwindcss/aspect-ratio')],
 }

@@ -1,0 +1,40 @@
+.card {
+  @screen sm {
+    &,
+    &.reversed {
+      grid-template-rows: minmax(30rem, max-content) minmax(0, max-content);
+      grid-template-areas:
+        'image'
+        'name';
+
+      & > .line {
+        display: none;
+      }
+    }
+  }
+
+  @screen md {
+    grid-template-columns: minmax(0, max-content) 1fr minmax(30rem, max-content);
+    grid-template-areas: 'name line image';
+
+    &.reversed {
+      grid-template-columns: minmax(30rem, max-content) 1fr minmax(0, max-content);
+      grid-template-areas: 'image line name';
+    }
+
+    & > .line {
+      grid-area: line;
+    }
+
+    &.reversed > .image {
+      @apply place-items-start;
+    }
+  }
+
+  & > .image {
+    grid-area: image;
+  }
+  & > .name {
+    grid-area: name;
+  }
+}

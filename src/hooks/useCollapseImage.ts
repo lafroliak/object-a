@@ -20,12 +20,19 @@ type State = {
   tiles: { x: number; y: number }[]
 }
 
-export default function useCollapseImage({ image, cref, sp = 16, start }: Props) {
+export default function useCollapseImage({
+  image,
+  cref,
+  sp = 16,
+  start,
+}: Props) {
   const clearRenderRef = useRef(false)
   const state = useRef<State>({} as State)
 
   const spx = useCallback(
-    function spx(array: [number, number, number, number]): [number, number, number, number] {
+    function spx(
+      array: [number, number, number, number],
+    ): [number, number, number, number] {
       return array.map((v) => v * sp) as [number, number, number, number]
     },
     [sp],
@@ -36,12 +43,21 @@ export default function useCollapseImage({ image, cref, sp = 16, start }: Props)
       clearRenderRef.current = false
       const c = cref.current
       const cx = c?.getContext('2d')
-      const { cells, ordered, threshold, grid, cols, rows, imc, tiles } = state.current
+      const {
+        cells,
+        ordered,
+        threshold,
+        grid,
+        cols,
+        rows,
+        imc,
+        tiles,
+      } = state.current
 
       // active
-      const active: [number | null, number | null, boolean][][] = [...Array(rows)].map((_, y) =>
-        [...Array(cols)].map((__, x) => [x, y, false]),
-      )
+      const active: [number | null, number | null, boolean][][] = [
+        ...Array(rows),
+      ].map((_, y) => [...Array(cols)].map((__, x) => [x, y, false]))
       for (let i = threshold; i < cells; i += 1) {
         const tile = tiles[i]
         const { x } = tile
@@ -81,7 +97,10 @@ export default function useCollapseImage({ image, cref, sp = 16, start }: Props)
         const self = grid[y][x]
         const filtered = raw.filter((v) => v !== null)
         const distances = filtered.map((v) => (v ? parseFloat(`${v[2]}`) : 0))
-        const minDistance = distances.reduce((res, cur) => Math.min(res, cur), Infinity)
+        const minDistance = distances.reduce(
+          (res, cur) => Math.min(res, cur),
+          Infinity,
+        )
         if (minDistance < self[2]) {
           const minI = distances.indexOf(minDistance)
           return filtered[minI]
@@ -103,7 +122,11 @@ export default function useCollapseImage({ image, cref, sp = 16, start }: Props)
               moved = true
               const [mx, my] = moveTo
               // let old = active[my][mx].slice()
-              const old = [null, null, false] as [number | null, number | null, boolean]
+              const old = [null, null, false] as [
+                number | null,
+                number | null,
+                boolean,
+              ]
               active[my][mx] = check
               active[y][x] = old
             }
@@ -119,8 +142,17 @@ export default function useCollapseImage({ image, cref, sp = 16, start }: Props)
             const x = i % cols
             const y = Math.floor(i / cols)
             const check = active[y][x]
-            if (!Number.isNaN(check[0]) && !Number.isNaN(check[1]) && check[2] && cx) {
-              cx.drawImage(imc, ...spx([check[0] as number, check[1] as number, 1, 1]), ...spx([x, y, 1, 1]))
+            if (
+              !Number.isNaN(check[0]) &&
+              !Number.isNaN(check[1]) &&
+              check[2] &&
+              cx
+            ) {
+              cx.drawImage(
+                imc,
+                ...spx([check[0] as number, check[1] as number, 1, 1]),
+                ...spx([x, y, 1, 1]),
+              )
             }
           }
         } else if (moved && !clearRenderRef.current && cx && c) {
@@ -154,23 +186,32 @@ export default function useCollapseImage({ image, cref, sp = 16, start }: Props)
 
       if (!c) return
 
-      const cx = c.getContext('2d')
-      let img: HTMLCanvasElement | HTMLImageElement = document.createElement('img')
+      let img: HTMLCanvasElement | HTMLImageElement = document.createElement(
+        'img',
+      )
       img.onload = () => {
         const aspect = img.width / img.height
-        const windowAspect = (window.innerWidth - sp) / (window.innerHeight - sp * 8)
+        const parrentWidth = c.parentElement?.offsetWidth || window.innerWidth
+        const parentHeight = c.parentElement?.offsetHeight || window.innerHeight
+        const parentAspect = (parrentWidth - sp) / (parentHeight - sp * 8)
 
         let snapw
         let snaph
-        if (aspect < windowAspect) {
+        if (aspect < parentAspect) {
           // worry about height
-          const adjHeight = Math.min(img.height, Math.floor(window.innerHeight - sp * 8))
+          const adjHeight = Math.min(
+            img.height,
+            Math.floor(parentHeight - sp * 8),
+          )
           snaph = Math.round(adjHeight / sp) * sp
           const snapr = snaph / img.height
           snapw = Math.round((img.width * snapr) / sp) * sp
         } else {
           // worry about width
-          const adjWidth = Math.min(img.width, Math.floor(window.innerWidth - sp) - sp / 2)
+          const adjWidth = Math.min(
+            img.width,
+            Math.floor(parrentWidth - sp) - sp / 2,
+          )
           snapw = Math.round(adjWidth / sp) * sp
           const snapr = snapw / img.width
           snaph = Math.round((img.height * snapr) / sp) * sp
@@ -195,6 +236,7 @@ export default function useCollapseImage({ image, cref, sp = 16, start }: Props)
         img = tImg
 
         // draw original image
+        // const cx = c.getContext('2d')
         // cx.drawImage(img, 0, 0, c.width, c.height)
 
         // store original image
@@ -226,7 +268,9 @@ export default function useCollapseImage({ image, cref, sp = 16, start }: Props)
         // grid with coordinates
         const grid = [...Array(rows)].map((_, y) =>
           [...Array(cols)].map((__, x) => {
-            const d = parseFloat(Math.sqrt((x - cols / 2) ** 2 + (y - rows / 2) ** 2).toFixed(8))
+            const d = parseFloat(
+              Math.sqrt((x - cols / 2) ** 2 + (y - rows / 2) ** 2).toFixed(8),
+            )
             return [x, y, d]
           }),
         )
@@ -243,7 +287,9 @@ export default function useCollapseImage({ image, cref, sp = 16, start }: Props)
         //   cx?.fillRect(...spx([x, y, 1, 1]))
         // }
 
-        const threshold = cells - Math.round(cells * (start || Math.random() * (0.3 - 0.01) + 0.01))
+        const threshold =
+          cells -
+          Math.round(cells * (start || Math.random() * (0.3 - 0.01) + 0.01))
         state.current.threshold = threshold
         state.current.cells = cells
         state.current.ordered = ordered
@@ -258,7 +304,7 @@ export default function useCollapseImage({ image, cref, sp = 16, start }: Props)
       img.src = `${src}?cache=true`
       img.setAttribute('crossOrigin', '*')
     },
-    [cref, render, sp],
+    [cref, render, sp, start],
   )
 
   useEffect(() => {

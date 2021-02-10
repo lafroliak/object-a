@@ -59,7 +59,7 @@ function Drawer({
     <>
       <Element
         className={clsx(
-          'relative grid place-items-center bg-gray-100 border-gray-400 border-solid',
+          'relative grid place-items-center bg-gray-100 border-opacity-0 border-gray-400 border-solid',
           styles.drawer,
           styles[side],
           {
@@ -100,7 +100,7 @@ function Drawer({
         {() => (
           <motion.div
             className={clsx(
-              'relative z-40 border-gray-400 border-solid bg-gray-100',
+              'relative z-40 bg-gray-100',
               styles.content,
               styles[`content-${side}`],
               {

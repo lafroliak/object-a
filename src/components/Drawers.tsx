@@ -1,5 +1,6 @@
 import useDrawer from '@stores/useDrawer'
 import clsx from 'clsx'
+import dynamic from 'next/dynamic'
 import { memo } from 'react'
 
 import Basket from './Basket'
@@ -9,6 +10,13 @@ import * as styles from './Drawers.module.css'
 import IfElse from './IfElse'
 import Menu from './Menu'
 import MenuButton from './MenuButton'
+
+const Showcase = dynamic(import('./Showcase'), {
+  loading: function Placeholder() {
+    return <p>[loading...]</p>
+  },
+  ssr: false,
+})
 
 export const SIDES = {
   Top: 'top',
@@ -32,10 +40,14 @@ function Drawers() {
         opened ? styles[`opened-${opened}`] : null,
       )}
     >
-      <div className={clsx('grid place-items-center', styles.r)}>
+      <div
+        className={clsx('grid place-items-center bg-gray-100 z-40', styles.r)}
+      >
         <BasketButton />
       </div>
-      <div className={clsx('grid place-items-center', styles.l)}>
+      <div
+        className={clsx('grid place-items-center bg-gray-100 z-40', styles.l)}
+      >
         <MenuButton />
       </div>
       <Menu />
@@ -70,7 +82,7 @@ function Drawers() {
             [showcase]
           </button>
         }
-        content={<div>SHOWCASE</div>}
+        content={<Showcase />}
       />
       <Drawer
         as="aside"
