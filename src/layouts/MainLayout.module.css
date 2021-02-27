@@ -1,0 +1,35 @@
+.main-container {
+  height: -webkit-fill-available;
+
+  @screen sm {
+    grid-template-rows: 2.5rem 1fr 5rem;
+    grid-template-columns: 2.5rem 1fr 2.5rem;
+    grid-template-areas:
+      '... ... ...'
+      'main main main'
+      '... ... ...';
+  }
+
+  @screen md {
+    grid-template-rows: 3rem 1fr 3rem;
+    grid-template-columns: 3rem 1fr 3rem;
+    grid-template-areas:
+      '... ... ...'
+      '... main ...'
+      '... ... ...';
+  }
+
+  & > .main {
+    grid-area: main;
+  }
+}
+
+.main {
+  -webkit-overflow-scrolling: touch;
+
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

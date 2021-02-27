@@ -57,11 +57,8 @@ const renderBlock = (
     .with(
       { type: ComponentType.ParagraphCollection, json: select('json') },
       ({ type }, { json }) => (
-        <div className="max-w-3xl mx-auto">
-          <CrystallizeContent
-            key={`${type}=${idx}`}
-            content={json as RichTextContent['json']}
-          />
+        <div key={`${type}=${idx}`} className="max-w-3xl mx-auto">
+          <CrystallizeContent content={json as RichTextContent['json']} />
         </div>
       ),
     )

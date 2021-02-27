@@ -1,35 +1,47 @@
-import clsx from 'clsx'
-import getConfig from 'next/config'
+import { trpc } from '@lib/trpc'
+import useDrawer from '@stores/useDrawer'
 import Link from 'next/link'
+import { useMemo } from 'react'
 
-import Drawer from './Drawer'
 import { SIDES } from './Drawers'
-import * as styles from './Menu.module.css'
 
-const { publicRuntimeConfig } = getConfig()
+const DRAWERS = [
+  { side: SIDES.Right, name: '[basket]', disabled: false },
+  { side: SIDES.Bottom, name: '[showcase]', disabled: false },
+  { side: SIDES.Left, name: '[stories]', disbled: true },
+]
 
 export default function Menu() {
+  const allPages = trpc.useQuery(['get-all-pages'])
+  const pages = useMemo(() => allPages.data?.reverse() || [], [allPages.data])
+  const toggle = useDrawer((state) => state.toggle)
+
   return (
-    <Drawer
-      as="header"
-      side={SIDES.Top}
-      name={
-        <div className={clsx('grid w-full', styles.header)}>
-          <Link href="/">
-            <a
-              title="to the homepage"
-              className={clsx('grid place-items-center')}
+    <menu className="grid grid-cols-2 p-0 m-0 list-none place-items-center auto-rows-min">
+      {DRAWERS.map(({ side, name, disabled }) =>
+        disabled ? (
+          <li key={side} className="text-gray-500">
+            {name}
+          </li>
+        ) : (
+          <li key={side}>
+            <button
+              type="button"
+              className="block cursor-pointer focus:outline-none"
+              onClick={() => toggle(side)}
             >
-              {publicRuntimeConfig.SITE_NAME}
-            </a>
+              {name}
+            </button>
+          </li>
+        ),
+      )}
+      {pages.map((page) => (
+        <li key={page.id}>
+          <Link href={page.path === '/homepage' ? '/' : page.path || '/'}>
+            <a>{page.name}</a>
           </Link>
-        </div>
-      }
-      content={
-        <menu className={clsx('grid m-0 p-0 h-full place-items-center')}>
-          MENU
-        </menu>
-      }
-    />
+        </li>
+      ))}
+    </menu>
   )
 }

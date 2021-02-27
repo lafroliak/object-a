@@ -25,6 +25,10 @@ module.exports = {
       '2xl': { min: '1536px' },
     },
     extend: {
+      cursor: {
+        grab: 'grab',
+        grabbing: 'grabbing',
+      },
       fontFamily: {
         'jet-brain-mono': [
           'JetBrains Mono Variables',
@@ -36,9 +40,8 @@ module.exports = {
       height: {
         '1px': '1px',
       },
-      cursor: {
-        grab: 'grab',
-        grabbing: 'grabbing',
+      zIndex: {
+        '-1': '-1',
       },
     },
   },

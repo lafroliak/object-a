@@ -13,6 +13,13 @@ module.exports = {
   images: {
     domains: ['media.crystallize.com'],
   },
+  future: {
+    webpack5: true,
+  },
+  webpack: function (config, _options) {
+    config.experiments = {}
+    return config
+  },
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if

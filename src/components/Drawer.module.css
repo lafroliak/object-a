@@ -1,0 +1,89 @@
+.drawer {
+  --handler-size: 0.75rem;
+  --side-size: calc(var(--handler-size) + var(--name-size));
+
+  &.top {
+    --drawer-size: calc(50vh - (var(--side-size) * 2));
+    height: var(--drawer-size);
+    grid-template-areas:
+      'content'
+      'name'
+      'handler';
+  }
+  &.right {
+    right: calc(var(--drawer-size) * -1);
+    width: var(--drawer-size);
+    grid-template-areas: 'handler name content';
+  }
+  &.bottom {
+    --drawer-size: calc(50vh - (var(--side-size) * 2));
+    bottom: calc(var(--drawer-size) * -1);
+    height: var(--drawer-size);
+    grid-template-areas:
+    'handler'
+    'name'
+    'content';
+  }
+  &.left-handler {
+    --drawer-size: calc(50vh - (var(--side-size) * 2));
+    bottom: calc(var(--drawer-size) * -1);
+    height: var(--drawer-size);
+    grid-template-rows: var(--handler-size) var(--name-size) 1fr;
+    grid-template-areas:
+      'handler'
+      'name'
+      'content';
+  }
+  &.left {
+    left: calc(var(--drawer-size) * -1);
+    width: var(--drawer-size);
+    grid-template-areas: 'content name handler';
+  }
+
+  @screen sm {
+    --name-size: 1.75rem;
+
+    &.top {
+      grid-template-rows: 1fr var(--name-size) var(--handler-size);
+    }
+    &.right {
+      --drawer-size: calc(100vw - var(--side-size));
+      grid-template-columns: var(--handler-size) var(--name-size) 1fr;
+    }
+    &.bottom {
+      grid-template-rows: var(--handler-size) var(--name-size) 1fr;
+    }
+    &.left {
+      --drawer-size: calc(100vw - var(--side-size));
+      grid-template-columns: 1fr var(--name-size) var(--handler-size);
+    }
+  }
+  @screen md {
+    --name-size: 2.25rem;
+
+    &.top {
+      grid-template-rows: 1fr var(--name-size) var(--handler-size);
+    }
+    &.right {
+      grid-template-columns: var(--handler-size) var(--name-size) 1fr;
+      --drawer-size: calc((100vw / 3) - (var(--side-size) * 2));
+    }
+    &.bottom {
+      grid-template-rows: var(--handler-size) var(--name-size) 1fr;
+    }
+    &.left {
+      --drawer-size: calc((100vw / 3 * 2) - (var(--side-size) * 2));
+      grid-template-columns: 1fr var(--name-size) var(--handler-size);
+    }
+  }
+
+  & > .content {
+    grid-area: content;
+  }
+  & > .name {
+    grid-area: name;
+  }
+  & > .handler {
+    grid-area: handler;
+  }
+}

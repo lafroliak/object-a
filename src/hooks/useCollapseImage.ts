@@ -20,6 +20,12 @@ type State = {
   tiles: { x: number; y: number }[]
 }
 
+const cache: { [key: string]: string } = {}
+const getCache = (src: string): string | undefined => cache[src]
+const updateCache = (src: string, data: string): void => {
+  cache[src] = data
+}
+
 export default function useCollapseImage({
   image,
   cref,
@@ -246,6 +252,10 @@ export default function useCollapseImage({
         const imx = imc.getContext('2d')
         imx?.drawImage(img, 0, 0, c.width, c.height)
 
+        if (!getCache(src)) {
+          updateCache(src, imc.toDataURL())
+        }
+
         // cut up original image
         let tiles = []
         for (let i = 0; i < cells; i += 1) {
@@ -301,8 +311,14 @@ export default function useCollapseImage({
 
         render()
       }
-      img.src = `${src}?cache=true`
-      img.setAttribute('crossOrigin', '*')
+
+      const cached = getCache(src)
+      if (cached) {
+        img.src = cached
+      } else {
+        img.src = `${src}?cache=true`
+        img.setAttribute('crossOrigin', '*')
+      }
     },
     [cref, render, sp, start],
   )

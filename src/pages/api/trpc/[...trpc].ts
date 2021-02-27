@@ -1,6 +1,6 @@
 import { simplyFetchFromGraph } from '@lib/crystallize/graph'
 import fragments from '@lib/crystallize/graph/fragments'
-import { Product } from '@lib/crystallize/types'
+import { Item, Product } from '@lib/crystallize/types'
 import * as trpc from '@trpc/server'
 import * as z from 'zod'
 
@@ -61,6 +61,63 @@ export const appRouter = createRouter()
       return data.catalogue?.children?.filter(
         (c) => c.type === 'product',
       ) as Product[]
+    },
+  })
+  .query('get-all-pages', {
+    async resolve() {
+      const { data } = await simplyFetchFromGraph({
+        query: `
+          query PAGE($language: String!, $path: String!,  $version: VersionLabel!) {
+            catalogue(path: $path, language: $language, version: $version) {
+              ...item
+              ...product
+
+              children {
+                ...item
+                ...product
+              }
+            }
+          }
+    
+          ${fragments}
+        `,
+        variables: {
+          language: 'en',
+          path: '/',
+          version: 'published',
+        },
+      })
+
+      return data.catalogue?.children?.filter(
+        (c) => c.type === 'document',
+      ) as Item[]
+    },
+  })
+  .query('get-page', {
+    // using zod schema to validate and infer input values
+    input: z.object({
+      path: z.string(),
+    }),
+    async resolve({ input }) {
+      const { data } = await simplyFetchFromGraph({
+        query: `
+          query PAGE($language: String!, $path: String!,  $version: VersionLabel!) {
+            catalogue(path: $path, language: $language, version: $version) {
+              ...item
+              ...product
+            }
+          }
+    
+          ${fragments}
+        `,
+        variables: {
+          language: 'en',
+          path: input.path,
+          version: 'published',
+        },
+      })
+
+      return data.catalogue as Item
     },
   })
 

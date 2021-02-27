@@ -1,0 +1,47 @@
+.header {
+  grid-template-areas: 'l link r';
+
+  & > .link {
+    grid-area: link;
+  }
+  & > .r {
+    grid-area: r;
+  }
+  & > .l {
+    grid-area: l;
+  }
+
+  @screen sm {
+    grid-template-columns: 2.5rem 1fr 2.5rem;
+  }
+
+  @screen md {
+    grid-template-columns: 3rem 1fr 3rem;
+  }
+}
+
+.drawer {
+  & > .content {
+    grid-area: content;
+  }
+  & > .handler {
+    grid-area: handler;
+  }
+
+  @screen sm {
+    grid-template-rows: 1.75rem 1fr 0.75rem;
+    grid-template-areas:
+      '...'
+      'content'
+      'handler';
+  }
+
+  @screen md {
+    grid-template-columns: 3rem 1fr 3rem;
+    grid-template-rows: 2.25rem 1fr 0.75rem;
+    grid-template-areas:
+      '... ... ...'
+      '... content ...'
+      '... handler ...';
+  }
+}
