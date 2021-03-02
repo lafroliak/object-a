@@ -13,7 +13,7 @@ function Header() {
     <header className="fixed top-0 left-0 right-0 z-50">
       <nav
         className={clsx(
-          'grid relative w-full bg-gray-100 place-items-center place-content-end sm:h-7 md:h-9',
+          'grid relative w-full bg-color-100 dark:bg-color-800 place-items-center place-content-end sm:h-7 md:h-9',
           styles.header,
         )}
       >

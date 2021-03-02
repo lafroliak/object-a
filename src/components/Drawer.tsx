@@ -129,9 +129,9 @@ function Drawer({
     <Element
       className={clsx('fixed z-30', {
         'right-0 left-0 top-0 md:left-12 md:right-12': side === SIDES.Top,
-        'right-0 top-10 bottom-20 md:top-12 md:bottom-12': side === SIDES.Right,
+        'right-0 top-10 bottom-10 md:top-12 md:bottom-12': side === SIDES.Right,
         'right-0 bottom-0 left-0 md:right-12 md:left-12': side === SIDES.Bottom,
-        'right-0 bottom-20 left-0': side === SIDES.LeftHandler,
+        'right-0 bottom-10 left-0': side === SIDES.LeftHandler,
         'left-0 bottom-10 top-10 md:top-12 md:bottom-12': side === SIDES.Left,
         'z-40': opened == side,
       })}
@@ -140,11 +140,11 @@ function Drawer({
         layoutId={layoutId}
         ref={ref}
         className={clsx(
-          'absolute grid md:bg-gray-100',
+          'absolute grid md:bg-color-100 md:dark:bg-color-800',
           styles.drawer,
           styles[side],
           {
-            'sm:bg-gray-100':
+            'sm:bg-color-100 sm:dark:bg-color-800':
               side !== SIDES.Right || (side === SIDES.Right && opened === side),
             'right-0 left-0 bottom-0': side === SIDES.Top,
             'top-0 bottom-0': side === SIDES.Right,
@@ -170,7 +170,7 @@ function Drawer({
       >
         <div
           className={clsx(
-            'w-full h-full grid place-items-center border-opacity-0 border-gray-500 border-solid transition duration-200 ease-in-out',
+            'w-full h-full grid place-items-center border-opacity-0 border-color-500 border-solid transition duration-200 ease-in-out',
             styles.handler,
             {
               'opacity-0': disabled,
@@ -184,7 +184,7 @@ function Drawer({
           )}
         >
           <div
-            className={clsx('bg-gray-500 rounded-sm', {
+            className={clsx('bg-color-500 rounded-sm', {
               'w-1 h-4': isSidebar,
               'w-4 h-1': !isSidebar,
             })}

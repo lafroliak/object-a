@@ -8,7 +8,7 @@ import { SIDES } from './Drawers'
 const DRAWERS = [
   { side: SIDES.Right, name: '[basket]', disabled: false },
   { side: SIDES.Bottom, name: '[showcase]', disabled: false },
-  { side: SIDES.Left, name: '[stories]', disbled: true },
+  { side: SIDES.Left, name: '[stories]', disabled: true },
 ]
 
 export default function Menu() {
@@ -20,7 +20,7 @@ export default function Menu() {
     <menu className="grid grid-cols-2 p-0 m-0 list-none place-items-center auto-rows-min">
       {DRAWERS.map(({ side, name, disabled }) =>
         disabled ? (
-          <li key={side} className="text-gray-500">
+          <li key={side} className="text-color-500">
             {name}
           </li>
         ) : (

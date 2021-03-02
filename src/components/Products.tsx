@@ -9,7 +9,7 @@ type Props = {
 }
 function Products({ columns }: Props) {
   return (
-    <div className="max-w-5xl mx-auto space-y-12 md:-space-y-12">
+    <div className="max-w-5xl mx-auto space-y-8 md:-space-y-8">
       {(columns || []).map((c, i) => (
         <Link
           key={c.itemId}

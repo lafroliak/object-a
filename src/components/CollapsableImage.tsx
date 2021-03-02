@@ -1,28 +1,39 @@
 import useCollapseImage from '@hooks/useCollapseImage'
 import { Option } from '@typings/utils'
-import { memo, useEffect, useRef, useState } from 'react'
+import clsx from 'clsx'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import useSpring from 'react-use/lib/useSpring'
+
+import IfElse from './IfElse'
 
 type Props = {
   image: Option<string>
+  placeholder: Option<string>
   isHovered?: boolean
   isTap?: boolean
   inverted?: boolean
 }
 function CollapsableImage({
   image,
+  placeholder,
   isHovered = true,
   isTap = false,
   inverted = false,
 }: Props) {
   const cref = useRef<HTMLCanvasElement>(null)
   const [min] = useState(() => Math.random() * (0.2 - 0.1) + 0.1)
+  const [loaded, setLoaded] = useState<boolean>(false)
+
+  const onLoad = useCallback(() => {
+    setLoaded(true)
+  }, [])
 
   const [state, render] = useCollapseImage({
     image,
     cref,
     sp: 48,
     start: inverted ? 1 : min,
+    onLoad,
   })
 
   const [target, setTarget] = useState(0)
@@ -56,7 +67,22 @@ function CollapsableImage({
 
   if (!image) return null
 
-  return <canvas ref={cref} />
+  return (
+    <>
+      <IfElse predicate={!!placeholder && !loaded}>
+        {() => (
+          <div
+            className={clsx('absolute inset-0 bg-contain bg-no-repeat')}
+            style={{
+              backgroundImage: `url(${placeholder})`,
+              filter: 'blur(1em)',
+            }}
+          />
+        )}
+      </IfElse>
+      <canvas ref={cref} />
+    </>
+  )
 }
 
 export default memo(CollapsableImage)

@@ -7,6 +7,7 @@ type Props = {
   cref: MutableRefObject<HTMLCanvasElement | null>
   sp?: number
   start?: number
+  onLoad?: () => void
 }
 
 type State = {
@@ -31,6 +32,7 @@ export default function useCollapseImage({
   cref,
   sp = 16,
   start,
+  onLoad,
 }: Props) {
   const clearRenderRef = useRef(false)
   const state = useRef<State>({} as State)
@@ -309,6 +311,10 @@ export default function useCollapseImage({
         state.current.imc = imc
         state.current.tiles = tiles
 
+        if (typeof onLoad === 'function') {
+          onLoad()
+        }
+
         render()
       }
 
@@ -320,7 +326,7 @@ export default function useCollapseImage({
         img.setAttribute('crossOrigin', '*')
       }
     },
-    [cref, render, sp, start],
+    [cref, render, sp, start, onLoad],
   )
 
   useEffect(() => {

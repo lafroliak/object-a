@@ -10,6 +10,7 @@ import {
   RichTextContent,
 } from '@lib/crystallize/types'
 import { getBlocks, WithType } from '@lib/getBlocks'
+import clsx from 'clsx'
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 import { NextSeo } from 'next-seo'
 import React, { useEffect, useRef } from 'react'
@@ -57,7 +58,12 @@ const renderBlock = (
     .with(
       { type: ComponentType.ParagraphCollection, json: select('json') },
       ({ type }, { json }) => (
-        <div key={`${type}=${idx}`} className="max-w-3xl mx-auto">
+        <div
+          key={`${type}=${idx}`}
+          className={clsx('max-w-3xl mx-auto text-capsize', {
+            italic: idx === 0,
+          })}
+        >
           <CrystallizeContent content={json as RichTextContent['json']} />
         </div>
       ),
@@ -96,7 +102,7 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
   }, [page])
 
   return (
-    <div className="py-12 space-y-48">
+    <>
       <NextSeo
         title={page.title?.text || undefined}
         description={page.intro?.plainText?.join('. ') || undefined}
@@ -110,7 +116,7 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
         }}
       />
       {page.blocks.map(renderBlock)}
-    </div>
+    </>
   )
 }
 

@@ -17,11 +17,16 @@ function MainLayout({ children }: PropsWithChildren<unknown>) {
     <>
       <div
         className={clsx(
-          'grid content-between h-full min-h-screen w-screen',
+          'grid content-between h-full min-h-screen w-screen max-w-full overflow-x-hidden',
           styles['main-container'],
         )}
       >
-        <main className={clsx('relative bg-gray-200', styles.main)}>
+        <main
+          className={clsx(
+            'relative bg-color-200 dark:bg-color-900',
+            styles.main,
+          )}
+        >
           {children}
         </main>
       </div>

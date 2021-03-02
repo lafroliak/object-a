@@ -5,24 +5,22 @@ module.exports = {
   purge: {
     content: ['./src/**/*.{js,jsx,ts,tsx}'],
   },
-  darkMode: false, // or 'media' or 'class'
+  darkMode: 'media', // or 'media' or 'class'
   theme: {
     colors: {
       ...colors,
-      gray: colors.blueGray,
-    },
-    screens: {
-      xs: { max: '639px' },
-      // sm: { min: '640px' },
-      sm: { max: '767px' },
-      md: { min: '768px' },
-      lg: { min: '1024px' },
-      xl: { min: '1280px' },
-      // sm: { min: '640px', max: '767px' },
-      // md: { min: '768px', max: '1023px' },
-      // lg: { min: '1024px', max: '1279px' },
-      // xl: { min: '1280px', max: '1535px' },
-      '2xl': { min: '1536px' },
+      color: {
+        50: colors.blueGray['50'],
+        100: colors.blueGray['100'],
+        200: colors.blueGray['200'],
+        300: colors.blueGray['300'],
+        400: colors.blueGray['400'],
+        500: colors.blueGray['500'],
+        600: colors.blueGray['600'],
+        700: colors.blueGray['700'],
+        800: colors.blueGray['800'],
+        900: colors.blueGray['900'],
+      },
     },
     extend: {
       cursor: {
@@ -37,14 +35,26 @@ module.exports = {
         ],
         'jet-brain-static': ['JetBrains Mono', ...fontFamily.mono],
       },
+      fontWeight: {
+        base: 499,
+        dark: 472,
+        hover: 521,
+      },
       height: {
         '1px': '1px',
+      },
+      screens: {
+        sm: { max: '767px' },
       },
       zIndex: {
         '-1': '-1',
       },
     },
   },
-  variants: {},
+  variants: {
+    extend: {
+      fontWeight: ['dark', 'hover'],
+    },
+  },
   plugins: [require('@tailwindcss/aspect-ratio')],
 }

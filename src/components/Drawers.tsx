@@ -48,7 +48,7 @@ function Drawers() {
               layoutId="drawers_closer"
               key={prop ? 'drawers_closer' : 'nope'}
               className={clsx(
-                'fixed top-10 md:top-12 bottom-10 md:bottom-12 left-0 right-0 md:left-12 md:right-12 bg-gray-400 bg-opacity-50 z-10 cursor-pointer',
+                'fixed top-10 md:top-12 bottom-10 md:bottom-12 left-0 right-0 md:left-12 md:right-12 bg-color-500 bg-opacity-40 z-10 cursor-pointer',
               )}
               onClick={close}
               initial={{ opacity: 0 }}
@@ -83,13 +83,17 @@ function Drawers() {
         <IfElse
           predicate={!isSM || opened === SIDES.Left}
           placeholder={
-            <Drawer
-              layoutId={SIDES.LeftHandler}
-              as="nav"
-              side={SIDES.LeftHandler}
-              disabled
-              name={<span className="text-gray-500">[stories]</span>}
-            />
+            <IfElse predicate={!isSM}>
+              {() => (
+                <Drawer
+                  layoutId={SIDES.LeftHandler}
+                  as="nav"
+                  side={SIDES.LeftHandler}
+                  disabled
+                  name={<span className="text-color-500">[stories]</span>}
+                />
+              )}
+            </IfElse>
           }
         >
           {() => (
@@ -99,7 +103,7 @@ function Drawers() {
               side={SIDES.Left}
               disabled
               name={
-                <span className="text-gray-500 transform -rotate-90 md:translate-x-2">
+                <span className="transform -rotate-90 text-color-500 md:translate-x-2">
                   [stories]
                 </span>
               }

@@ -6,24 +6,16 @@
       grid-template-areas:
         'image'
         'name';
-
-      & > .line {
-        display: none;
-      }
     }
   }
 
   @screen md {
-    grid-template-columns: minmax(0, max-content) 1fr minmax(30rem, max-content);
-    grid-template-areas: 'name line image';
+    grid-template-columns: 1fr minmax(30rem, max-content);
+    grid-template-areas: 'name ... image';
 
     &.reversed {
-      grid-template-columns: minmax(30rem, max-content) 1fr minmax(0, max-content);
-      grid-template-areas: 'image line name';
-    }
-
-    & > .line {
-      grid-area: line;
+      grid-template-columns: minmax(30rem, max-content) 1fr;
+      grid-template-areas: 'image name';
     }
 
     &.reversed > .image {
