@@ -205,7 +205,7 @@ export default function useCollapseImage({
 
         let snapw
         let snaph
-        if (aspect < parentAspect) {
+        if (aspect > parentAspect) {
           // worry about height
           const adjHeight = Math.min(
             img.height,

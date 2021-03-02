@@ -10,11 +10,11 @@
   }
 
   @screen md {
-    grid-template-columns: 1fr minmax(30rem, max-content);
-    grid-template-areas: 'name ... image';
+    grid-template-columns: 1fr minmax(30rem, 33.33333vw);
+    grid-template-areas: 'name image';
 
     &.reversed {
-      grid-template-columns: minmax(30rem, max-content) 1fr;
+      grid-template-columns: minmax(30rem, 33.33333vw) 1fr;
       grid-template-areas: 'image name';
     }
 

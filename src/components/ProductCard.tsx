@@ -68,7 +68,7 @@ function ProductCard({ item, index = 0 }: Props) {
           <div
             className={clsx(
               styles.image,
-              'relative grid w-full place-items-end',
+              'relative grid w-full aspect-h-1 aspect-w-1',
             )}
           >
             <CollapsableImage

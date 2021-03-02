@@ -80,7 +80,7 @@ function CollapsableImage({
           />
         )}
       </IfElse>
-      <canvas ref={cref} />
+      <canvas className="absolute inset-0" ref={cref} />
     </>
   )
 }
