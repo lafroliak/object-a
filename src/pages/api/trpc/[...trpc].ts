@@ -2,6 +2,7 @@ import { simplyFetchFromGraph } from '@lib/crystallize/graph'
 import fragments from '@lib/crystallize/graph/fragments'
 import { Item, Product } from '@lib/crystallize/types'
 import * as trpc from '@trpc/server'
+import * as trpcNext from '@trpc/server/dist/adapters/next';
 import * as z from 'zod'
 
 // The app's context - is typically generated for each request
@@ -9,7 +10,7 @@ export type Context = {}
 const createContext = ({
   req,
   res,
-}: trpc.CreateNextContextOptions): Context => {
+}: trpcNext.CreateNextContextOptions): Context => {
   return {}
 }
 
@@ -126,7 +127,7 @@ export const appRouter = createRouter()
 export type AppRouter = typeof appRouter
 
 // export API handler
-export default trpc.createNextApiHandler({
+export default trpcNext.createNextApiHandler({
   router: appRouter,
   createContext,
 })
