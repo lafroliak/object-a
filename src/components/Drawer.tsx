@@ -2,7 +2,14 @@ import useDrawer from '@stores/useDrawer'
 import clsx from 'clsx'
 import { motion, useAnimation } from 'framer-motion'
 import { HTMLMotionComponents } from 'framer-motion/types/render/dom/types'
-import { memo, ReactNode, useCallback, useEffect, useRef } from 'react'
+import {
+  memo,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { useMedia, useWindowSize } from 'react-use'
 
 import * as styles from './Drawer.module.css'
@@ -32,7 +39,7 @@ function Drawer({
   disabled = false,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null)
-  const size = useRef<number>(0)
+  const [size, setSize] = useState<number>(0)
 
   const opened = useDrawer((state) => state.opened)
   const open = useDrawer((state) => state.open)
@@ -44,11 +51,19 @@ function Drawer({
 
   useEffect(() => {
     if (ref.current) {
-      size.current = isSidebar
-        ? ref.current.getBoundingClientRect().width
-        : ref.current.getBoundingClientRect().height
+      setSize(
+        isSidebar
+          ? ref.current.getBoundingClientRect().width
+          : ref.current.getBoundingClientRect().height,
+      )
     }
-  }, [ref, windowSize, windowHeight, isSidebar])
+  }, [
+    ref.current?.getBoundingClientRect().width,
+    ref.current?.getBoundingClientRect().height,
+    windowSize,
+    windowHeight,
+    isSidebar,
+  ])
 
   useEffect(() => {
     if (!disabled) {
@@ -58,33 +73,33 @@ function Drawer({
 
   const variants = {
     [SIDES.Top]: {
-      opened: { y: size.current },
+      opened: { y: size },
       closed: { y: isSM ? 40 : 48 },
     },
     [SIDES.Right]: {
-      opened: { x: -size.current },
+      opened: { x: -size },
       closed: { x: isSM ? -12 : -48 },
     },
     [SIDES.Bottom]: {
-      opened: { y: -size.current },
+      opened: { y: -size },
       closed: { y: isSM ? -40 : -48 },
     },
     [SIDES.Left]: {
-      opened: { x: size.current },
+      opened: { x: size },
       closed: { x: isSM ? 0 : 48 },
     },
     [SIDES.LeftHandler]: {
-      opened: { y: -size.current },
+      opened: { y: -size },
       closed: { y: 0 },
     },
   }
 
   const constraints = {
-    [SIDES.Top]: { top: isSM ? 40 : 48, bottom: size.current },
-    [SIDES.Right]: { right: isSM ? -12 : -48, left: -size.current },
-    [SIDES.Bottom]: { bottom: isSM ? -40 : -48, top: -size.current },
-    [SIDES.Left]: { left: isSM ? 0 : 48, right: size.current },
-    [SIDES.LeftHandler]: { top: -size.current, bottom: 0 },
+    [SIDES.Top]: { top: isSM ? 40 : 48, bottom: size },
+    [SIDES.Right]: { right: isSM ? -12 : -48, left: -size },
+    [SIDES.Bottom]: { bottom: isSM ? -40 : -48, top: -size },
+    [SIDES.Left]: { left: isSM ? 0 : 48, right: size },
+    [SIDES.LeftHandler]: { top: -size, bottom: 0 },
   }
 
   const handleDragEnd = useCallback(

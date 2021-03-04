@@ -3,7 +3,6 @@
   --side-size: calc(var(--handler-size) + var(--name-size));
 
   &.top {
-    --drawer-size: calc(50vh - (var(--side-size) * 2));
     height: var(--drawer-size);
     grid-template-areas:
       'content'
@@ -16,13 +15,12 @@
     grid-template-areas: 'handler name content';
   }
   &.bottom {
-    --drawer-size: calc(50vh - (var(--side-size) * 2));
     bottom: calc(var(--drawer-size) * -1);
     height: var(--drawer-size);
     grid-template-areas:
-    'handler'
-    'name'
-    'content';
+      'handler'
+      'name'
+      'content';
   }
   &.left-handler {
     --drawer-size: calc(50vh - (var(--side-size) * 2));
@@ -85,9 +83,41 @@
       --drawer-size: calc((100vw / 2) - (var(--side-size) * 2));
     }
   }
-  @media (min-width: 1280px) and (max-width: 1535px) {
+  @media (min-width: 1280px) {
     &.right {
       --drawer-size: calc((100vw / 3) - (var(--side-size) * 2));
+    }
+  }
+  @media (max-height: 599px) and (orientation: landscape) {
+    &.top {
+      --drawer-size: calc(100vh - (var(--side-size) * 2));
+    }
+    &.bottom {
+      --drawer-size: calc(100vh - (var(--side-size) * 2));
+    }
+  }
+  @media (min-height: 600px) and ((max-height: 899px)) and (orientation: landscape) {
+    &.top {
+      --drawer-size: calc((100vh / 3 * 2) - (var(--side-size) * 2));
+    }
+    &.bottom {
+      --drawer-size: calc((100vh / 3 * 2) - (var(--side-size) * 2));
+    }
+  }
+  @media (min-height: 900px) and (orientation: landscape) {
+    &.top {
+      --drawer-size: calc((100vh / 2) - (var(--side-size) * 2));
+    }
+    &.bottom {
+      --drawer-size: calc((100vh / 2) - (var(--side-size) * 2));
+    }
+  }
+  @media (orientation: portret) {
+    &.top {
+      --drawer-size: calc((100vh / 2) - (var(--side-size) * 2));
+    }
+    &.bottom {
+      --drawer-size: calc((100vh / 2) - (var(--side-size) * 2));
     }
   }
 
