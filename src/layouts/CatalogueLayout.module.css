@@ -1,0 +1,20 @@
+.container {
+  @media (orientation: portret) {
+    grid-template-rows: 1fr min-content;
+    grid-template-areas:
+      'image'
+      'details';
+  }
+
+  @media (orientation: landscape) {
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas: 'image details';
+  }
+
+  & > .image {
+    grid-area: image;
+  }
+  & > .details {
+    grid-area: details;
+  }
+}

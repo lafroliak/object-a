@@ -1,15 +1,14 @@
 import S from '@lib/sequencer/sequencer'
 import { memo, useEffect, useRef } from 'react'
-import { useWindowSize } from 'react-use'
 
 type Props = {
   list: Array<string>
+  width: number
+  height: number
 }
 
-function Sequencer({ list }: Props) {
+function Sequencer({ list, width = 0, height = 0 }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null)
-
-  const { width, height } = useWindowSize()
 
   useEffect(() => {
     if (typeof window !== undefined) {
@@ -24,7 +23,14 @@ function Sequencer({ list }: Props) {
     }
   }, [list])
 
-  return <canvas className="absolute inset-0 w-full h-full" width={width} height={height} ref={canvas} />
+  return (
+    <canvas
+      className="absolute inset-0 w-full h-full"
+      width={width}
+      height={height}
+      ref={canvas}
+    />
+  )
 }
 
 export default memo(Sequencer)

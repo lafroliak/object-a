@@ -59,7 +59,11 @@ function Drawers() {
           )}
         </IfElse>
       </AnimatePresence>
-      <Drawer as="nav" side={SIDES.Top} content={<Menu />} />
+      <Drawer
+        as="nav"
+        side={SIDES.Top}
+        // content={<Menu />}
+      />
       <Drawer
         as="aside"
         side={SIDES.Right}
@@ -123,7 +127,7 @@ function Drawers() {
             [showcase]
           </button>
         }
-        content={<Showcase />}
+        // content={<Showcase />}
       />
     </>
   )

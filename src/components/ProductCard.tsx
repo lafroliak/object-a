@@ -98,7 +98,7 @@ function ProductCard({ item, index = 0 }: Props) {
                 },
               )}
             >
-              [objekt {prop.toLocaleLowerCase()}]
+              [{prop}]
             </h3>
           </div>
         )}

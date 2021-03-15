@@ -30,7 +30,7 @@ function ShowcaseCard({ item }: Props) {
             <div className="absolute inset-0 grid overflow-hidden place-items-center">
               <Image
                 src={prop.url}
-                alt={`objekt ${item?.name || ''}`}
+                alt={`${item?.name || ''}`}
                 width={prop.width}
                 height={prop.height || prop.width}
               />
@@ -40,7 +40,7 @@ function ShowcaseCard({ item }: Props) {
       </IfElse>
       <IfElse predicate={name}>
         {(prop) => (
-          <h3 className="text-center">[objekt {prop.toLocaleLowerCase()}]</h3>
+          <h3 className="text-center">[{prop}]</h3>
         )}
       </IfElse>
     </>

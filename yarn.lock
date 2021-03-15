@@ -375,7 +375,7 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@babel/types@^7.12.13", "@babel/types@^7.12.7", "@babel/types@^7.13.0":
+"@babel/types@^7.12.13", "@babel/types@^7.12.17", "@babel/types@^7.12.7", "@babel/types@^7.13.0":
   version "7.13.0"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.13.0.tgz#74424d2816f0171b4100f0ab34e9a374efdf7f80"
   integrity sha512-hE+HE8rnG1Z6Wzo+MhaKE5lM5eMx71T4EHJgku2E3xIfaULhDcxiiRxUYgwX8qwP1BBSlag+TdGOt6JAidIZTA==
@@ -760,24 +760,27 @@
     "@babel/runtime" "^7.12.5"
     "@testing-library/dom" "^7.28.1"
 
-"@trpc/client@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-3.3.0.tgz#1fbdaa7a59ee3187397ce707b30047d7c9611629"
-  integrity sha512-iiiMbw83EwzXoJzR+Yz0uPqGKh4McBayKX9cmXjsMKOehbURjR5QGmA89Dtu0fhp3vtDk6+iwxzkxVOF8x2fYA==
+"@trpc/client@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-3.5.1.tgz#af1419655c20d54ae65589e02cf5c84cda6b70e1"
+  integrity sha512-78F7YcqR0k4OtcpLJUJZwcFewMsVPLu5CoMDjXi8fXH1Oj9SG3jj6MFwS4r/bMJJEDCiSI3RwrzqHB0Ldrqm/A==
   dependencies:
+    "@trpc/server" "^3.5.0"
     tslib "^2.1.0"
 
-"@trpc/react@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@trpc/react/-/react-3.3.0.tgz#2b043853b84d26f62577488fc76f7a45721380ea"
-  integrity sha512-oFOZ9IsbUci+t83eMm7DlG5H4435VqGAknz9ILaAXaNUekpx/RmU1/110qGt1toiak5sBQBB1mPagX71vo+T1g==
+"@trpc/react@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@trpc/react/-/react-3.5.1.tgz#a0257d30524bd313a2b27a653c0806d10a59339e"
+  integrity sha512-i/hfFyJJNQdedflHicEtjduaKc/EJi5hMKQmwqpRLZ2tGQ2WSUH1piIh6XWGb4R5UYVPTLPSgdyRgnEbwgWN7w==
   dependencies:
+    "@trpc/client" "^3.5.1"
+    "@trpc/server" "^3.5.0"
     tslib "^2.1.0"
 
-"@trpc/server@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-3.3.0.tgz#1d4573752adc760a7673ff0453a278905f365135"
-  integrity sha512-FGpOgeO6G1v8N9AzVBDmSWcvKNB6qiy+gHgqhjLBlUu4PArCmG1Wnbh4lNgEPy6RYHKkz7ID0qtiGGk22KIeFQ==
+"@trpc/server@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-3.5.0.tgz#fb3833625eec7cc1e2947b6a88fb1ce816328ab4"
+  integrity sha512-ADvD9sJk1VeQ3ixZ+CD3y/wibHtxPuS1XoLueL2X2Nl1OOoasaJTBN4rjWhYt2SrYYeZDGfWcizRZwwdKHbJug==
   dependencies:
     tslib "^2.1.0"
 
@@ -1408,6 +1411,15 @@ babel-plugin-module-resolver@^4.1.0:
     pkg-up "^3.1.0"
     reselect "^4.0.0"
     resolve "^1.13.1"
+
+babel-plugin-superjson-next@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/babel-plugin-superjson-next/-/babel-plugin-superjson-next-0.2.3.tgz#9a3166a0540cf139fb93270276316776775f122d"
+  integrity sha512-eqcsWLims4qRAL4xGKZiB9GE38ByreslD2SeeDhC0FCnbt7jK7YVCWFYhYslVCniiG1Atstxf6w5ApfsuqwUoQ==
+  dependencies:
+    "@babel/helper-module-imports" "^7.12.13"
+    "@babel/types" "^7.12.17"
+    hoist-non-react-statics "^3.3.2"
 
 babel-plugin-syntax-jsx@6.18.0:
   version "6.18.0"
@@ -2373,7 +2385,7 @@ debug@2, debug@^2.2.0, debug@^2.3.3, debug@^2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@^4.0.1, debug@^4.1.0, debug@^4.1.1:
+debug@^4.0.1, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
   integrity sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
@@ -3641,6 +3653,13 @@ hmac-drbg@^1.0.0:
     hash.js "^1.0.3"
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
+
+hoist-non-react-statics@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
+  integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
+  dependencies:
+    react-is "^16.7.0"
 
 hosted-git-info@^2.1.4:
   version "2.8.8"
@@ -6478,7 +6497,7 @@ react-dom@^17.0.1:
     object-assign "^4.1.1"
     scheduler "^0.20.1"
 
-react-is@16.13.1, react-is@^16.8.1:
+react-is@16.13.1, react-is@^16.7.0, react-is@^16.8.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
@@ -7476,6 +7495,13 @@ stylus@^0.54.7:
     sax "~1.2.4"
     semver "^6.3.0"
     source-map "^0.7.3"
+
+superjson@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/superjson/-/superjson-1.7.2.tgz#81f531829fee8bdab5593f57c145be25d2ed54c4"
+  integrity sha512-KwMBfX2c5Mq4EcvGivXH3JBYqYFoZQbA3aMhwXIdpkyVInEkxIGaoSDk+E8y/gMe5RH3mjBU3xRpvKsjZktphw==
+  dependencies:
+    debug "^4.3.1"
 
 supports-color@^5.3.0, supports-color@^5.4.0:
   version "5.5.0"

@@ -12,7 +12,7 @@ const DRAWERS = [
 ]
 
 export default function Menu() {
-  const allPages = trpc.useQuery(['get-all-pages'])
+  const allPages = trpc.useQuery(['crystallize.get-all-pages'])
   const pages = useMemo(() => allPages.data?.reverse() || [], [allPages.data])
   const toggle = useDrawer((state) => state.toggle)
 

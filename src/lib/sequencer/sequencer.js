@@ -43,7 +43,11 @@ class S {
 
     this.config = { ...defaults, ...opts }
 
-    if (this.config.from == '' && this.config.to == '' && this.config.list.length == 0) {
+    if (
+      this.config.from == '' &&
+      this.config.to == '' &&
+      this.config.list.length == 0
+    ) {
       console.error('Missing filenames.')
       return false
     }
@@ -65,12 +69,18 @@ class S {
     this.ctx = this.config.canvas.getContext('2d')
     // Take the provided list or build one with 'from' and 'to'
     this.list =
-      this.config.list.length > 0 ? this.config.list : parse(this.config.from, this.config.to, this.config.step)
+      this.config.list.length > 0
+        ? this.config.list
+        : parse(this.config.from, this.config.to, this.config.step)
 
     this.size(this.ctx.canvas.width, this.ctx.canvas.height)
 
     if (this.config.autoLoad == 'first') {
-      new Preloader(this.images, [this.list.shift()], imageLoad.bind(null, this))
+      new Preloader(
+        this.images,
+        [this.list.shift()],
+        imageLoad.bind(null, this),
+      )
     } else if (this.config.autoLoad == 'all') {
       this.load()
     }
@@ -81,7 +91,12 @@ class S {
       console.log('load() can be called only once.')
     }
 
-    new Preloader(this.images, this.list, imageLoad.bind(null, this), queueComplete.bind(null, this))
+    new Preloader(
+      this.images,
+      this.list,
+      imageLoad.bind(null, this),
+      queueComplete.bind(null, this),
+    )
   }
 
   run() {
@@ -333,7 +348,12 @@ function absoluteMove(self, e) {
 }
 
 // TODO: break out in own module
-function Preloader(arrayToPopulate, fileList, imageLoadCallback, queueCompleteCallbak) {
+function Preloader(
+  arrayToPopulate,
+  fileList,
+  imageLoadCallback,
+  queueCompleteCallbak,
+) {
   const concurrentLoads = Math.min(fileList.length, 4)
   let current = arrayToPopulate.length - 1 // id: order in array
   let count = arrayToPopulate.length // count: count of image loaded... can be out of sync of id.
