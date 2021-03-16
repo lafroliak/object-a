@@ -1,3 +1,4 @@
+import { Item } from '@lib/crystallize/types'
 import { trpc } from '@lib/trpc'
 import useDrawer from '@stores/useDrawer'
 import Link from 'next/link'
@@ -12,36 +13,44 @@ const DRAWERS = [
 ]
 
 export default function Menu() {
-  const allPages = trpc.useQuery(['crystallize.get-all-pages'])
-  const pages = useMemo(() => allPages.data?.reverse() || [], [allPages.data])
+  const data = trpc.useQuery(['crystallize.get-all-pages'], {
+    initialData: { pages: [] as Item[] },
+  })
+  console.log(data)
+
+  // const pages = useMemo(() => data?.reverse() || [], [data])
   const toggle = useDrawer((state) => state.toggle)
 
   return (
-    <menu className="grid grid-cols-2 p-0 m-0 list-none place-items-center auto-rows-min">
-      {DRAWERS.map(({ side, name, disabled }) =>
-        disabled ? (
-          <li key={side} className="text-color-500">
-            {name}
-          </li>
-        ) : (
-          <li key={side}>
-            <button
-              type="button"
-              className="block cursor-pointer focus:outline-none"
-              onClick={() => toggle(side)}
-            >
+    <div className="grid grid-cols-2 p-0 m-0 place-items-center">
+      <menu className="list-none">
+        {DRAWERS.map(({ side, name, disabled }) =>
+          disabled ? (
+            <li key={side} className="text-color-500">
               {name}
-            </button>
+            </li>
+          ) : (
+            <li key={side}>
+              <button
+                type="button"
+                className="block cursor-pointer focus:outline-none"
+                onClick={() => toggle(side)}
+              >
+                {name}
+              </button>
+            </li>
+          ),
+        )}
+      </menu>
+      {/* <menu className="list-none">
+        {pages.map((page) => (
+          <li key={page.id}>
+            <Link href={page.path === '/homepage' ? '/' : page.path || '/'}>
+              <a>{page.name}</a>
+            </Link>
           </li>
-        ),
-      )}
-      {pages.map((page) => (
-        <li key={page.id}>
-          <Link href={page.path === '/homepage' ? '/' : page.path || '/'}>
-            <a>{page.name}</a>
-          </Link>
-        </li>
-      ))}
-    </menu>
+        ))}
+      </menu> */}
+    </div>
   )
 }

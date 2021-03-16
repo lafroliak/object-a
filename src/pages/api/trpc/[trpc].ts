@@ -17,6 +17,7 @@ type Context = inferAsyncReturnType<typeof createContext>
 export function createRouter() {
   return trpc.router<Context>()
 }
+
 const router = createRouter()
   .merge('crystallize.', crystallizeRouter)
 
@@ -28,6 +29,6 @@ export default trpcNext.createNextApiHandler({
   createContext,
   transformer: superjson,
   onError({ error }) {
-    console.error(error)
+    console.error('[trpc]: ', error)
   },
 })

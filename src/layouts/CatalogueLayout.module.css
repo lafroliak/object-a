@@ -17,4 +17,11 @@
   & > .details {
     grid-area: details;
   }
+
+}
+
+.details {
+  & ul {
+    @apply space-y-3;
+  }
 }

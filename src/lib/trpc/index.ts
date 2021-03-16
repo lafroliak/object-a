@@ -12,8 +12,14 @@ export const client = createTRPCClient<AppRouter>({
 export const trpc = createReactQueryHooks<AppRouter>({
   client,
   queryClient: new QueryClient({
-    // defaultOptions: {
-    //   queries: {}
-    // }
+    defaultOptions: {
+      queries: {
+        cacheTime: Infinity,
+        staleTime: Infinity,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        notifyOnChangeProps: ['data', 'error'],
+      },
+    },
   }),
 })

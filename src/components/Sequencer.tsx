@@ -15,7 +15,7 @@ function Sequencer({ list, width = 0, height = 0 }: Props) {
       S.make({
         list,
         scaleMode: 'contain',
-        playMode: 'hover',
+        playMode: 'drag',
         direction: 'x',
         autoLoad: 'all',
         canvas: canvas.current,

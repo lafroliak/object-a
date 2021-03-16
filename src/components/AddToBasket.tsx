@@ -36,10 +36,10 @@ function AddToBasket({ item }: Props) {
   return (
     <div className="space-x-8">
       <button type="button" onClick={handleClick}>
-        {isItemInBasket ? 'Remove from Basket' : 'Add to Basket'}
+        [{isItemInBasket ? 'remove from basket' : 'add to basket'}]
       </button>
       <button type="button" onClick={handleNow}>
-        Buy Now
+        [buy now]
       </button>
     </div>
   )

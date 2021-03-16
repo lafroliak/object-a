@@ -13,7 +13,15 @@ import {
 import dynamic from 'next/dynamic'
 import * as styles from '@layouts/CatalogueLayout.module.css'
 import clsx from 'clsx'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import {
+  SingleLineContent,
+  RichTextContent,
+  Product,
+  BooleanContent,
+} from '@lib/crystallize/types'
+import CrystallizeContent from '@components/CrystallizeContent'
+import { number } from 'zod'
 
 const Sequencer = dynamic(import('@components/Sequencer'), { ssr: false })
 
@@ -85,50 +93,140 @@ function CataloguePage({
   catalogue,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const ref = useRef<HTMLDivElement>(null)
-  const width = useRef<number>(0)
-  const height = useRef<number>(0)
+  const [[width, height], setSize] = useState<[number, number]>([0, 0])
 
   useEffect(() => {
-    width.current = ref.current?.getBoundingClientRect().width || 0
-    height.current = ref.current?.getBoundingClientRect().height || 0
+    setSize([
+      ref.current?.getBoundingClientRect().width || 0,
+      ref.current?.getBoundingClientRect().height || 0,
+    ])
   }, [
     ref.current?.getBoundingClientRect().width,
     ref.current?.getBoundingClientRect().height,
   ])
-  if (catalogue && catalogue?.type !== 'product') return null
+
+  if (!catalogue) return null
 
   return (
-    <div className={clsx('grid w-full h-full', styles.container)}>
+    <>
       <IfElse
-        predicate={catalogue?.components?.find((c) => c?.name === 'Images')}
+        predicate={
+          catalogue?.type === 'product' ? (catalogue as Product) : null
+        }
+        placeholder={<div>{JSON.stringify(catalogue, null, 2)}</div>}
       >
-        {(prop) => (
-          <IfElse
-            predicate={isImage(prop.type, prop.content) ? prop.content : null}
-          >
-            {(content) => (
-              <IfElse predicate={content?.images}>
-                {(images) => (
-                  <div
-                    ref={ref}
-                    className={clsx('relative w-full h-full', styles.image)}
+        {(cat) => (
+          <div className={clsx('grid w-full h-full', styles.container)}>
+            <IfElse
+              predicate={cat.components?.find((c) => c?.name === 'Images')}
+            >
+              {(component) => (
+                <IfElse
+                  predicate={
+                    isImage(component.type, component.content)
+                      ? component.content
+                      : null
+                  }
+                >
+                  {(content) => (
+                    <IfElse predicate={content?.images}>
+                      {(images) => (
+                        <div
+                          ref={ref}
+                          className={clsx(
+                            'relative w-full h-full cursor-grab active:cursor-grabbing',
+                            styles.image,
+                          )}
+                        >
+                          <Sequencer
+                            list={images.map((x) => x.url)}
+                            width={width}
+                            height={height}
+                          />
+                        </div>
+                      )}
+                    </IfElse>
+                  )}
+                </IfElse>
+              )}
+            </IfElse>
+            <div
+              className={clsx(
+                'grid space-y-8 place-content-center py-4 pr-4',
+                styles.details,
+              )}
+            >
+              <IfElse predicate={catalogue.name}>
+                {(name) => <h1>{name}</h1>}
+              </IfElse>
+              <IfElse
+                predicate={cat.components?.find((c) => c?.name === 'Details')}
+              >
+                {(component) => (
+                  <IfElse
+                    predicate={
+                      component?.type === 'richText'
+                        ? (component?.content as RichTextContent)
+                        : null
+                    }
                   >
-                    <Sequencer
-                      list={images.map((x) => x.url)}
-                      width={width.current}
-                      height={height.current}
-                    />
+                    {(content) => <CrystallizeContent content={content.json} />}
+                  </IfElse>
+                )}
+              </IfElse>
+              <IfElse
+                predicate={cat.components?.find((c) => c?.name === 'Material')}
+              >
+                {(component) => (
+                  <IfElse
+                    predicate={
+                      component?.type === 'singleLine'
+                        ? (component?.content as SingleLineContent)
+                        : null
+                    }
+                  >
+                    {(content) => (
+                      <div>
+                        {'Material: '}
+                        {content.text}
+                      </div>
+                    )}
+                  </IfElse>
+                )}
+              </IfElse>
+              <IfElse predicate={cat.topics?.[0].name}>
+                {(size) => (
+                  <div>
+                    {'Size: '}
+                    {size}
                   </div>
                 )}
               </IfElse>
-            )}
-          </IfElse>
+              <IfElse predicate={cat.variants?.[0]?.priceVariants?.[0]?.price}>
+                {(price) => (
+                  <div>
+                    {'Price: '}${price}
+                    <IfElse
+                      predicate={
+                        (cat.components?.find((c) => c?.name === 'Sold out')
+                          ?.content as BooleanContent)?.value
+                      }
+                    >
+                      {() => (
+                        <span className="pl-2 text-xs text-color-500">
+                          [sold out]
+                        </span>
+                      )}
+                    </IfElse>
+                  </div>
+                )}
+              </IfElse>
+              <AddToBasket item={cat} />
+            </div>
+          </div>
         )}
       </IfElse>
-      <div className={clsx(styles.details)}>
-        <AddToBasket item={catalogue} />
-      </div>
-    </div>
+    </>
   )
 }
 
@@ -149,7 +247,7 @@ export async function getStaticPaths(): Promise<GetStaticPathsResult> {
 
   try {
     const allCatalogueItems = await simplyFetchFromGraph({
-      query: `
+      query: /* GraphQL */ `
           query GET_ALL_CATALOGUE_ITEMS($language: String!) {
             catalogue(language: $language, path: "/") {
               path

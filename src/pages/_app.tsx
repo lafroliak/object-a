@@ -30,30 +30,32 @@ function App({
   })
 
   return (
-    <QueryClientProvider client={trpc.queryClient}>
-      <Hydrate state={trpc.useDehydratedState(pageProps.dehydratedState)}>
-        <DefaultSeo
-          title={publicRuntimeConfig.SITE_NAME}
-          canonical={process.env.VERCEL_URL || publicRuntimeConfig.SITE_URL}
-          openGraph={{
-            type: 'website',
-            locale: 'en_IE',
-            url: process.env.VERCEL_URL || publicRuntimeConfig.SITE_URL,
-            site_name: publicRuntimeConfig.SITE_NAME,
-          }}
-          twitter={{
-            cardType: 'summary_large_image',
-          }}
-          additionalMetaTags={[
-            {
-              name: 'twitter:image:alt',
-              content: publicRuntimeConfig.SITE_NAME,
-            },
-          ]}
-        />
-        <>{getLayout(<Component {...pageProps} />)}</>
-      </Hydrate>
-    </QueryClientProvider>
+    <>
+      <DefaultSeo
+        title={publicRuntimeConfig.SITE_NAME}
+        canonical={process.env.VERCEL_URL || publicRuntimeConfig.SITE_URL}
+        openGraph={{
+          type: 'website',
+          locale: 'en_IE',
+          url: process.env.VERCEL_URL || publicRuntimeConfig.SITE_URL,
+          site_name: publicRuntimeConfig.SITE_NAME,
+        }}
+        twitter={{
+          cardType: 'summary_large_image',
+        }}
+        additionalMetaTags={[
+          {
+            name: 'twitter:image:alt',
+            content: publicRuntimeConfig.SITE_NAME,
+          },
+        ]}
+      />
+      <QueryClientProvider client={trpc.queryClient}>
+        <Hydrate state={trpc.useDehydratedState(pageProps?.dehydratedState)}>
+          <>{getLayout(<Component {...pageProps} />)}</>
+        </Hydrate>
+      </QueryClientProvider>
+    </>
   )
 }
 

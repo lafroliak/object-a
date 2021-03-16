@@ -189,7 +189,7 @@ function Drawer({
             styles.handler,
             {
               'opacity-0': disabled,
-              'opacity-30 cursor-grab md:hover:opacity-100 md:hover:border-opacity-100': !disabled,
+              'opacity-30 cursor-grab active:cursor-grabbing md:hover:opacity-100 md:hover:border-opacity-100': !disabled,
               'border-b': side === SIDES.Top,
               'border-l': side === SIDES.Right,
               'border-t': side === SIDES.Bottom || side === SIDES.LeftHandler,

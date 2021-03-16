@@ -59,8 +59,13 @@ export default `
         ...gridRelations
         ...propertiesTableContent
         ...dateTimeContent
+        ...booleanContent
       }
     }
+  }
+
+  fragment booleanContent on BooleanContent {
+    value
   }
 
   fragment singleLine on SingleLineContent {
