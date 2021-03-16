@@ -19,9 +19,10 @@ import {
   RichTextContent,
   Product,
   BooleanContent,
+  ImageVariant,
 } from '@lib/crystallize/types'
 import CrystallizeContent from '@components/CrystallizeContent'
-import { number } from 'zod'
+import { isWebpSupported } from '@lib/isWebpSupported'
 
 const Sequencer = dynamic(import('@components/Sequencer'), { ssr: false })
 
@@ -129,7 +130,20 @@ function CataloguePage({
                   }
                 >
                   {(content) => (
-                    <IfElse predicate={content?.images}>
+                    <IfElse
+                      predicate={content?.images?.reduce((res, i) => {
+                        const m = i.variants?.find(
+                          (v) =>
+                            v.url.includes(
+                              isWebpSupported() ? 'webp' : 'png',
+                            ) && v.width === 1024,
+                        )
+                        if (m) {
+                          return [...res, m]
+                        }
+                        return res
+                      }, [] as ImageVariant[])}
+                    >
                       {(images) => (
                         <div
                           ref={ref}
@@ -248,8 +262,11 @@ export async function getStaticPaths(): Promise<GetStaticPathsResult> {
   try {
     const allCatalogueItems = await simplyFetchFromGraph({
       query: /* GraphQL */ `
-          query GET_ALL_CATALOGUE_ITEMS($language: String!) {
-            catalogue(language: $language, path: "/") {
+        query GET_ALL_CATALOGUE_ITEMS($language: String!) {
+          catalogue(language: $language, path: "/") {
+            path
+            name
+            children {
               path
               name
               children {
@@ -267,10 +284,6 @@ export async function getStaticPaths(): Promise<GetStaticPathsResult> {
                       children {
                         path
                         name
-                        children {
-                          path
-                          name
-                        }
                       }
                     }
                   }
@@ -278,7 +291,8 @@ export async function getStaticPaths(): Promise<GetStaticPathsResult> {
               }
             }
           }
-        `,
+        }
+      `,
       variables: {
         language: 'en',
       },

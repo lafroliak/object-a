@@ -1,4 +1,5 @@
 import { Product } from '@lib/crystallize/types'
+import { isWebpSupported } from '@lib/isWebpSupported'
 import { Option } from '@typings/utils'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
@@ -28,7 +29,8 @@ function ProductCard({ item, index = 0 }: Props) {
 
   const placeholder = (images?.[0] || variant?.image)?.variants?.[0]
   const image = (images?.[0] || variant?.image)?.variants?.find(
-    (img) => img.width === 500 && !img.url.includes('webp'),
+    (img) =>
+      img.width === 500 && img.url.includes(isWebpSupported() ? 'webp' : 'png'),
   )
 
   return (
