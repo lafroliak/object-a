@@ -3,24 +3,38 @@ import '@styles/global.css'
 
 import { trpc } from '@lib/trpc'
 import useBasket from '@stores/useBasket'
-import { AppProps } from 'next/app'
+import type { AppContext, AppProps } from 'next/app'
 import getConfig from 'next/config'
 import { DefaultSeo } from 'next-seo'
 import { ReactNode } from 'react'
 import { QueryClientProvider } from 'react-query'
 import { Hydrate } from 'react-query/hydration'
 import { useEffectOnce } from 'react-use'
+import GlobalStateProvider, { State } from '@components/GlobalStateProvider'
+import { NextComponentType } from 'next'
+import { getAllPages } from '@lib/crystallize/queries'
 
 const { publicRuntimeConfig } = getConfig()
 
-function App({
-  Component,
-  pageProps,
-}: AppProps & {
-  Component: AppProps['Component'] & {
-    getLayout: ((comp: ReactNode) => ReactNode) | undefined
+export interface ModifiedAppInitialProps<A = { [key in string]: string }> {
+  appProps: A
+}
+
+export interface ExtendedAppProps<
+  P = { [key in string]: string },
+  A = { [key in string]: string }
+> extends AppProps<P>,
+    ModifiedAppInitialProps<A> {}
+
+const App: NextComponentType<
+  AppContext,
+  ModifiedAppInitialProps<{ state: State }>,
+  ExtendedAppProps<unknown, { state: State }> & {
+    Component: AppProps['Component'] & {
+      getLayout: ((comp: ReactNode) => ReactNode) | undefined
+    }
   }
-}) {
+> = ({ Component, pageProps, appProps }) => {
   const getLayout = Component.getLayout || ((page: ReactNode) => page)
 
   const setSession = useBasket((state) => state.setSession)
@@ -52,11 +66,27 @@ function App({
       />
       <QueryClientProvider client={trpc.queryClient}>
         <Hydrate state={trpc.useDehydratedState(pageProps?.dehydratedState)}>
-          <>{getLayout(<Component {...pageProps} />)}</>
+          <GlobalStateProvider state={appProps.state}>
+            {getLayout(<Component {...pageProps} />)}
+          </GlobalStateProvider>
         </Hydrate>
       </QueryClientProvider>
     </>
   )
+}
+
+App.getInitialProps = async function getInitialProps() {
+  const state: State = {
+    pages: null,
+  }
+
+  try {
+    state.pages = await getAllPages()
+  } catch (error) {
+    console.error('getInitialProps: ', error) // eslint-disable-line
+  }
+
+  return { appProps: { state } }
 }
 
 export default App

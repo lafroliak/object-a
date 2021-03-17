@@ -62,7 +62,7 @@ function Drawers() {
       <Drawer
         as="nav"
         side={SIDES.Top}
-        // content={<Menu />}
+        content={<Menu />}
       />
       <Drawer
         as="aside"

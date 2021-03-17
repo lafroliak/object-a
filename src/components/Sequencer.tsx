@@ -26,8 +26,8 @@ function Sequencer({ list, width = 0, height = 0 }: Props) {
   return (
     <canvas
       className="absolute inset-0 w-full h-full"
-      width={width}
-      height={height}
+      width={width > height ? height : width}
+      height={width > height ? height : width}
       ref={canvas}
     />
   )

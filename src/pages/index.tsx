@@ -54,12 +54,11 @@ const renderBlock = (
   idx: number,
 ): JSX.Element =>
   match(block)
-    .exhaustive()
     .with(
       { type: ComponentType.ParagraphCollection, json: select('json') },
-      ({ type }, { json }) => (
+      ({ json }) => (
         <div
-          key={`${type}=${idx}`}
+          key={`${ComponentType.ParagraphCollection}-${idx}`}
           className={clsx('max-w-3xl mx-auto text-capsize', {
             italic: idx === 0,
           })}
@@ -70,9 +69,9 @@ const renderBlock = (
     )
     .with(
       { type: ComponentType.GridRelations, columns: select('columns') },
-      ({ type }, { columns }) => (
+      ({ columns }) => (
         <Products
-          key={`${type}=${idx}`}
+          key={`${ComponentType.GridRelations}-${idx}`}
           columns={columns as GridRow['columns']}
         />
       ),

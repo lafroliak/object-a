@@ -1,10 +1,8 @@
-import { Item } from '@lib/crystallize/types'
-import { trpc } from '@lib/trpc'
 import useDrawer from '@stores/useDrawer'
 import Link from 'next/link'
-import { useMemo } from 'react'
 
 import { SIDES } from './Drawers'
+import { useGlobalState } from './GlobalStateProvider'
 
 const DRAWERS = [
   { side: SIDES.Right, name: '[basket]', disabled: false },
@@ -13,12 +11,7 @@ const DRAWERS = [
 ]
 
 export default function Menu() {
-  const data = trpc.useQuery(['crystallize.get-all-pages'], {
-    initialData: { pages: [] as Item[] },
-  })
-  console.log(data)
-
-  // const pages = useMemo(() => data?.reverse() || [], [data])
+  const { pages } = useGlobalState()
   const toggle = useDrawer((state) => state.toggle)
 
   return (
@@ -42,15 +35,25 @@ export default function Menu() {
           ),
         )}
       </menu>
-      {/* <menu className="list-none">
-        {pages.map((page) => (
-          <li key={page.id}>
-            <Link href={page.path === '/homepage' ? '/' : page.path || '/'}>
-              <a>{page.name}</a>
-            </Link>
-          </li>
-        ))}
-      </menu> */}
+      {
+        <menu className="list-none">
+          {pages?.map((page) => (
+            <li key={page.path}>
+              <Link
+                href={
+                  page.path === '/homepage'
+                    ? '/'
+                    : page.path
+                    ? `/catalogue${page.path}`
+                    : '/'
+                }
+              >
+                <a>{page.name}</a>
+              </Link>
+            </li>
+          ))}
+        </menu>
+      }
     </div>
   )
 }
