@@ -1,8 +1,8 @@
-import * as trpc from '@trpc/server'
-import * as trpcNext from '@trpc/server/dist/adapters/next'
-import { inferAsyncReturnType } from '@trpc/server'
-import superjson from 'superjson'
 import { crystallizeRouter } from '@lib/trpc/crystallizeRouter'
+import * as trpc from '@trpc/server'
+import { inferAsyncReturnType } from '@trpc/server'
+import * as trpcNext from '@trpc/server/dist/adapters/next'
+import superjson from 'superjson'
 
 // create context based of incoming request
 // set as optional here so it can also be re-used for `getStaticProps()`
@@ -18,8 +18,7 @@ export function createRouter() {
   return trpc.router<Context>()
 }
 
-const router = createRouter()
-  .merge('crystallize.', crystallizeRouter)
+const router = createRouter().merge('crystallize.', crystallizeRouter)
 
 export const appRouter = router
 export type AppRouter = typeof router

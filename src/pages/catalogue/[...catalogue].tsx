@@ -1,28 +1,28 @@
 import AddToBasket from '@components/AddToBasket'
+import CrystallizeContent from '@components/CrystallizeContent'
 import IfElse from '@components/IfElse'
 import { getLayout } from '@layouts/CatalogueLayout'
+import * as styles from '@layouts/CatalogueLayout.module.css'
 import { simplyFetchFromGraph } from '@lib/crystallize/graph'
 import documentQuery from '@lib/crystallize/graph/queries/documentQuery'
 import productQuery from '@lib/crystallize/graph/queries/productQuery'
 import { isImage } from '@lib/crystallize/isType'
+import {
+  BooleanContent,
+  ImageVariant,
+  Product,
+  RichTextContent,
+  SingleLineContent,
+} from '@lib/crystallize/types'
+import { isWebpSupported } from '@lib/isWebpSupported'
+import clsx from 'clsx'
 import {
   GetStaticPathsResult,
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from 'next'
 import dynamic from 'next/dynamic'
-import * as styles from '@layouts/CatalogueLayout.module.css'
-import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
-import {
-  SingleLineContent,
-  RichTextContent,
-  Product,
-  BooleanContent,
-  ImageVariant,
-} from '@lib/crystallize/types'
-import CrystallizeContent from '@components/CrystallizeContent'
-import { isWebpSupported } from '@lib/isWebpSupported'
 
 const Sequencer = dynamic(import('@components/Sequencer'), { ssr: false })
 
@@ -95,16 +95,15 @@ function CataloguePage({
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const ref = useRef<HTMLDivElement>(null)
   const [[width, height], setSize] = useState<[number, number]>([0, 0])
+  const widthRef = ref.current?.getBoundingClientRect().width
+  const heightRef = ref.current?.getBoundingClientRect().height
 
   useEffect(() => {
     setSize([
       ref.current?.getBoundingClientRect().width || 0,
       ref.current?.getBoundingClientRect().height || 0,
     ])
-  }, [
-    ref.current?.getBoundingClientRect().width,
-    ref.current?.getBoundingClientRect().height,
-  ])
+  }, [widthRef, heightRef])
 
   if (!catalogue) return null
 

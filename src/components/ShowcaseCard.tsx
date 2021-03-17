@@ -39,9 +39,7 @@ function ShowcaseCard({ item }: Props) {
         )}
       </IfElse>
       <IfElse predicate={name}>
-        {(prop) => (
-          <h3 className="text-center">[{prop}]</h3>
-        )}
+        {(prop) => <h3 className="text-center">[{prop}]</h3>}
       </IfElse>
     </>
   )

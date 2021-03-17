@@ -16,12 +16,12 @@ const Menu = dynamic(import('./Menu'), {
   ssr: false,
 })
 
-const Showcase = dynamic(import('./Showcase'), {
-  loading: function Placeholder() {
-    return <p>[loading...]</p>
-  },
-  ssr: false,
-})
+// const Showcase = dynamic(import('./Showcase'), {
+//   loading: function Placeholder() {
+//     return <p>[loading...]</p>
+//   },
+//   ssr: false,
+// })
 
 export const SIDES = {
   Top: 'top',
@@ -59,11 +59,7 @@ function Drawers() {
           )}
         </IfElse>
       </AnimatePresence>
-      <Drawer
-        as="nav"
-        side={SIDES.Top}
-        content={<Menu />}
-      />
+      <Drawer as="nav" side={SIDES.Top} content={<Menu />} />
       <Drawer
         as="aside"
         side={SIDES.Right}

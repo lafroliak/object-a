@@ -10,6 +10,7 @@
     "test:ci": "yarn-or-npm test --runInBand --no-cache --ci",
     "test": "NODE_ENV=test jest",
     "lint": "eslint './{src,pages}/**/*' --ext .js,.jsx,.tsx,.ts",
+    "type-check": "tsc --noEmit -p tsconfig.json",
     "format": "eslint './{src,pages}/**/*' --ext .js,.jsx,.tsx,.ts --fix",
     "analyze": "cross-env BUNDLE_ANALYZE=both next build",
     "export": "cross-env NODE_ENV=production next export",

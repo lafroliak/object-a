@@ -1,9 +1,10 @@
 import { simplyFetchFromGraph } from '@lib/crystallize/graph'
 import fragments from '@lib/crystallize/graph/fragments'
-import { Item, Product } from '@lib/crystallize/types'
-import { createRouter } from '../../pages/api/trpc/[trpc]'
-import * as z from 'zod'
 import { getAllPages } from '@lib/crystallize/queries'
+import { Item, Product } from '@lib/crystallize/types'
+import * as z from 'zod'
+
+import { createRouter } from '../../pages/api/trpc/[trpc]'
 
 // Important: only use this export with SSR/SSG
 export const crystallizeRouter = createRouter()
@@ -48,12 +49,12 @@ export const crystallizeRouter = createRouter()
   })
   .query('get-all-pages', {
     async resolve({ ctx }) {
-      // ctx.res?.setHeader(
-      //   'Cache-Control',
-      //   'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
-      // )
+      ctx.res?.setHeader(
+        'Cache-Control',
+        'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
+      )
 
-      const pages = await getAllPages();
+      const pages = await getAllPages()
 
       return {
         pages,

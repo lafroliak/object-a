@@ -11,7 +11,8 @@ type State = {
 
 export default create<State>((set, get) => ({
   opened: undefined,
-  toggle: (side: Sides) => set({ opened: get().opened === side ? undefined : side }),
+  toggle: (side: Sides) =>
+    set({ opened: get().opened === side ? undefined : side }),
   open: (side: Sides) => set({ opened: side }),
   close: () => set({ opened: undefined }),
 }))

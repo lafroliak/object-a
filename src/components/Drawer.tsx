@@ -48,6 +48,8 @@ function Drawer({
   const { width: windowSize, height: windowHeight } = useWindowSize()
   const constrols = useAnimation()
   const isSidebar = ([SIDES.Left, SIDES.Right] as Sides[]).includes(side)
+  const width = ref.current?.getBoundingClientRect().width
+  const height = ref.current?.getBoundingClientRect().height
 
   useEffect(() => {
     if (ref.current) {
@@ -57,13 +59,7 @@ function Drawer({
           : ref.current.getBoundingClientRect().height,
       )
     }
-  }, [
-    ref.current?.getBoundingClientRect().width,
-    ref.current?.getBoundingClientRect().height,
-    windowSize,
-    windowHeight,
-    isSidebar,
-  ])
+  }, [width, height, windowSize, windowHeight, isSidebar])
 
   useEffect(() => {
     if (!disabled) {

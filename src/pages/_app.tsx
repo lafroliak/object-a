@@ -1,8 +1,11 @@
 import 'tailwindcss/tailwind.css'
 import '@styles/global.css'
 
+import GlobalStateProvider, { State } from '@components/GlobalStateProvider'
+import { getAllPages } from '@lib/crystallize/queries'
 import { trpc } from '@lib/trpc'
 import useBasket from '@stores/useBasket'
+import { NextComponentType } from 'next'
 import type { AppContext, AppProps } from 'next/app'
 import getConfig from 'next/config'
 import { DefaultSeo } from 'next-seo'
@@ -10,9 +13,6 @@ import { ReactNode } from 'react'
 import { QueryClientProvider } from 'react-query'
 import { Hydrate } from 'react-query/hydration'
 import { useEffectOnce } from 'react-use'
-import GlobalStateProvider, { State } from '@components/GlobalStateProvider'
-import { NextComponentType } from 'next'
-import { getAllPages } from '@lib/crystallize/queries'
 
 const { publicRuntimeConfig } = getConfig()
 

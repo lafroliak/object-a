@@ -1,8 +1,6 @@
-import { createContext, ReactNode, useContext } from 'react'
-
-import {Option} from '@typings/utils'
-import { trpc } from '@lib/trpc'
 import { Item, Maybe } from '@lib/crystallize/types'
+import { trpc } from '@lib/trpc'
+import { createContext, ReactNode, useContext } from 'react'
 
 export type State = {
   pages: Maybe<Item[]>
