@@ -1,7 +1,7 @@
 import { crystallizeRouter } from '@lib/trpc/crystallizeRouter'
 import * as trpc from '@trpc/server'
 import { inferAsyncReturnType } from '@trpc/server'
-import * as trpcNext from '@trpc/server/dist/adapters/next'
+import * as trpcNext from '@trpc/server/adapters/next'
 import superjson from 'superjson'
 
 // create context based of incoming request
