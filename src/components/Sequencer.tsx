@@ -3,8 +3,8 @@ import { memo, useEffect, useRef } from 'react'
 
 type Props = {
   list: Array<string>
-  width: number
-  height: number
+  width?: number
+  height?: number
 }
 
 function Sequencer({ list, width = 0, height = 0 }: Props) {
@@ -26,8 +26,8 @@ function Sequencer({ list, width = 0, height = 0 }: Props) {
   return (
     <canvas
       className="absolute inset-0 w-full h-full"
-      width={width > height ? height : width}
-      height={width > height ? height : width}
+      width={width}
+      height={width}
       ref={canvas}
     />
   )

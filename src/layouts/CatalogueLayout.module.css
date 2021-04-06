@@ -1,10 +1,9 @@
 .container {
-  @media (orientation: portret) {
-    grid-template-rows: 1fr min-content;
-    grid-template-areas:
-      'image'
-      'details';
-  }
+  grid-template-columns: none;
+  grid-template-rows: 1fr min-content;
+  grid-template-areas:
+    'image'
+    'details';
 
   @media (orientation: landscape) {
     grid-template-columns: 2fr 1fr;
@@ -17,7 +16,6 @@
   & > .details {
     grid-area: details;
   }
-
 }
 
 .details {

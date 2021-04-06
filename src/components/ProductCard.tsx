@@ -85,11 +85,14 @@ function ProductCard({ item, index = 0 }: Props) {
       </IfElse>
       <IfElse predicate={name}>
         {(prop) => (
-          <div
+          <motion.div
             className={clsx('relative grid items-center', styles.name, {
               'justify-end': index % 2 === 0,
               'justify-start': index % 2 !== 0,
             })}
+            initial={false}
+            animate={{ opacity: isHovered ? 1 : 0 }}
+            transition={{ delay: 0.25 }}
           >
             <h3
               className={clsx(
@@ -102,7 +105,7 @@ function ProductCard({ item, index = 0 }: Props) {
             >
               [{prop}]
             </h3>
-          </div>
+          </motion.div>
         )}
       </IfElse>
     </motion.div>

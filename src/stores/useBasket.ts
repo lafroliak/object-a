@@ -73,7 +73,7 @@ export default create<State>(
     {
       name: 'basket',
       getStorage: () =>
-        typeof window !== 'undefined' ? window.sessionStorage : dummyStorageApi,
+        typeof window !== 'undefined' ? window.localStorage : dummyStorageApi,
     },
   ),
 )

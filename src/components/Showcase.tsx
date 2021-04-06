@@ -1,13 +1,13 @@
-import { trpc } from '@lib/trpc'
 import clsx from 'clsx'
 import Link from 'next/link'
 import { memo } from 'react'
 
+import { useGlobalState } from './GlobalStateProvider'
 import * as styles from './Showcase.module.css'
 import ShowcaseCard from './ShowcaseCard'
 
 function Showcase() {
-  const allProducts = trpc.useQuery(['crystallize.get-all-products'])
+  const { products } = useGlobalState()
 
   return (
     <div
@@ -16,9 +16,9 @@ function Showcase() {
         styles.showcase,
       )}
     >
-      {allProducts.data?.map((item) => (
+      {products?.map((item, idx) => (
         <Link
-          key={`showcase-${item.id}`}
+          key={`showcase-${item.id}-${idx}`}
           href={item?.path ? `/catalogue${item.path}` : '/'}
         >
           <a className="flex flex-col flex-shrink-0 w-64 h-full space-y-2">

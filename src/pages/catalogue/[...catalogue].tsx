@@ -1,30 +1,16 @@
-import AddToBasket from '@components/AddToBasket'
-import CrystallizeContent from '@components/CrystallizeContent'
+import DocumentPage from '@components/DocumentPage'
 import IfElse from '@components/IfElse'
+import ProductPage from '@components/ProductPage'
 import { getLayout } from '@layouts/CatalogueLayout'
-import * as styles from '@layouts/CatalogueLayout.module.css'
 import { simplyFetchFromGraph } from '@lib/crystallize/graph'
 import documentQuery from '@lib/crystallize/graph/queries/documentQuery'
 import productQuery from '@lib/crystallize/graph/queries/productQuery'
-import { isImage } from '@lib/crystallize/isType'
-import {
-  BooleanContent,
-  ImageVariant,
-  Product,
-  RichTextContent,
-  SingleLineContent,
-} from '@lib/crystallize/types'
-import { isWebpSupported } from '@lib/isWebpSupported'
-import clsx from 'clsx'
+import { Item, Product } from '@lib/crystallize/types'
 import {
   GetStaticPathsResult,
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from 'next'
-import dynamic from 'next/dynamic'
-import { useEffect, useRef, useState } from 'react'
-
-const Sequencer = dynamic(import('@components/Sequencer'), { ssr: false })
 
 export async function getStaticProps(
   context: GetStaticPropsContext<{ catalogue: Array<string> }>,
@@ -93,154 +79,33 @@ export async function getStaticProps(
 function CataloguePage({
   catalogue,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const ref = useRef<HTMLDivElement>(null)
-  const [[width, height], setSize] = useState<[number, number]>([0, 0])
-  const widthRef = ref.current?.getBoundingClientRect().width
-  const heightRef = ref.current?.getBoundingClientRect().height
-
-  useEffect(() => {
-    setSize([
-      ref.current?.getBoundingClientRect().width || 0,
-      ref.current?.getBoundingClientRect().height || 0,
-    ])
-  }, [widthRef, heightRef])
-
   if (!catalogue) return null
 
-  return (
-    <>
+  if (catalogue.type === 'document') {
+    return (
       <IfElse
-        predicate={
-          catalogue?.type === 'product' ? (catalogue as Product) : null
-        }
-        placeholder={<div>{JSON.stringify(catalogue, null, 2)}</div>}
+        predicate={catalogue?.type === 'document' ? (catalogue as Item) : null}
       >
-        {(cat) => (
-          <div className={clsx('grid w-full h-full', styles.container)}>
-            <IfElse
-              predicate={cat.components?.find((c) => c?.name === 'Images')}
-            >
-              {(component) => (
-                <IfElse
-                  predicate={
-                    isImage(component.type, component.content)
-                      ? component.content
-                      : null
-                  }
-                >
-                  {(content) => (
-                    <IfElse
-                      predicate={content?.images?.reduce((res, i) => {
-                        const m = i.variants?.find(
-                          (v) =>
-                            v.url.includes(
-                              isWebpSupported() ? 'webp' : 'png',
-                            ) && v.width === 1024,
-                        )
-                        if (m) {
-                          return [...res, m]
-                        }
-                        return res
-                      }, [] as ImageVariant[])}
-                    >
-                      {(images) => (
-                        <div
-                          ref={ref}
-                          className={clsx(
-                            'relative w-full h-full cursor-grab active:cursor-grabbing',
-                            styles.image,
-                          )}
-                        >
-                          <Sequencer
-                            list={images.map((x) => x.url)}
-                            width={width}
-                            height={height}
-                          />
-                        </div>
-                      )}
-                    </IfElse>
-                  )}
-                </IfElse>
-              )}
-            </IfElse>
-            <div
-              className={clsx(
-                'grid space-y-8 place-content-center py-4 pr-4',
-                styles.details,
-              )}
-            >
-              <IfElse predicate={catalogue.name}>
-                {(name) => <h1>{name}</h1>}
-              </IfElse>
-              <IfElse
-                predicate={cat.components?.find((c) => c?.name === 'Details')}
-              >
-                {(component) => (
-                  <IfElse
-                    predicate={
-                      component?.type === 'richText'
-                        ? (component?.content as RichTextContent)
-                        : null
-                    }
-                  >
-                    {(content) => <CrystallizeContent content={content.json} />}
-                  </IfElse>
-                )}
-              </IfElse>
-              <IfElse
-                predicate={cat.components?.find((c) => c?.name === 'Material')}
-              >
-                {(component) => (
-                  <IfElse
-                    predicate={
-                      component?.type === 'singleLine'
-                        ? (component?.content as SingleLineContent)
-                        : null
-                    }
-                  >
-                    {(content) => (
-                      <div>
-                        {'Material: '}
-                        {content.text}
-                      </div>
-                    )}
-                  </IfElse>
-                )}
-              </IfElse>
-              <IfElse predicate={cat.topics?.[0].name}>
-                {(size) => (
-                  <div>
-                    {'Size: '}
-                    {size}
-                  </div>
-                )}
-              </IfElse>
-              <IfElse predicate={cat.variants?.[0]?.priceVariants?.[0]?.price}>
-                {(price) => (
-                  <div>
-                    {'Price: '}${price}
-                    <IfElse
-                      predicate={
-                        (cat.components?.find((c) => c?.name === 'Sold out')
-                          ?.content as BooleanContent)?.value
-                      }
-                    >
-                      {() => (
-                        <span className="pl-2 text-xs text-color-500">
-                          [sold out]
-                        </span>
-                      )}
-                    </IfElse>
-                  </div>
-                )}
-              </IfElse>
-              <AddToBasket item={cat} />
-            </div>
-          </div>
-        )}
+        {(page) => <DocumentPage page={page} />}
       </IfElse>
-    </>
-  )
+    )
+  }
+
+  if (catalogue.type === 'product') {
+    return (
+      <>
+        <IfElse
+          predicate={
+            catalogue.type === 'product' ? (catalogue as Product) : null
+          }
+        >
+          {(page) => <ProductPage page={page} />}
+        </IfElse>
+      </>
+    )
+  }
+
+  return null
 }
 
 export async function getStaticPaths(): Promise<GetStaticPathsResult> {

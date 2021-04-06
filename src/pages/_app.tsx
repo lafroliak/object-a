@@ -2,7 +2,7 @@ import 'tailwindcss/tailwind.css'
 import '@styles/global.css'
 
 import GlobalStateProvider, { State } from '@components/GlobalStateProvider'
-import { getAllPages } from '@lib/crystallize/queries'
+import { getAllPages, getAllProducts } from '@lib/crystallize/queries'
 import { trpc } from '@lib/trpc'
 import useBasket from '@stores/useBasket'
 import { NextComponentType } from 'next'
@@ -78,10 +78,12 @@ const App: NextComponentType<
 App.getInitialProps = async function getInitialProps() {
   const state: State = {
     pages: null,
+    products: null,
   }
 
   try {
     state.pages = await getAllPages()
+    state.products = await getAllProducts()
   } catch (error) {
     console.error('getInitialProps: ', error) // eslint-disable-line
   }

@@ -2,6 +2,7 @@ const { fontFamily } = require('tailwindcss/defaultTheme')
 const colors = require('tailwindcss/colors')
 
 module.exports = {
+  mode: 'jit',
   purge: {
     content: ['./src/**/*.{js,jsx,ts,tsx}'],
   },
@@ -10,16 +11,16 @@ module.exports = {
     colors: {
       ...colors,
       color: {
-        50: colors.blueGray['50'],
-        100: colors.blueGray['100'],
-        200: colors.blueGray['200'],
-        300: colors.blueGray['300'],
-        400: colors.blueGray['400'],
-        500: colors.blueGray['500'],
-        600: colors.blueGray['600'],
-        700: colors.blueGray['700'],
-        800: colors.blueGray['800'],
-        900: colors.blueGray['900'],
+        50: colors.white,
+        100: colors.trueGray['50'],
+        200: colors.trueGray['100'],
+        300: colors.trueGray['200'],
+        400: colors.trueGray['400'],
+        500: colors.trueGray['500'],
+        600: colors.trueGray['600'],
+        700: colors.trueGray['700'],
+        800: colors.trueGray['800'],
+        900: colors.trueGray['900'],
       },
     },
     extend: {

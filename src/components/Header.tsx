@@ -1,12 +1,10 @@
 import clsx from 'clsx'
-import getConfig from 'next/config'
 import Link from 'next/link'
 
 import BasketButton from './BasketButton'
 import * as styles from './Header.module.css'
+import Logo from './Logo'
 import MenuButton from './MenuButton'
-
-const { publicRuntimeConfig } = getConfig()
 
 function Header() {
   return (
@@ -21,8 +19,8 @@ function Header() {
           <MenuButton />
         </div>
         <Link href="/">
-          <a title="to the homepage" className={clsx(styles.link)}>
-            {publicRuntimeConfig.SITE_NAME}
+          <a title="to the homepage" className={clsx('w-28', styles.link)}>
+            <Logo />
           </a>
         </Link>
         <div className={clsx(styles.r)}>

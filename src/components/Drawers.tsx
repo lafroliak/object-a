@@ -1,9 +1,10 @@
 import useDrawer from '@stores/useDrawer'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useRouter } from 'next/dist/client/router'
 import dynamic from 'next/dynamic'
-import { memo } from 'react'
-import { useMedia } from 'react-use'
+import { memo, useEffect } from 'react'
+import { useMedia, usePrevious } from 'react-use'
 
 import Basket from './Basket'
 import Drawer from './Drawer'
@@ -16,12 +17,12 @@ const Menu = dynamic(import('./Menu'), {
   ssr: false,
 })
 
-// const Showcase = dynamic(import('./Showcase'), {
-//   loading: function Placeholder() {
-//     return <p>[loading...]</p>
-//   },
-//   ssr: false,
-// })
+const Showcase = dynamic(import('./Showcase'), {
+  loading: function Placeholder() {
+    return <p>[loading...]</p>
+  },
+  ssr: false,
+})
 
 export const SIDES = {
   Top: 'top',
@@ -38,6 +39,14 @@ function Drawers() {
   const close = useDrawer((state) => state.close)
   const toggle = useDrawer((state) => state.toggle)
   const isSM = useMedia('(max-width: 767px)')
+  const router = useRouter()
+  const prevPathname = usePrevious(router.pathname)
+
+  useEffect(() => {
+    if (prevPathname !== router.pathname) {
+      close()
+    }
+  }, [router.pathname, prevPathname, close])
 
   return (
     <>
@@ -123,7 +132,7 @@ function Drawers() {
             [showcase]
           </button>
         }
-        // content={<Showcase />}
+        content={<Showcase />}
       />
     </>
   )

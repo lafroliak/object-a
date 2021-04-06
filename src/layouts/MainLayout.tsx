@@ -1,5 +1,6 @@
 import Header from '@components/Header'
 import clsx from 'clsx'
+import getConfig from 'next/config'
 import dynamic from 'next/dynamic'
 import { PropsWithChildren, ReactNode } from 'react'
 
@@ -12,6 +13,8 @@ const Drawers = dynamic(import('@components/Drawers'), {
   ssr: false,
 })
 
+const { publicRuntimeConfig } = getConfig()
+
 function MainLayout({ children }: PropsWithChildren<unknown>) {
   return (
     <>
@@ -21,6 +24,9 @@ function MainLayout({ children }: PropsWithChildren<unknown>) {
           styles['main-container'],
         )}
       >
+        <h1 className={clsx('grid place-items-center opacity-0', styles.hide)}>
+          {publicRuntimeConfig.SITE_NAME}
+        </h1>
         <main
           className={clsx(
             'relative bg-color-200 dark:bg-color-900',
