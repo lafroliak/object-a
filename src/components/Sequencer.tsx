@@ -22,6 +22,10 @@ function Sequencer({ list, width = 0 }: Props) {
         hiDPI: false,
       })
     }
+
+    return () => {
+      S.remove()
+    }
   }, [list])
 
   return (

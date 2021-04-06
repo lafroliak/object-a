@@ -21,6 +21,10 @@ function make(cfg) {
   return s
 }
 
+function remove() {
+  instances.splice(0)
+}
+
 class S {
   constructor(opts) {
     const defaults = {
@@ -395,6 +399,7 @@ function Preloader(
 }
 
 export default {
+  remove,
   make,
   instances,
 }
