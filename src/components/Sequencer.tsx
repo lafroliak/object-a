@@ -7,7 +7,7 @@ type Props = {
   height?: number
 }
 
-function Sequencer({ list, width = 0, height = 0 }: Props) {
+function Sequencer({ list, width = 0 }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -19,6 +19,7 @@ function Sequencer({ list, width = 0, height = 0 }: Props) {
         direction: 'x',
         autoLoad: 'all',
         canvas: canvas.current,
+        hiDPI: false,
       })
     }
   }, [list])

@@ -27,7 +27,6 @@ type Props = {
 export default function ProductPage({ page }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const [width, setSize] = useState<number>(0)
-  const widthRef = ref.current?.getBoundingClientRect().width
   const [instructionOn, setInstructionOn] = useState<boolean>(true)
   const [sku, setSKU] = useState<Option<string>>(null)
 
@@ -39,8 +38,10 @@ export default function ProductPage({ page }: Props) {
   }, [page.variants])
 
   useEffect(() => {
-    setSize(ref.current?.getBoundingClientRect().width || 0)
-  }, [widthRef])
+    if (ref.current) {
+      setSize(ref.current.getBoundingClientRect().width ?? 0)
+    }
+  }, [])
 
   return (
     <div className={clsx('grid w-full h-full', styles.container)}>
@@ -172,6 +173,7 @@ export default function ProductPage({ page }: Props) {
                         predicate={(v?.stock ?? 0) > 0 ? v : null}
                         placeholder={
                           <span
+                            key={v.sku}
                             className={clsx(
                               'inline-block relative px-3 py-1 opacity-50 bg-color-100 dark:bg-color-800',
                             )}
