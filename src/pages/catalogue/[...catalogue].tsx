@@ -1,16 +1,17 @@
-import DocumentPage from '@components/DocumentPage'
-import IfElse from '@components/IfElse'
-import ProductPage from '@components/ProductPage'
-import { getLayout } from '@layouts/CatalogueLayout'
-import { simplyFetchFromGraph } from '@lib/crystallize/graph'
-import documentQuery from '@lib/crystallize/graph/queries/documentQuery'
-import productQuery from '@lib/crystallize/graph/queries/productQuery'
-import { Item, Product } from '@lib/crystallize/types'
 import {
   GetStaticPathsResult,
   GetStaticPropsContext,
   InferGetStaticPropsType,
 } from 'next'
+
+import DocumentPage from '~components/DocumentPage'
+import IfElse from '~components/IfElse'
+import ProductPage from '~components/ProductPage'
+import { getLayout } from '~layouts/CatalogueLayout'
+import { simplyFetchFromGraph } from '~lib/crystallize/graph'
+import documentQuery from '~lib/crystallize/graph/queries/documentQuery'
+import productQuery from '~lib/crystallize/graph/queries/productQuery'
+import { Item, Product } from '~lib/crystallize/types'
 
 export async function getStaticProps(
   context: GetStaticPropsContext<{ catalogue: Array<string> }>,

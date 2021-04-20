@@ -1,7 +1,8 @@
-import { Product } from '@lib/crystallize/types'
-import { isWebpSupported } from '@lib/isWebpSupported'
-import { Option } from '@typings/utils'
 import { memo } from 'react'
+
+import { Product } from '~lib/crystallize/types'
+import { isWebpSupported } from '~lib/isWebpSupported'
+import { Option } from '~typings/utils'
 
 import IfElse from './IfElse'
 

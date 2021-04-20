@@ -6,6 +6,7 @@
     'details';
 
   @media (orientation: landscape) {
+    max-height: calc(100vh - 6rem);
     grid-template-columns: 2fr 1fr;
     grid-template-areas: 'image details';
   }
@@ -22,4 +23,9 @@
   & ul {
     @apply space-y-3;
   }
+}
+
+.details,
+.image {
+  max-height: calc(100vh - 6rem);
 }

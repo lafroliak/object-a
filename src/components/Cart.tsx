@@ -1,5 +1,5 @@
-import useBasket from '@stores/useBasket'
-import useDrawer from '@stores/useDrawer'
+import useCart from '~stores/useCart'
+import useDrawer from '~stores/useDrawer'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { memo } from 'react'
@@ -8,11 +8,11 @@ import IfElse from './IfElse'
 import * as styles from './Showcase.module.css'
 import ShowcaseCard from './ShowcaseCard'
 
-function Basket() {
+function Cart() {
   const opened = useDrawer((state) => state.opened)
-  const items = useBasket((state) => state.items)
-  const totals = useBasket((state) => state.totals)
-  const clearItems = useBasket((state) => state.clearItems)
+  const items = useCart((state) => state.items)
+  const totals = useCart((state) => state.totals)
+  const clearItems = useCart((state) => state.clearItems)
 
   return (
     <motion.div
@@ -26,7 +26,7 @@ function Basket() {
         predicate={items.length > 0 ? items : null}
         placeholder={
           <div className="grid w-full h-full text-sm place-items-center">
-            Basket is empty
+            Cart is empty
           </div>
         }
       >
@@ -59,7 +59,7 @@ function Basket() {
                   className="uppercase cursor-pointer focus:outline-none"
                   onClick={clearItems}
                 >
-                  [clean basket]
+                  [clean cart]
                 </button>
               )}
             </IfElse>
@@ -70,4 +70,4 @@ function Basket() {
   )
 }
 
-export default memo(Basket)
+export default memo(Cart)

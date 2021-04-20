@@ -1,9 +1,10 @@
-import { Product } from '@lib/crystallize/types'
-import { isWebpSupported } from '@lib/isWebpSupported'
-import { Option } from '@typings/utils'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { memo, useState } from 'react'
+
+import { Product } from '~lib/crystallize/types'
+import { isWebpSupported } from '~lib/isWebpSupported'
+import { Option } from '~typings/utils'
 
 import CollapsableImage from './CollapsableImage'
 import IfElse from './IfElse'

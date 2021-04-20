@@ -1,13 +1,14 @@
-import useDrawer from '@stores/useDrawer'
 import Link from 'next/link'
+
+import useDrawer from '~stores/useDrawer'
 
 import { SIDES } from './Drawers'
 import { useGlobalState } from './GlobalStateProvider'
 
 const DRAWERS = [
-  { side: SIDES.Right, name: '[basket]', disabled: false },
+  { side: SIDES.Right, name: '[cart]', disabled: false },
   { side: SIDES.Bottom, name: '[showcase]', disabled: false },
-  { side: SIDES.Left, name: '[stories]', disabled: true },
+  { side: SIDES.Left, name: '[about]', disabled: false },
 ]
 
 export default function Menu() {
@@ -37,21 +38,23 @@ export default function Menu() {
       </menu>
       {
         <menu className="list-none">
-          {pages?.map((page) => (
-            <li key={page.path}>
-              <Link
-                href={
-                  page.path === '/homepage'
-                    ? '/'
-                    : page.path
-                    ? `/catalogue${page.path}`
-                    : '/'
-                }
-              >
-                <a>{page.name}</a>
-              </Link>
-            </li>
-          ))}
+          {pages
+            ?.filter((p) => !p.path?.includes('about'))
+            .map((page) => (
+              <li key={page.path}>
+                <Link
+                  href={
+                    page.path === '/homepage'
+                      ? '/'
+                      : page.path
+                      ? `/catalogue${page.path}`
+                      : '/'
+                  }
+                >
+                  <a>[{page.name?.toLowerCase()}]</a>
+                </Link>
+              </li>
+            ))}
         </menu>
       }
     </div>

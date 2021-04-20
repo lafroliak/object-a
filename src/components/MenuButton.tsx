@@ -1,4 +1,4 @@
-import useDrawer from '@stores/useDrawer'
+import useDrawer from '~stores/useDrawer'
 
 import { SIDES } from './Drawers'
 

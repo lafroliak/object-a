@@ -1,47 +1,50 @@
 import 'tailwindcss/tailwind.css'
-import '@styles/global.css'
+import '~styles/global.css'
 
-import GlobalStateProvider, { State } from '@components/GlobalStateProvider'
-import { getAllPages, getAllProducts } from '@lib/crystallize/queries'
-import { trpc } from '@lib/trpc'
-import useBasket from '@stores/useBasket'
-import { NextComponentType } from 'next'
-import type { AppContext, AppProps } from 'next/app'
+import type { AppProps } from 'next/app'
 import getConfig from 'next/config'
 import { DefaultSeo } from 'next-seo'
-import { ReactNode } from 'react'
-import { QueryClientProvider } from 'react-query'
+import { ReactNode, useState } from 'react'
+import { QueryClient, QueryClientProvider } from 'react-query'
 import { Hydrate } from 'react-query/hydration'
 import { useEffectOnce } from 'react-use'
 
+import GlobalStateProvider from '~components/GlobalStateProvider'
+import { trpc } from '~lib/trpc'
+import useCart from '~stores/useCart'
+
 const { publicRuntimeConfig } = getConfig()
 
-export interface ModifiedAppInitialProps<A = { [key in string]: string }> {
-  appProps: A
-}
-
-export interface ExtendedAppProps<
-  P = { [key in string]: string },
-  A = { [key in string]: string }
-> extends AppProps<P>,
-    ModifiedAppInitialProps<A> {}
-
-const App: NextComponentType<
-  AppContext,
-  ModifiedAppInitialProps<{ state: State }>,
-  ExtendedAppProps<unknown, { state: State }> & {
-    Component: AppProps['Component'] & {
-      getLayout: ((comp: ReactNode) => ReactNode) | undefined
-    }
+function MyApp({
+  Component,
+  pageProps,
+}: AppProps & {
+  Component: AppProps['Component'] & {
+    getLayout: ((comp: ReactNode) => ReactNode) | undefined
   }
-> = ({ Component, pageProps, appProps }) => {
+}) {
   const getLayout = Component.getLayout || ((page: ReactNode) => page)
 
-  const setSession = useBasket((state) => state.setSession)
+  const setSession = useCart((state) => state.setSession)
 
   useEffectOnce(() => {
     setSession()
   })
+
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            cacheTime: Infinity,
+            staleTime: Infinity,
+            refetchOnWindowFocus: false,
+            refetchOnMount: false,
+            notifyOnChangeProps: 'tracked',
+          },
+        },
+      }),
+  )
 
   return (
     <>
@@ -64,9 +67,9 @@ const App: NextComponentType<
           },
         ]}
       />
-      <QueryClientProvider client={trpc.queryClient}>
+      <QueryClientProvider client={queryClient}>
         <Hydrate state={trpc.useDehydratedState(pageProps?.dehydratedState)}>
-          <GlobalStateProvider state={appProps.state}>
+          <GlobalStateProvider>
             {getLayout(<Component {...pageProps} />)}
           </GlobalStateProvider>
         </Hydrate>
@@ -75,20 +78,18 @@ const App: NextComponentType<
   )
 }
 
-App.getInitialProps = async function getInitialProps() {
-  const state: State = {
-    pages: null,
-    products: null,
-  }
+// MyApp.getInitialProps = async function getInitialProps() {
+//   const ctx = await createContext()
+//   const ssr = trpc.ssr(appRouter, ctx)
 
-  try {
-    state.pages = await getAllPages()
-    state.products = await getAllProducts()
-  } catch (error) {
-    console.error('getInitialProps: ', error) // eslint-disable-line
-  }
+//   await ssr.prefetchQuery('crystallize.get-all-pages')
+//   await ssr.prefetchQuery('crystallize.get-all-products')
 
-  return { appProps: { state } }
-}
+//   return {
+//     appProps: {
+//       dehydratedState: ssr.dehydrate(),
+//     },
+//   }
+// }
 
-export default App
+export default MyApp

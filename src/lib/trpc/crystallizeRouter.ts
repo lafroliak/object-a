@@ -1,8 +1,9 @@
-import { simplyFetchFromGraph } from '@lib/crystallize/graph'
-import fragments from '@lib/crystallize/graph/fragments'
-import { getAllPages, getAllProducts } from '@lib/crystallize/queries'
-import { Item } from '@lib/crystallize/types'
 import * as z from 'zod'
+
+import { simplyFetchFromGraph } from '~lib/crystallize/graph'
+import fragments from '~lib/crystallize/graph/fragments'
+import { getAllPages, getAllProducts } from '~lib/crystallize/queries'
+import { Item } from '~lib/crystallize/types'
 
 import { createRouter } from '../../pages/api/trpc/[trpc]'
 

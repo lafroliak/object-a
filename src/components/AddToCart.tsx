@@ -1,8 +1,9 @@
-import { Product } from '@lib/crystallize/types'
-import useBasket from '@stores/useBasket'
-import useDrawer from '@stores/useDrawer'
-import type { Option } from '@typings/utils'
 import { memo } from 'react'
+
+import { Product } from '~lib/crystallize/types'
+import useCart from '~stores/useCart'
+import useDrawer from '~stores/useDrawer'
+import type { Option } from '~typings/utils'
 
 import { SIDES } from './Drawers'
 
@@ -10,17 +11,17 @@ type Props = {
   item: Option<Product>
   sku: Option<string>
 }
-function AddToBasket({ item, sku }: Props) {
-  const items = useBasket((state) => state.items)
-  const addItem = useBasket((state) => state.addItem)
-  const deleteItem = useBasket((state) => state.deleteItem)
+function AddToCart({ item, sku }: Props) {
+  const items = useCart((state) => state.items)
+  const addItem = useCart((state) => state.addItem)
+  const deleteItem = useCart((state) => state.deleteItem)
   const open = useDrawer((state) => state.open)
-  const isItemInBasket = items.find((i) => i.id === item?.id)
+  const isItemInCart = items.find((i) => i.id === item?.id)
 
   const handleClick = () => {
     if (!item) return
 
-    if (isItemInBasket) {
+    if (isItemInCart) {
       deleteItem(item.id)
     } else {
       addItem({
@@ -44,7 +45,7 @@ function AddToBasket({ item, sku }: Props) {
         onClick={handleClick}
         className="inline-block uppercase"
       >
-        [{isItemInBasket ? 'remove from basket' : 'add to basket'}]
+        [{isItemInCart ? 'remove from cart' : 'add to cart'}]
       </button>
       <button
         type="button"
@@ -57,4 +58,4 @@ function AddToBasket({ item, sku }: Props) {
   )
 }
 
-export default memo(AddToBasket)
+export default memo(AddToCart)

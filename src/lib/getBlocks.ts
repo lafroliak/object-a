@@ -78,6 +78,7 @@ export const getBlocks = (page: Item | undefined) => {
             ),
           ]
         })
+        .with({ name: 'Sizes' }, () => {})
         .run()
 
       return result

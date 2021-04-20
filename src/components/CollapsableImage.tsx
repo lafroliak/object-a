@@ -1,8 +1,8 @@
-import useCollapseImage from '@hooks/useCollapseImage'
-import { Option } from '@typings/utils'
-import clsx from 'clsx'
 import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import useSpring from 'react-use/lib/useSpring'
+
+import useCollapseImage from '~hooks/useCollapseImage'
+import { Option } from '~typings/utils'
 
 import IfElse from './IfElse'
 
@@ -72,11 +72,8 @@ function CollapsableImage({
       <IfElse predicate={!!placeholder && !loaded}>
         {() => (
           <div
-            className={clsx('absolute inset-0 bg-contain bg-no-repeat')}
-            style={{
-              backgroundImage: `url(${placeholder})`,
-              filter: 'blur(1em)',
-            }}
+            className="absolute inset-0 bg-no-repeat bg-contain filter blur"
+            style={{ backgroundImage: `url(${placeholder})` }}
           />
         )}
       </IfElse>

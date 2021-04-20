@@ -3,7 +3,7 @@ import {
   ParagraphCollectionContent,
   PropertiesTableContent,
   RichTextContent,
-} from '@lib/crystallize/types'
+} from '~lib/crystallize/types'
 
 import CrystallizeContent from './CrystallizeContent'
 import IfElse from './IfElse'
@@ -60,30 +60,34 @@ export default function DocumentPage({ page }: Props) {
                 : null
             }
           >
-            {(content) => (
-              <table className="text-xs text-center">
-                <thead className="border-b border-color-500">
-                  <td className="px-2 pb-1">EU SIZE</td>
-                  {content.sections?.[0]?.properties?.map((prop) => (
-                    <td key={prop.key} className="px-2 pb-1">
-                      {prop.key}
-                    </td>
-                  ))}
-                </thead>
-                <tbody>
-                  {content.sections?.map((sec) => (
-                    <tr className="pt-1" key={sec.title}>
-                      <td>{sec.title}</td>
-                      {sec.properties?.map((prop) => (
-                        <td className="pt-1" key={`${sec.title}-${prop.key}`}>
-                          {prop.value}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+            {(content) =>
+              content?.sections?.find((s) =>
+                s?.properties?.find((p) => p?.value),
+              ) ? (
+                <table className="text-xs text-center">
+                  <thead className="border-b border-color-500">
+                    <td className="px-2 pb-1">EU SIZE</td>
+                    {content.sections?.[0]?.properties?.map((prop) => (
+                      <td key={prop.key} className="px-2 pb-1">
+                        {prop.key}
+                      </td>
+                    ))}
+                  </thead>
+                  <tbody>
+                    {content.sections?.map((sec) => (
+                      <tr className="pt-1" key={sec.title}>
+                        <td>{sec.title}</td>
+                        {sec.properties?.map((prop) => (
+                          <td className="pt-1" key={`${sec.title}-${prop.key}`}>
+                            {prop.value}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : null
+            }
           </IfElse>
         )}
       </IfElse>

@@ -1,12 +1,13 @@
-import Header from '@components/Header'
 import clsx from 'clsx'
 import getConfig from 'next/config'
 import dynamic from 'next/dynamic'
 import { PropsWithChildren, ReactNode } from 'react'
 
+import Header from '~components/Header'
+
 import * as styles from './MainLayout.module.css'
 
-const Drawers = dynamic(import('@components/Drawers'), {
+const Drawers = dynamic(import('~components/Drawers'), {
   loading: function Placeholder() {
     return <p>[loading...]</p>
   },

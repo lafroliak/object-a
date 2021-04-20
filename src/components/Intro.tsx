@@ -1,6 +1,7 @@
-import { Item, RichTextContent } from '@lib/crystallize/types'
-import { Option } from '@typings/utils'
 import { memo } from 'react'
+
+import { Item, RichTextContent } from '~lib/crystallize/types'
+import { Option } from '~typings/utils'
 
 import CrystallizeContent from './CrystallizeContent'
 import IfElse from './IfElse'

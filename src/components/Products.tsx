@@ -1,6 +1,7 @@
-import { GridColumn } from '@lib/crystallize/types'
 import Link from 'next/link'
 import { memo } from 'react'
+
+import { GridColumn } from '~lib/crystallize/types'
 
 import ProductCard from './ProductCard'
 

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 
-import BasketButton from './BasketButton'
+import CartButton from './CartButton'
 import * as styles from './Header.module.css'
 import Logo from './Logo'
 import MenuButton from './MenuButton'
@@ -24,7 +24,7 @@ function Header() {
           </a>
         </Link>
         <div className={clsx(styles.r)}>
-          <BasketButton />
+          <CartButton />
         </div>
       </nav>
     </header>

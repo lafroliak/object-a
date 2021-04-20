@@ -1,8 +1,9 @@
-import { Product } from '@lib/crystallize/types'
-import { Option } from '@typings/utils'
 import { nanoid } from 'nanoid'
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
+
+import { Product } from '~lib/crystallize/types'
+import { Option } from '~typings/utils'
 
 const dummyStorageApi = {
   getItem: () => null,
@@ -18,7 +19,7 @@ type State = {
   setSession: (session?: string) => void
 
   /**
-   * `items` – Items in the Basket
+   * `items` – Items in the Cart
    */
   items: Array<Product>
   clearItems: () => void
@@ -71,7 +72,7 @@ export default create<State>(
         ),
     }),
     {
-      name: 'basket',
+      name: 'cart',
       getStorage: () =>
         typeof window !== 'undefined' ? window.localStorage : dummyStorageApi,
     },

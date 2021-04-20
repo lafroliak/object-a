@@ -1,6 +1,7 @@
-import { Item, Maybe, Product } from '@lib/crystallize/types'
-import { trpc } from '@lib/trpc'
-import { createContext, ReactNode, useContext } from 'react'
+import { createContext, PropsWithChildren, useContext } from 'react'
+
+import { Item, Maybe, Product } from '~lib/crystallize/types'
+import { trpc } from '~lib/trpc'
 
 export type State = {
   pages: Maybe<Partial<Item>[]>
@@ -17,24 +18,11 @@ export const useGlobalState = () => {
   return context
 }
 
-type Props = {
-  children: ReactNode
-  state: State
-}
-
-export default function GlobalStateProvider({ children, state }: Props) {
-  const { data: pagesData } = trpc.useQuery(['crystallize.get-all-pages'], {
-    initialData: { pages: state.pages, lastUpdated: new Date().toJSON() },
-  })
-  const { data: productsData } = trpc.useQuery(
-    ['crystallize.get-all-products'],
-    {
-      initialData: {
-        products: state.products,
-        lastUpdated: new Date().toJSON(),
-      },
-    },
-  )
+export default function GlobalStateProvider({
+  children,
+}: PropsWithChildren<unknown>) {
+  const { data: pagesData } = trpc.useQuery(['crystallize.get-all-pages'])
+  const { data: productsData } = trpc.useQuery(['crystallize.get-all-products'])
 
   return (
     <GlobalStateContext.Provider

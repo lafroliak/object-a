@@ -1,3 +1,5 @@
+import { NodeProps } from '@crystallize/react-content-transformer'
+
 export type Maybe<T> = T | null
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K]
@@ -466,7 +468,7 @@ export type QueryTopicsArgs = {
 
 export type RichTextContent = {
   __typename?: 'RichTextContent'
-  json?: Maybe<Array<Scalars['JSON']>>
+  json?: Maybe<NodeProps | [NodeProps]>
   html?: Maybe<Array<Scalars['String']>>
   plainText?: Maybe<Array<Scalars['String']>>
 }

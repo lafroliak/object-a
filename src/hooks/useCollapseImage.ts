@@ -1,6 +1,7 @@
-import sortByKey from '@lib/sortByKey'
-import { Option } from '@typings/utils'
 import { MutableRefObject, useCallback, useEffect, useRef } from 'react'
+
+import sortByKey from '~lib/sortByKey'
+import { Option } from '~typings/utils'
 
 type Props = {
   image: Option<string>

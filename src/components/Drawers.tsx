@@ -1,4 +1,3 @@
-import useDrawer from '@stores/useDrawer'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/dist/client/router'
@@ -6,9 +5,18 @@ import dynamic from 'next/dynamic'
 import { memo, useEffect } from 'react'
 import { useMedia, usePrevious } from 'react-use'
 
-import Basket from './Basket'
+import useDrawer from '~stores/useDrawer'
+
+import Cart from './Cart'
 import Drawer from './Drawer'
 import IfElse from './IfElse'
+
+const About = dynamic(import('./About'), {
+  loading: function Placeholder() {
+    return <p>[loading...]</p>
+  },
+  ssr: false,
+})
 
 const Menu = dynamic(import('./Menu'), {
   loading: function Placeholder() {
@@ -40,13 +48,13 @@ function Drawers() {
   const toggle = useDrawer((state) => state.toggle)
   const isSM = useMedia('(max-width: 767px)')
   const router = useRouter()
-  const prevPathname = usePrevious(router.pathname)
+  const prevPathname = usePrevious(router.asPath)
 
   useEffect(() => {
-    if (prevPathname !== router.pathname) {
+    if (prevPathname !== router.asPath) {
       close()
     }
-  }, [router.pathname, prevPathname, close])
+  }, [router.asPath, prevPathname, close])
 
   return (
     <>
@@ -83,10 +91,10 @@ function Drawers() {
             )}
             onClick={() => toggle(SIDES.Right)}
           >
-            [basket]
+            [cart]
           </button>
         }
-        content={<Basket />}
+        content={<Cart />}
       />
       <AnimatePresence>
         <IfElse
@@ -99,7 +107,20 @@ function Drawers() {
                   as="nav"
                   side={SIDES.LeftHandler}
                   disabled
-                  name={<span className="text-color-500">[stories]</span>}
+                  name={
+                    <button
+                      type="button"
+                      className={clsx(
+                        'cursor-pointer focus:outline-none md:inline-block',
+                        {
+                          hidden: opened !== SIDES.Left,
+                        },
+                      )}
+                      onClick={() => toggle(SIDES.Left)}
+                    >
+                      [about]
+                    </button>
+                  }
                 />
               )}
             </IfElse>
@@ -110,12 +131,21 @@ function Drawers() {
               layoutId={SIDES.Left}
               as="aside"
               side={SIDES.Left}
-              disabled
               name={
-                <span className="transform -rotate-90 text-color-500 md:translate-x-2">
-                  [stories]
-                </span>
+                <button
+                  type="button"
+                  className={clsx(
+                    'cursor-pointer transform -rotate-90 translate-x-2 focus:outline-none md:inline-block',
+                    {
+                      hidden: opened !== SIDES.Left,
+                    },
+                  )}
+                  onClick={() => toggle(SIDES.Left)}
+                >
+                  [about]
+                </button>
               }
+              content={<About />}
             />
           )}
         </IfElse>

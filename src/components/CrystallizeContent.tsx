@@ -1,12 +1,19 @@
-import CrystallizeContentTransformer from '@crystallize/content-transformer/react'
-import { RichTextContent } from '@lib/crystallize/types'
+import {
+  ContentTransformer,
+  NodeContent,
+  NodeProps,
+} from '@crystallize/react-content-transformer'
 import { memo } from 'react'
 
-const commonTransfomerOverrides = {
-  link({ metadata, renderNode, ...rest }: any) {
-    const { href } = metadata
+import { RichTextContent } from '~lib/crystallize/types'
 
-    return <a href={href}>{renderNode(rest)}</a>
+const overrides = {
+  link: function Link(props: NodeProps) {
+    return (
+      <a href={props.metadata?.href}>
+        <NodeContent {...props} />
+      </a>
+    )
   },
 }
 
@@ -15,12 +22,9 @@ type Props = {
 }
 
 function CrystallizeContent({ content }: Props) {
-  return (
-    <CrystallizeContentTransformer
-      {...content}
-      overrides={commonTransfomerOverrides}
-    />
-  )
+  if (!content) return null
+
+  return <ContentTransformer json={content} overrides={overrides} />
 }
 
 export default memo(CrystallizeContent)

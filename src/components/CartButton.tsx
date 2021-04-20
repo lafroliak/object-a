@@ -1,10 +1,10 @@
-import useBasket from '@stores/useBasket'
-import useDrawer from '@stores/useDrawer'
+import useCart from '~stores/useCart'
+import useDrawer from '~stores/useDrawer'
 
 import { SIDES } from './Drawers'
 
-export default function BasketButton() {
-  const items = useBasket((state) => state.items)
+export default function CartButton() {
+  const items = useCart((state) => state.items)
   const toggle = useDrawer((state) => state.toggle)
 
   return (

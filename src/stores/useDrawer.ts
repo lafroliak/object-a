@@ -1,6 +1,7 @@
-import { Sides } from '@components/Drawers'
-import { Option } from '@typings/utils'
 import create from 'zustand'
+
+import { Sides } from '~components/Drawers'
+import { Option } from '~typings/utils'
 
 type State = {
   opened: Option<Sides>
