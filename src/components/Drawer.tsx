@@ -1,6 +1,10 @@
-import useDrawer from '~stores/useDrawer'
 import clsx from 'clsx'
-import { motion, useAnimation } from 'framer-motion'
+import {
+  motion,
+  useAnimation,
+  useDragControls,
+  useMotionValue,
+} from 'framer-motion'
 import { HTMLMotionComponents } from 'framer-motion/types/render/html/types'
 import {
   memo,
@@ -11,6 +15,8 @@ import {
   useState,
 } from 'react'
 import { useMedia, useWindowSize } from 'react-use'
+
+import useDrawer from '~stores/useDrawer'
 
 import * as styles from './Drawer.module.css'
 import { SIDES, Sides } from './Drawers'
@@ -50,6 +56,13 @@ function Drawer({
   const isSidebar = ([SIDES.Left, SIDES.Right] as Sides[]).includes(side)
   const width = ref.current?.getBoundingClientRect().width
   const height = ref.current?.getBoundingClientRect().height
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const dragControls = useDragControls()
+
+  function startDrag(event: any) {
+    dragControls.start(event, { snapToCursor: true })
+  }
 
   useEffect(() => {
     if (ref.current) {
@@ -148,6 +161,20 @@ function Drawer({
       })}
     >
       <motion.div
+        className="absolute inset-0"
+        style={{ x, y }}
+        drag={disabled ? undefined : isSidebar ? 'x' : 'y'}
+        dragElastic={0}
+        dragMomentum={false}
+        dragConstraints={
+          side === SIDES.Left && isSM
+            ? constraints[SIDES.Bottom]
+            : constraints[side]
+        }
+        onDragEnd={handleDragEnd}
+        dragControls={dragControls}
+      />
+      <motion.div
         layoutId={layoutId}
         ref={ref}
         className={clsx(
@@ -169,27 +196,20 @@ function Drawer({
         variants={variants[side]}
         exit={{ opacity: 0 }}
         transition={{ type: 'spring', damping: 60, stiffness: 180 }}
-        drag={disabled ? undefined : isSidebar ? 'x' : 'y'}
-        dragElastic={0}
-        dragMomentum={false}
-        dragConstraints={
-          side === SIDES.Left && isSM
-            ? constraints[SIDES.Bottom]
-            : constraints[side]
-        }
-        onDragEnd={handleDragEnd}
+        style={{ x, y }}
       >
         <div
+          onPointerDown={startDrag}
           className={clsx(
-            'w-full h-full grid place-items-center border-opacity-0 border-color-500 border-solid transition duration-200 ease-in-out',
+            'w-full h-full grid place-items-center border-opacity-0 border-color-500 border-solid transition duration-200 ease-in-out delay-200',
             styles.handler,
             {
               'opacity-0': disabled,
               'opacity-30 cursor-grab active:cursor-grabbing md:hover:opacity-100 md:hover:border-opacity-100': !disabled,
-              'border-b': side === SIDES.Top,
-              'border-l': side === SIDES.Right,
-              'border-t': side === SIDES.Bottom || side === SIDES.LeftHandler,
-              'border-r': side === SIDES.Left,
+              'border-b-2': side === SIDES.Top,
+              'border-l-2': side === SIDES.Right,
+              'border-t-2': side === SIDES.Bottom || side === SIDES.LeftHandler,
+              'border-r-2': side === SIDES.Left,
               'border-opacity-100': opened === side,
             },
           )}
