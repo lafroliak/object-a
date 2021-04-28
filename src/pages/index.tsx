@@ -60,7 +60,7 @@ const renderBlock = (
       ({ json }) => (
         <div
           key={`${ComponentType.ParagraphCollection}-${idx}`}
-          className={clsx('max-w-3xl mx-auto text-capsize', {
+          className={clsx('max-w-3xl mx-auto px-4 md:px-8', {
             italic: idx === 0,
           })}
         >

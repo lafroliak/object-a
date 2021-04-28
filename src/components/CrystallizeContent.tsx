@@ -8,6 +8,9 @@ import { memo } from 'react'
 import { RichTextContent } from '~lib/crystallize/types'
 
 const overrides = {
+  p: function Paragraph(props: NodeProps) {
+    return <p className="text-capsize" {...props} />
+  },
   link: function Link(props: NodeProps) {
     return (
       <a href={props.metadata?.href}>

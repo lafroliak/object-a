@@ -11,7 +11,7 @@ import Cart from './Cart'
 import Drawer from './Drawer'
 import IfElse from './IfElse'
 
-const About = dynamic(import('./About'), {
+const PageContent = dynamic(import('./PageContent'), {
   loading: function Placeholder() {
     return <p>[loading...]</p>
   },
@@ -97,59 +97,40 @@ function Drawers() {
         content={<Cart />}
       />
       <AnimatePresence>
-        <IfElse
-          predicate={!isSM || opened === SIDES.Left}
-          placeholder={
-            <IfElse predicate={!isSM}>
-              {() => (
-                <Drawer
-                  layoutId={SIDES.LeftHandler}
-                  as="nav"
-                  side={SIDES.LeftHandler}
-                  disabled
-                  name={
-                    <button
-                      type="button"
-                      className={clsx(
-                        'cursor-pointer focus:outline-none md:inline-block',
-                        {
-                          hidden: opened !== SIDES.Left,
-                        },
-                      )}
-                      onClick={() => toggle(SIDES.Left)}
-                    >
-                      [about]
-                    </button>
-                  }
-                />
-              )}
-            </IfElse>
-          }
-        >
+        <IfElse predicate={isSM && opened !== SIDES.Left}>
           {() => (
             <Drawer
-              layoutId={SIDES.Left}
+              layoutId={SIDES.LeftHandler}
               as="aside"
-              side={SIDES.Left}
+              side={SIDES.LeftHandler}
               name={
                 <button
                   type="button"
-                  className={clsx(
-                    'cursor-pointer transform -rotate-90 translate-x-2 focus:outline-none md:inline-block',
-                    {
-                      hidden: opened !== SIDES.Left,
-                    },
-                  )}
+                  className="cursor-pointer focus:outline-none md:inline-block"
                   onClick={() => toggle(SIDES.Left)}
                 >
                   [about]
                 </button>
               }
-              content={<About />}
             />
           )}
         </IfElse>
       </AnimatePresence>
+      <Drawer
+        layoutId={SIDES.Left}
+        as="aside"
+        side={SIDES.Left}
+        name={
+          <button
+            type="button"
+            className="transform -rotate-90 translate-x-2 cursor-pointer focus:outline-none md:inline-block"
+            onClick={() => toggle(SIDES.Left)}
+          >
+            [about]
+          </button>
+        }
+        content={<PageContent path="/about" />}
+      />
       <Drawer
         as="aside"
         side={SIDES.Bottom}

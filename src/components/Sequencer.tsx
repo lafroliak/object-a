@@ -15,6 +15,7 @@ type Props = {
 
 function Sequencer({ list, placeholder, width = 0 }: Props) {
   const [loaded, setLoaded] = useState<boolean>(false)
+  const [dragging, setDragging] = useState<boolean>(false)
   const canvas = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -39,9 +40,15 @@ function Sequencer({ list, placeholder, width = 0 }: Props) {
   return (
     <>
       <canvas
-        className={clsx('absolute inset-0 w-full h-full opacity-0', {
-          'opacity-100': loaded,
-        })}
+        className={clsx(
+          'absolute inset-0 w-full h-full opacity-0  cursor-grab',
+          {
+            'opacity-100': loaded,
+            'cursor-grabbing': dragging,
+          },
+        )}
+        onPointerDown={() => void setDragging(true)}
+        onPointerUp={() => void setDragging(false)}
         width={width}
         height={width}
         ref={canvas}
@@ -54,8 +61,15 @@ function Sequencer({ list, placeholder, width = 0 }: Props) {
           />
         )}
       </IfElse>
-      <div className="absolute bottom-0 grid w-full place-items-center">
-        <div className="grid space-y-2 transform translate-y-full place-items-center text-color-500">
+      <div
+        className={clsx(
+          'absolute bottom-0 grid w-full place-items-center transition-opacity duration-200 delay-200',
+          {
+            'opacity-0': dragging,
+          },
+        )}
+      >
+        <div className="grid gap-2 transform md:translate-y-full place-items-center text-color-500">
           <div
             className={clsx({
               'animate-spin': !loaded,

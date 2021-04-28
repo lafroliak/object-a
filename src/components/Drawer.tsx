@@ -98,8 +98,8 @@ function Drawer({
       closed: { x: isSM ? 0 : 48 },
     },
     [SIDES.LeftHandler]: {
-      opened: { y: -size },
-      closed: { y: 0 },
+      opened: { y: 0, opacity: 0 },
+      closed: { y: 0, opacity: 1 },
     },
   }
 
@@ -108,7 +108,7 @@ function Drawer({
     [SIDES.Right]: { right: isSM ? -12 : -48, left: -size },
     [SIDES.Bottom]: { bottom: isSM ? -40 : -48, top: -size },
     [SIDES.Left]: { left: isSM ? 0 : 48, right: size },
-    [SIDES.LeftHandler]: { top: -size, bottom: 0 },
+    [SIDES.LeftHandler]: { top: -40, bottom: 0 },
   }
 
   const handleDragEnd = useCallback(
@@ -141,6 +141,9 @@ function Drawer({
           close()
         }
       } else {
+        if (!opened) {
+          open(side === SIDES.LeftHandler ? SIDES.Left : side)
+        }
         constrols.start(opened ? 'closed' : 'opened')
       }
     },
@@ -155,9 +158,9 @@ function Drawer({
         'right-0 left-0 top-0 md:left-12 md:right-12': side === SIDES.Top,
         'right-0 top-10 bottom-10 md:top-12 md:bottom-12': side === SIDES.Right,
         'right-0 bottom-0 left-0 md:right-12 md:left-12': side === SIDES.Bottom,
-        'right-0 bottom-10 left-0': side === SIDES.LeftHandler,
+        'right-0 bottom-20 left-0': side === SIDES.LeftHandler,
         'left-0 bottom-10 top-10 md:top-12 md:bottom-12': side === SIDES.Left,
-        'z-40': opened == side,
+        'z-40': opened === side,
       })}
     >
       <motion.div
@@ -176,6 +179,7 @@ function Drawer({
       />
       <motion.div
         layoutId={layoutId}
+        key={layoutId}
         ref={ref}
         className={clsx(
           'absolute grid md:bg-color-100 md:dark:bg-color-800',
