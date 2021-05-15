@@ -4,6 +4,10 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
 
 import { simplyFetchFromGraph } from '~lib/crystallize/graph'
+import normaliseOrderModel from '~lib/crystallize/normaliseOrderModel'
+import { createCrystallizeOrder } from '~lib/crystallize/order'
+import { Product } from '~lib/crystallize/types'
+import { Mutation } from '~lib/crystallize/types-orders'
 import { stripe } from '~lib/stripe/createClient'
 
 const endpointSecret = process.env.WEBHOOK_SECRET!
@@ -44,78 +48,88 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     // Handle the checkout.session.completed event
     // if (event.type === 'payment_intent.succeeded') {
     if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as Stripe.Checkout.Session
+      try {
+        const session = event.data.object as Stripe.Checkout.Session
 
-      // Get payment intent object
-      // if (typeof session.payment_intent === 'string') {
-      //   const { data } = await fetchCrystallizeAllOrders()
-      //   const order = (data as Query).orders.getAll.edges?.find(
-      //     ({ node }) =>
-      //       (node.payment?.[0] as StripePayment).paymentIntentId ===
-      //       session.payment_intent,
-      //   )
-      //   if (!order?.node.id) {
-      //     const { charges } = await stripe.paymentIntents.retrieve(
-      //       session.payment_intent,
-      //     )
-      //     const charge = charges?.data?.[0]
-      //     console.log(charge)
-      //   }
-      // }
+        const lineItems = await stripe.checkout.sessions.listLineItems(
+          session.id,
+        )
 
-      const lineItems = await stripe.checkout.sessions.listLineItems(
-        session.id,
-        {
-          limit: 100,
-        },
-      )
-
-      if (lineItems) {
-        // Fulfill the purchase...
-        const { data } = await simplyFetchFromGraph({
-          query: /* GraphQL */ `
-            query PRODUCT(
-              $language: String!
-              $path: String!
-              $version: VersionLabel!
-            ) {
-              catalogue(path: $path, language: $language, version: $version) {
-                ...product
-              }
-            }
-
-            fragment product on Product {
-              id
-              name
-              variants {
-                id
-                sku
-                priceVariants {
-                  price
+        if (lineItems) {
+          // Fulfill the purchase...
+          const products: Product[] = []
+          for (let item of lineItems.data) {
+            const { data: productData } = await simplyFetchFromGraph({
+              query: /* GraphQL */ `
+                query PRODUCT(
+                  $language: String!
+                  $path: String!
+                  $version: VersionLabel!
+                ) {
+                  catalogue(
+                    path: $path
+                    language: $language
+                    version: $version
+                  ) {
+                    ...product
+                  }
                 }
-                images {
-                  url
+
+                fragment product on Product {
+                  id
+                  name
+                  variants {
+                    id
+                    sku
+                    priceVariants {
+                      price
+                    }
+                    images {
+                      url
+                    }
+                  }
                 }
-              }
+              `,
+              variables: {
+                language: 'en',
+                path: `/${item.description.toLowerCase().split(' ').join('-')}`,
+                version: 'published',
+              },
+            })
+
+            if (productData.catalogue) {
+              products.push(productData.catalogue as Product)
             }
-          `,
-          variables: {
-            language: 'en',
-            path: `/${lineItems.data[0].description
-              .toLowerCase()
-              .split(' ')
-              .join('-')}`,
-            version: 'published',
-          },
-        })
+          }
 
-        // TODO how we now sku here for right order??
-        console.log(JSON.stringify(data, null, 2))
+          const skus = session.metadata?.skus.split(',') || []
+          const cart = products.map((product) => ({
+            ...product,
+            variants: product.variants?.filter((v) => skus.includes(v.sku)),
+          }))
 
-        try {
-        } catch (err) {
-          return res.status(400).send(`Fulfillment Error: ${err.message}`)
+          // Get payment intent object
+          if (typeof session.payment_intent === 'string') {
+            const { charges } = await stripe.paymentIntents.retrieve(
+              session.payment_intent,
+            )
+            const charge = charges?.data?.[0]
+            const normalizedInput = normaliseOrderModel({
+              cart,
+              charge,
+            })
+
+            const { data: orders } = await createCrystallizeOrder(
+              normalizedInput,
+            )
+            console.log(
+              '✅ Order created successfully:',
+              (orders as Mutation).orders.create.id,
+            )
+          }
         }
+      } catch (err) {
+        return res.status(400).send(`Fulfillment Error: ${err.message}`)
       }
     }
 

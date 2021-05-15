@@ -55,6 +55,7 @@ export const stripeRouter = createRouter()
           quantity: z.number().optional(),
         }),
       ),
+      skus: z.string(),
     }),
     async resolve({ input }) {
       const options: Stripe.Checkout.SessionCreateParams = {
@@ -66,6 +67,9 @@ export const stripeRouter = createRouter()
         },
         customer_email: input.email,
         mode: 'payment',
+        metadata: {
+          skus: input.skus,
+        },
         success_url: `${process.env.SITE_URL}success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.SITE_URL}cancel`,
       }

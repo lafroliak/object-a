@@ -17,7 +17,7 @@ export default function normalizeItems(
       price_data: {
         currency: 'usd',
         product_data: {
-          name: item.name,
+          name: item.name.trim(),
           metadata: {
             sku: item.variants?.[0].sku || '',
           },

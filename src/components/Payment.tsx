@@ -3,6 +3,7 @@ import { useStripe } from '@stripe/react-stripe-js'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 
+import getSKUs from '~lib/crystallize/getSKUs'
 import { AddressType } from '~lib/crystallize/types-orders'
 import normalizeItems from '~lib/stripe/normalizeItems'
 import { trpc } from '~lib/trpc'
@@ -44,6 +45,7 @@ export default function Payment() {
       {
         email: data.email,
         items: normalizeItems(items),
+        skus: getSKUs(items),
       },
       {
         onSuccess: (data) => {

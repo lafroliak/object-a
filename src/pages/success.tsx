@@ -58,8 +58,6 @@ function SuccessPage() {
                     },
                     {
                       onSuccess: (ordr) => {
-                        console.log(ordr?.node.id)
-
                         if (ordr?.node.id) {
                           setOrderID(ordr.node.id)
                         } else {
@@ -114,7 +112,7 @@ function SuccessPage() {
             <div className="pb-1 text-xs border-b border-color-500">
               {'Your purchase'}
             </div>
-            <div className="w-full space-y-2">
+            <div className="w-full space-y-4">
               {items.map((item) => (
                 <div key={item.sku}>
                   <ShowcaseCard
