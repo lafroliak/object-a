@@ -21,7 +21,7 @@ function MainLayout({ children }: PropsWithChildren<unknown>) {
     <>
       <div
         className={clsx(
-          'grid content-between h-full min-h-screen w-screen max-w-full overflow-x-hidden',
+          'grid content-between h-full min-h-screen w-screen max-w-full max-h-screen overflow-hidden',
           styles['main-container'],
         )}
       >
@@ -30,7 +30,7 @@ function MainLayout({ children }: PropsWithChildren<unknown>) {
         </h1>
         <main
           className={clsx(
-            'relative bg-color-200 dark:bg-color-900',
+            'relative max-h-[calc(100vh-7.5rem)] md:max-h-[calc(100vh-6rem)] bg-color-200 overflow-y-auto md:overflow-x-hidden scrollzone dark:bg-color-900',
             styles.main,
           )}
         >

@@ -13,18 +13,6 @@
 import context from './context.js'
 import { parse } from './parser.js'
 
-const instances = []
-
-function make(cfg) {
-  const s = new S(cfg)
-  if (s !== false) instances.push(s)
-  return s
-}
-
-function remove() {
-  instances.splice(0)
-}
-
 class S {
   constructor(opts) {
     const defaults = {
@@ -95,6 +83,8 @@ class S {
       console.log('load() can be called only once.')
     }
 
+    this.images = []
+
     new Preloader(
       this.images,
       this.list,
@@ -130,30 +120,32 @@ class S {
 
   nextImage(loop) {
     if (!loop) loop = this.config.loop
+    const images = this.images.filter(i => this.list.includes(i.src))
     if (loop === 'pong') {
       this.current += this.pongSign
-      if (this.current >= this.images.length - 1) {
+      if (this.current >= images.length - 1) {
         // this.current could ev. change by other playmodes, so extra-checks are necessary
         this.pongSign = -1
-        this.current = this.images.length - 1
+        this.current = images.length - 1
       } else if (this.current <= 0) {
         this.pongSign = 1
         this.current = 0
       }
       this.drawImage(this.current)
     } else {
-      this.drawImage(++this.current % this.images.length) // loop
+      this.drawImage(++this.current % images.length) // loop
     }
   }
 
   drawImage(id) {
+    const images = this.images.filter(i => this.list.includes(i.src))
     if (id === undefined) id = this.current
-    if (id < 0 || id >= this.images.length) return
+    if (id < 0 || id >= images.length) return
     const r = this.config.hiDPI ? window.devicePixelRatio : 1
     const cw = this.ctx.canvas.width / r
     const ch = this.ctx.canvas.height / r
     const ca = cw / ch
-    const img = this.images[id]
+    const img = images[id]
     const ia = img.width / img.height
     let iw
     let ih
@@ -398,8 +390,4 @@ function Preloader(
   }
 }
 
-export default {
-  remove,
-  make,
-  instances,
-}
+export default S

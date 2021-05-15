@@ -39,7 +39,10 @@ export default function Menu() {
       {
         <menu className="list-none">
           {pages
-            ?.filter((p) => !p.path?.includes('about'))
+            ?.filter(
+              (p) =>
+                p.path && !['/about', '/success', '/cancel'].includes(p.path),
+            )
             .map((page) => (
               <li key={page.path}>
                 <Link

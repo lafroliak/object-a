@@ -1,10 +1,12 @@
 import clsx from 'clsx'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 
-import CartButton from './CartButton'
 import * as styles from './Header.module.css'
 import Logo from './Logo'
 import MenuButton from './MenuButton'
+
+const CartButton = dynamic(import('./CartButton'), { ssr: false })
 
 function Header() {
   return (

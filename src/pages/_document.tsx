@@ -34,6 +34,7 @@ class MyDocument extends Document {
           />
           <link rel="shortcut icon" href="/favicon.png" type="image/png" />
           <link href="/fonts/JetBrainsMono.css" rel="stylesheet" />
+          <script key="stripe-js" src="https://js.stripe.com/v3/" async />
         </Head>
         <body>
           <Main />

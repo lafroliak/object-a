@@ -1,4 +1,4 @@
-export default `
+export default /* GraphQL */ `
   mutation updateOrder(
     $id: ID!
     $customer: CustomerInput
@@ -6,8 +6,8 @@ export default `
     $additionalInformation: String
   ) {
     order {
-        update(
-        id: $id,
+      update(
+        id: $id
         input: {
           customer: $customer
           payment: $payment

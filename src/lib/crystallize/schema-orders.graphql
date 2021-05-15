@@ -1,0 +1,372 @@
+"""Exposes a URL that specifies the behaviour of this scalar."""
+directive @specifiedBy(
+  """The URL that specifies the behaviour of this scalar."""
+  url: String!
+) on SCALAR
+
+type Address {
+  city: String
+  country: String
+  email: EmailAddress
+  firstName: String
+  lastName: String
+  middleName: String
+  phone: String
+  postalCode: String
+  state: String
+  street: String
+  street2: String
+  streetNumber: String
+  type: AddressType!
+}
+
+input AddressInput {
+  type: AddressType!
+  firstName: String
+  middleName: String
+  lastName: String
+  street: String
+  street2: String
+  streetNumber: String
+  postalCode: String
+  city: String
+  state: String
+  country: String
+  phone: String
+  email: EmailAddress
+}
+
+enum AddressType {
+  delivery
+  billing
+  other
+}
+
+type CashPayment implements PaymentType {
+  cash: String
+  provider: PaymentProvider!
+}
+
+input CashPaymentInput {
+  cash: String
+}
+
+input CreateOrderInput {
+  customer: CustomerInput!
+  cart: [OrderItemInput!]!
+  payment: [PaymentInput!]
+  total: PriceInput
+  additionalInformation: String
+  meta: [OrderMetadataInput!]
+  createdAt: DateTime
+}
+
+type Customer {
+  addresses: [Address!]
+  birthDate: Date
+  firstName: String
+  identifier: String
+  lastName: String
+  middleName: String
+}
+
+input CustomerInput {
+  identifier: String
+  firstName: String
+  middleName: String
+  lastName: String
+  birthDate: Date
+  addresses: [AddressInput!]
+}
+
+type CustomPayment implements PaymentType {
+  properties: [CustomProperties!]
+  provider: PaymentProvider!
+}
+
+input CustomPaymentInput {
+  properties: [CustomPropertiesInput!]
+}
+
+type CustomProperties {
+  property: String!
+  value: String
+}
+
+input CustomPropertiesInput {
+  property: String!
+  value: String
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format
+outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for
+representation of dates and times using the Gregorian calendar.
+"""
+scalar Date
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Discount {
+  percent: Float
+}
+
+input DiscountInput {
+  percent: Float
+}
+
+"""
+A field whose value conforms to the standard internet email address format as
+specified in RFC822: https://www.w3.org/Protocols/rfc822/.
+"""
+scalar EmailAddress
+
+type KlarnaPayment implements PaymentType {
+  id: String
+  metadata: String
+  orderId: String
+  provider: PaymentProvider!
+  recurringToken: String
+}
+
+input KlarnaPaymentInput {
+  klarna: String
+  orderId: String
+  recurringToken: String
+  metadata: String
+}
+
+type Mutation {
+  orders: OrderMutations!
+}
+
+"""Floats that will have a value of 0 or more."""
+scalar NonNegativeFloat
+
+"""Integers that will have a value of 0 or more."""
+scalar NonNegativeInt
+
+type Order {
+  additionalInformation: String
+  cart: [OrderItem!]!
+  createdAt: DateTime!
+  customer: Customer!
+  id: ID!
+  meta: [OrderMetaData!]
+  payment: [Payment!]
+  total: Price
+  updatedAt: DateTime!
+}
+
+type OrderConfirmation {
+  createdAt: DateTime!
+  id: ID!
+}
+
+type OrderConnection {
+  edges: [OrderConnectionEdge!]
+  pageInfo: PageInfo!
+}
+
+type OrderConnectionEdge {
+  cursor: String!
+  node: Order!
+}
+
+type OrderItem {
+  imageUrl: String
+  meta: [OrderMetaData!]
+  name: String!
+  price: Price
+  productId: ID
+  productVariantId: ID
+  quantity: NonNegativeInt!
+  sku: String
+  subscription: OrderItemSubscription
+  subTotal: Price
+}
+
+input OrderItemInput {
+  name: String!
+  sku: String
+  productId: ID
+  productVariantId: ID
+  imageUrl: String
+  quantity: NonNegativeInt!
+  subscription: OrderItemSubscriptionInput
+  price: PriceInput
+  subTotal: PriceInput
+  meta: [OrderMetadataInput!]
+}
+
+type OrderItemSubscription {
+  end: DateTime
+  name: String
+  period: PositiveInt!
+  start: DateTime
+  unit: OrderItemSubscriptionPeriodUnit!
+}
+
+input OrderItemSubscriptionInput {
+  name: String
+  period: PositiveInt!
+  unit: OrderItemSubscriptionPeriodUnit!
+  start: DateTime
+  end: DateTime
+}
+
+enum OrderItemSubscriptionPeriodUnit {
+  minute
+  hour
+  day
+  week
+  month
+  year
+}
+
+type OrderMetaData {
+  key: String!
+  value: String!
+}
+
+input OrderMetadataInput {
+  key: String!
+  value: String!
+}
+
+type OrderMutations {
+  create(input: CreateOrderInput!): OrderConfirmation!
+}
+
+type OrderQueries {
+  get(id: ID!): Order
+  getAll(customerIdentifier: String, first: Int = 20, after: String, last: Int, before: String, sort: SortDirection = desc, sortField: OrderSortField = updatedAt): OrderConnection!
+}
+
+enum OrderSortField {
+  updatedAt
+}
+
+type PageInfo {
+  endCursor: String!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String!
+  totalNodes: Int!
+}
+
+union Payment = KlarnaPayment | StripePayment | PaypalPayment | CashPayment | CustomPayment
+
+input PaymentInput {
+  provider: PaymentProvider!
+  klarna: KlarnaPaymentInput
+  paypal: PaypalPaymentInput
+  stripe: StripePaymentInput
+  cash: CashPaymentInput
+  custom: CustomPaymentInput
+}
+
+enum PaymentProvider {
+  klarna
+  stripe
+  paypal
+  cash
+  custom
+}
+
+interface PaymentType {
+  provider: PaymentProvider!
+}
+
+type PaypalPayment implements PaymentType {
+  id: String
+  invoiceId: String
+  metadata: String
+  orderId: String
+  provider: PaymentProvider!
+  subscriptionId: String
+}
+
+input PaypalPaymentInput {
+  paypal: String
+  orderId: String
+  subscriptionId: String
+  invoiceId: String
+  metadata: String
+}
+
+"""
+A field whose value conforms to the standard E.164 format as specified in:
+https://en.wikipedia.org/wiki/E.164. Basically this is +17895551234.
+"""
+scalar PhoneNumber
+
+"""Integers that will have a value greater than 0."""
+scalar PositiveInt
+
+type Price {
+  currency: String!
+  discounts: [Discount!]
+  gross: Float
+  net: Float
+  tax: Tax
+}
+
+input PriceInput {
+  gross: Float
+  net: Float
+  currency: String!
+  discounts: [DiscountInput!]
+  tax: TaxInput
+}
+
+type Query {
+  orders: OrderQueries!
+  version: VersionInfo!
+}
+
+enum SortDirection {
+  asc
+  desc
+}
+
+type StripePayment implements PaymentType {
+  customerId: String
+  id: String
+  metadata: String
+  orderId: String
+  paymentIntentId: String
+  paymentMethod: String
+  paymentMethodId: String
+  provider: PaymentProvider!
+  subscriptionId: String
+}
+
+input StripePaymentInput {
+  stripe: String
+  customerId: String
+  orderId: String
+  paymentMethod: String
+  paymentMethodId: String
+  paymentIntentId: String
+  subscriptionId: String
+  metadata: String
+}
+
+type Tax {
+  name: String
+  percent: Float
+}
+
+input TaxInput {
+  name: String
+  percent: Float
+}
+
+type VersionInfo {
+  apiVersion: String!
+  commitSha: String!
+}

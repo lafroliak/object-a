@@ -22,7 +22,7 @@ function Showcase() {
           href={item?.path ? `/catalogue${item.path}` : '/'}
         >
           <a className="flex flex-col flex-shrink-0 w-64 h-full space-y-2">
-            <ShowcaseCard item={item} />
+            <ShowcaseCard item={item} isLink />
           </a>
         </Link>
       ))}

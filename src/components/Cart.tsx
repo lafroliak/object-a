@@ -1,12 +1,18 @@
-import useCart from '~stores/useCart'
-import useDrawer from '~stores/useDrawer'
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
+import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { memo } from 'react'
+
+import useCart from '~stores/useCart'
+import useDrawer from '~stores/useDrawer'
 
 import IfElse from './IfElse'
 import * as styles from './Showcase.module.css'
 import ShowcaseCard from './ShowcaseCard'
+import StripeWrapper from './StripeWrapper'
+
+const Payment = dynamic(import('./Payment'), { ssr: false })
 
 function Cart() {
   const opened = useDrawer((state) => state.opened)
@@ -32,11 +38,16 @@ function Cart() {
       >
         {(itms) => (
           <>
-            {itms.map((item) => (
+            {itms.map((item, idx) => (
               <div key={item.id} className="w-full space-y-2">
-                <div>
-                  <ShowcaseCard item={item} />
-                </div>
+                <Link
+                  key={`showcase-${item.id}-${idx}`}
+                  href={item?.path ? `/catalogue${item.path}` : '/'}
+                >
+                  <a>
+                    <ShowcaseCard item={item} isLink />
+                  </a>
+                </Link>
                 <div className="text-center">
                   ${item.variants?.[0].priceVariants?.[0]?.price}
                 </div>
@@ -54,15 +65,20 @@ function Cart() {
             </div>
             <IfElse predicate={totals().quantity > 0}>
               {() => (
-                <button
-                  type="button"
-                  className="uppercase cursor-pointer focus:outline-none"
-                  onClick={clearItems}
-                >
-                  [clean cart]
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className="uppercase cursor-pointer focus:outline-none"
+                    onClick={clearItems}
+                  >
+                    [clean cart]
+                  </button>
+                </>
               )}
             </IfElse>
+            <StripeWrapper>
+              <Payment />
+            </StripeWrapper>
           </>
         )}
       </IfElse>

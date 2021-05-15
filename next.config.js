@@ -4,6 +4,8 @@ require('dotenv').config()
 const ENV_VARS = {
   SITE_NAME: process.env.SITE_NAME,
   SITE_URL: process.env.SITE_URL,
+  STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
 }
 
 module.exports = {

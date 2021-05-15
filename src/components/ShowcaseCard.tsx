@@ -8,9 +8,10 @@ import IfElse from './IfElse'
 
 type Props = {
   item: Option<Partial<Product>>
+  isLink?: boolean
 }
 
-function ShowcaseCard({ item }: Props) {
+function ShowcaseCard({ item, isLink }: Props) {
   if (!item) return null
 
   const { name, type, variants, defaultVariant } = item
@@ -44,7 +45,9 @@ function ShowcaseCard({ item }: Props) {
         {(prop) => (
           <h3 className="text-sm text-center whitespace-nowrap">
             <span className="relative">
-              [{prop.trim()}]
+              {isLink ? '[' : null}
+              {prop.trim()}
+              {isLink ? ']' : null}
               <IfElse predicate={isOutOfStock}>
                 {() => (
                   <span className="absolute inline-block w-2 h-2 bg-red-600 rounded -top-1 -right-3" />

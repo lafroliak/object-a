@@ -1,13 +1,11 @@
 html {
   @apply h-full w-full;
-  min-height: -webkit-fill-available;
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
   @apply bg-color-100 select-none font-jet-brain-mono font-base text-color-900 dark:text-color-100 dark:bg-color-800 dark:font-dark;
   min-height: 100vh;
-  min-height: -webkit-fill-available;
 
   scrollbar-width: none;
   scrollbar-height: none;

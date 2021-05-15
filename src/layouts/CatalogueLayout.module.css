@@ -1,12 +1,12 @@
 .container {
   grid-template-columns: none;
-  grid-template-rows: 1fr min-content;
+  grid-template-rows: minmax(0, min-content) minmax(0, min-content);
   grid-template-areas:
     'image'
     'details';
 
   @media (orientation: landscape) {
-    max-height: calc(100vh - 6rem);
+    height: calc(100vh - 6rem);
     grid-template-columns: 2fr 1fr;
     grid-template-areas: 'image details';
   }
@@ -28,4 +28,7 @@
 .details,
 .image {
   max-height: calc(100vh - 6rem);
+  @media (orientation: landscape) {
+    min-height: calc(100vh - 6rem);
+  }
 }

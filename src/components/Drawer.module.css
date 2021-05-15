@@ -49,6 +49,7 @@
     &.right {
       --drawer-size: calc(100vw - var(--side-size));
       grid-template-columns: var(--handler-size) var(--name-size) 1fr;
+      grid-template-rows: calc(100vh - (var(--side-size) * 3));
     }
     &.bottom {
       grid-template-rows: var(--handler-size) var(--name-size) 1fr;

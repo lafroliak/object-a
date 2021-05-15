@@ -1,5 +1,5 @@
-export default `
-  query getOrder($id: ID!){
+export default /* GraphQL */ `
+  query getOrder($id: ID!) {
     orders {
       get(id: $id) {
         id

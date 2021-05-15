@@ -7,35 +7,36 @@ import IconRotate from './IconRotate'
 import IfElse from './IfElse'
 
 type Props = {
+  pageID: string
   list: Array<string>
   width?: number
   height?: number
   placeholder?: string
 }
 
-function Sequencer({ list, placeholder, width = 0 }: Props) {
+function Sequencer({ pageID, list, placeholder, width = 0 }: Props) {
   const [loaded, setLoaded] = useState<boolean>(false)
   const [dragging, setDragging] = useState<boolean>(false)
   const canvas = useRef<HTMLCanvasElement>(null)
+  const instances = useRef<Record<string, S>>({})
 
   useEffect(() => {
     if (typeof window !== undefined) {
-      S.make({
-        list,
-        scaleMode: 'contain',
-        playMode: 'drag',
-        direction: 'x',
-        autoLoad: 'all',
-        canvas: canvas.current,
-        hiDPI: false,
-        queueComplete: () => void setLoaded(true),
-      })
+      if (!instances.current[pageID]) {
+        const s = new S({
+          list,
+          scaleMode: 'contain',
+          playMode: 'drag',
+          direction: 'x',
+          autoLoad: 'all',
+          canvas: canvas.current,
+          hiDPI: false,
+          queueComplete: () => void setLoaded(true),
+        })
+        if (s) instances.current[pageID] = s
+      }
     }
-
-    return () => {
-      S.remove()
-    }
-  }, [list])
+  }, [pageID, list])
 
   return (
     <>
@@ -66,6 +67,7 @@ function Sequencer({ list, placeholder, width = 0 }: Props) {
           'absolute bottom-0 grid w-full place-items-center transition-opacity duration-200 delay-200',
           {
             'opacity-0': dragging,
+            'opacity-100': !dragging,
           },
         )}
       >
@@ -78,7 +80,7 @@ function Sequencer({ list, placeholder, width = 0 }: Props) {
             <IconRotate />
           </div>
           <div className="text-xs">
-            <IfElse predicate={loaded} placeholder={<>lodading...</>}>
+            <IfElse predicate={loaded} placeholder={<>loading...</>}>
               {() => <>drag for rotate</>}
             </IfElse>
           </div>

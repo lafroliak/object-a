@@ -55,12 +55,17 @@ function Popup({ opened, onClose, side, content, as, layoutId }: Props) {
               animate="opened"
               exit="closed"
               variants={variants[side]}
-              className={clsx('absolute inset-0 flex', {
-                'items-start': side === SIDES.Top,
-                'justify-end': side === SIDES.Right,
-                'items-end': side === SIDES.Bottom,
-                'justify-start': side === SIDES.Left,
-              })}
+              className={clsx(
+                'fixed inset-0 flex flex-row bg-color-100 dark:bg-color-800',
+                {
+                  'items-start': side === SIDES.Top,
+                  'justify-end top-10 bottom-20 md:top-12 md:bottom-12':
+                    side === SIDES.Right,
+                  'items-end': side === SIDES.Bottom,
+                  'justify-start top-10 bottom-20 md:top-12 md:bottom-12':
+                    side === SIDES.Left,
+                },
+              )}
             >
               <motion.div
                 layoutId="popup_closer"
@@ -72,8 +77,18 @@ function Popup({ opened, onClose, side, content, as, layoutId }: Props) {
                 exit={{ opacity: 0 }}
                 transition={{ type: 'spring', damping: 60, stiffness: 180 }}
               />
-
-              {content}
+              <div
+                className={clsx(
+                  'flex-shrink-0 min-h-0 overflow-y-auto overscroll-auto scrollzone',
+                  {
+                    'max-w-[calc(100vw-2.5rem)] min-w-[33vw]':
+                      side === SIDES.Left || side === SIDES.Right,
+                    'max-h-[66vh]': side === SIDES.Top || side === SIDES.Bottom,
+                  },
+                )}
+              >
+                {content}
+              </div>
               <button
                 type="button"
                 className="absolute top-0 right-0 m-4 text-xs cursor-pointer"

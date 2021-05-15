@@ -3,6 +3,7 @@ import create from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { Product } from '~lib/crystallize/types'
+import { Customer } from '~lib/crystallize/types-orders'
 import { Option } from '~typings/utils'
 
 const dummyStorageApi = {
@@ -29,8 +30,10 @@ type State = {
     gross: number
     net: number
     quantity: number
-    currency: Option<string>
+    currency: string
   }
+  customer: Option<Customer>
+  updateCustomer: (customer: Customer) => void
 }
 
 export default create<State>(
@@ -44,7 +47,11 @@ export default create<State>(
       clearItems: () => set({ items: [] }, true),
       addItem: (item) =>
         set({
-          items: get().items.includes(item)
+          items: get().items.find(
+            (itm) =>
+              itm?.variants?.[0].id === item.variants?.[0].id ||
+              itm?.id === item?.id,
+          )
             ? get().items
             : [...get().items, item],
         }),
@@ -63,13 +70,15 @@ export default create<State>(
             if (price) {
               acc.gross += price * 1
               acc.net += price * quantity
-              acc.currency = currency
+              acc.currency = currency || 'usd'
             }
             acc.quantity += quantity
             return acc
           },
-          { gross: 0, net: 0, quantity: 0, currency: null as Option<string> },
+          { gross: 0, net: 0, quantity: 0, currency: 'usd' },
         ),
+      customer: null,
+      updateCustomer: (customer: Customer) => set({ customer }),
     }),
     {
       name: 'cart',

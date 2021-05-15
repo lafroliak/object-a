@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 
 import { Product } from '~lib/crystallize/types'
 import useCart from '~stores/useCart'
@@ -18,25 +18,27 @@ function AddToCart({ item, sku }: Props) {
   const open = useDrawer((state) => state.open)
   const isItemInCart = items.find((i) => i.id === item?.id)
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (!item) return
 
     if (isItemInCart) {
       deleteItem(item.id)
     } else {
+      if (!item || typeof addItem !== 'function') return
+
       addItem({
         ...item,
         variants: item.variants?.filter((v) => v?.sku == sku),
       })
     }
-  }
+  }, [item, addItem, deleteItem, sku, isItemInCart])
 
-  const handleNow = () => {
-    if (!item) return
+  const handleNow = useCallback(() => {
+    if (!item || typeof addItem !== 'function') return
 
     addItem({ ...item, variants: item.variants?.filter((v) => v?.sku == sku) })
     open(SIDES.Right)
-  }
+  }, [item, addItem, open, sku])
 
   return (
     <div className="space-x-8">

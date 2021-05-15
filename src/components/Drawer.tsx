@@ -156,7 +156,7 @@ function Drawer({
     <Element
       className={clsx('fixed z-30', {
         'right-0 left-0 top-0 md:left-12 md:right-12': side === SIDES.Top,
-        'right-0 top-10 bottom-10 md:top-12 md:bottom-12': side === SIDES.Right,
+        'right-0 top-10 bottom-20 md:top-12 md:bottom-12': side === SIDES.Right,
         'right-0 bottom-0 left-0 md:right-12 md:left-12': side === SIDES.Bottom,
         'right-0 bottom-20 left-0': side === SIDES.LeftHandler,
         'left-0 bottom-10 top-10 md:top-12 md:bottom-12': side === SIDES.Left,

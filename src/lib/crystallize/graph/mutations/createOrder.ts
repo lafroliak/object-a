@@ -1,9 +1,10 @@
-export default `
+export default /* GraphQL */ `
   mutation createOrder(
     $customer: CustomerInput!
     $cart: [OrderItemInput!]!
     $payment: [PaymentInput!]
     $total: PriceInput
+    $additionalInformation: String
   ) {
     orders {
       create(
@@ -12,6 +13,7 @@ export default `
           cart: $cart
           payment: $payment
           total: $total
+          additionalInformation: $additionalInformation
         }
       ) {
         id

@@ -13,7 +13,7 @@ export default function CartButton() {
       className="cursor-pointer focus:outline-none"
       onClick={() => toggle(SIDES.Right)}
     >
-      [{items.length}]
+      [{items.length ?? 0}]
     </button>
   )
 }

@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 
 import * as styles from '~layouts/CatalogueLayout.module.css'
 import { isImage } from '~lib/crystallize/isType'
@@ -65,12 +65,10 @@ export default function ProductPage({ page }: Props) {
 
   return (
     <>
-      <div
-        className={clsx('grid w-full h-full overflow-hidden', styles.container)}
-      >
+      <div className={clsx('grid w-full min-h-full', styles.container)}>
         <div
           className={clsx(
-            'grid place-items-center relative overflow-hidden md:overflow-auto scrollzone',
+            'grid place-items-center relative overflow-visible',
             styles.image,
           )}
         >
@@ -119,6 +117,7 @@ export default function ProductPage({ page }: Props) {
                                     )?.url,
                               undefined,
                             )}
+                            pageID={page.id}
                             list={images.map((x) => x.url)}
                             width={width}
                           />
@@ -168,23 +167,22 @@ export default function ProductPage({ page }: Props) {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className="absolute inset-0 overflow-x-auto bg-color-200 dark:bg-color-900 md:overflow-y-auto md:overflow-x-hidden scrollzone"
+                          className="absolute inset-0 grid grid-flow-col md:grid-flow-row grid-col-[minmax(min-content,max-content)] md:grid-row-[minmax(min-content,max-content)] gap-4 overflow-x-auto place-items-center md:overflow-y-auto md:overflow-x-hidden scrollzone bg-color-200 dark:bg-color-900"
                         >
-                          <div className="flex flex-row items-center justify-center space-x-4 md:py-12 md:space-x-0 md:space-y-4 md:flex-col bg-color-200 dark:bg-color-900">
-                            {images.map((image) => (
-                              <div
-                                key={image.key}
-                                className="relative flex-shrink-0 w-[95vw] h-[95vw] md:w-[75vmin] md:h-[75vmin] overflow-hidden"
-                              >
-                                <img
-                                  src={image.url}
-                                  alt={page.name ?? ''}
-                                  width={image.width}
-                                  className="absolute inset-0 w-full h-full"
-                                />
-                              </div>
-                            ))}
-                          </div>
+                          {images.map((image) => (
+                            <div
+                              key={image.key}
+                              className="relative w-[95vw] h-[95vw] md:w-[75vmin] md:h-[75vmin]"
+                            >
+                              <img
+                                src={image.url}
+                                alt={page.name ?? ''}
+                                width={image.width}
+                                height={image.height || 'auto'}
+                                className="absolute inset-0 w-full h-full"
+                              />
+                            </div>
+                          ))}
                         </motion.div>
                       )}
                     </IfElse>
@@ -236,7 +234,7 @@ export default function ProductPage({ page }: Props) {
         </div>
         <div
           className={clsx(
-            'grid place-content-start overflow-y-auto scrollzone',
+            'grid place-content-start md:overflow-y-auto scrollzone',
             styles.details,
           )}
         >
@@ -300,9 +298,8 @@ export default function ProductPage({ page }: Props) {
                   </div>
                   <div className="space-x-4">
                     {variants.map((v) => (
-                      <>
+                      <Fragment key={v.sku}>
                         <IfElse
-                          key={v.sku}
                           predicate={(v?.stock ?? 0) > 0 ? v : null}
                           placeholder={
                             <span
@@ -337,7 +334,7 @@ export default function ProductPage({ page }: Props) {
                             </button>
                           )}
                         </IfElse>
-                      </>
+                      </Fragment>
                     ))}
                   </div>
                 </div>
