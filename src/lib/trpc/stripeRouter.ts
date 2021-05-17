@@ -70,8 +70,10 @@ export const stripeRouter = createRouter()
         metadata: {
           skus: input.skus,
         },
-        success_url: `${process.env.SITE_URL}success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.SITE_URL}cancel`,
+        success_url: `${
+          process.env.VERCEL_URL || process.env.SITE_URL
+        }success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.VERCEL_URL || process.env.SITE_URL}cancel`,
       }
       if (input.items.length > 0) {
         options.line_items = input.items
@@ -79,6 +81,6 @@ export const stripeRouter = createRouter()
 
       const session = await stripe.checkout.sessions.create(options)
 
-      return { sessionId: session.id }
+      return session
     },
   })

@@ -48,11 +48,9 @@ export default function Payment() {
         skus: getSKUs(items),
       },
       {
-        onSuccess: (data) => {
-          if (stripe && data) {
-            console.log(data)
-
-            stripe.redirectToCheckout({ sessionId: data.sessionId })
+        onSuccess: (session) => {
+          if (stripe && session) {
+            stripe.redirectToCheckout({ sessionId: session.id })
           }
         },
       },
