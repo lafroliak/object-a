@@ -16,6 +16,7 @@ import { parse } from './parser.js'
 class S {
   constructor(opts) {
     const defaults = {
+      key: null,
       canvas: null,
       list: [],
       from: '',
@@ -98,7 +99,11 @@ class S {
     const _down = context.hasTouch ? 'touchstart' : 'mousedown'
     const _up = context.hasTouch ? 'touchend' : 'mouseup'
 
-    if (this.config.playMode === 'hover') {
+    if (this.config.playMode === 'none') {
+      this.ctx.canvas.removeEventListener(_move, absoluteMove.bind(null, this))
+      this.ctx.canvas.removeEventListener(_move, relativeMove.bind(null, this))
+      this.ctx.canvas.removeEventListener(_down, pointerDown.bind(null, this))
+    } else if (this.config.playMode === 'hover') {
       this.ctx.canvas.addEventListener(_move, absoluteMove.bind(null, this))
     } else if (this.config.playMode === 'drag') {
       this.ctx.canvas.addEventListener(_move, relativeMove.bind(null, this))
@@ -119,6 +124,7 @@ class S {
   }
 
   nextImage(loop) {
+    if (this.config.playMode === 'none') return
     if (!loop) loop = this.config.loop
     const images = this.images.filter(i => this.list.includes(i.src))
     if (loop === 'pong') {
@@ -138,6 +144,7 @@ class S {
   }
 
   drawImage(id) {
+    if (this.config.playMode === 'none') return
     const images = this.images.filter(i => this.list.includes(i.src))
     if (id === undefined) id = this.current
     if (id < 0 || id >= images.length) return
@@ -263,6 +270,7 @@ function pointerUp(self, e) {
 }
 
 function relativeMove(self, e) {
+  if (self.config.playMode === 'none') return
   if (!self.pointer.down) return
 
   const t = self.images.length
@@ -304,6 +312,7 @@ function constrain(v, a, b) {
 }
 
 function absoluteMove(self, e) {
+  if (self.config.playMode === 'none') return
   const t = self.images.length
   const r = self.config.hiDPI ? window.devicePixelRatio : 1
 

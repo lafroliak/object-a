@@ -23,17 +23,26 @@ function Sequencer({ pageID, list, placeholder, width = 0 }: Props) {
   useEffect(() => {
     if (typeof window !== undefined) {
       if (!instances.current[pageID]) {
+        setLoaded(false)
+
         const s = new S({
+          key: pageID,
           list,
           scaleMode: 'contain',
-          playMode: 'drag',
+          playMode: 'none',
           direction: 'x',
           autoLoad: 'all',
           canvas: canvas.current,
           hiDPI: false,
           queueComplete: () => void setLoaded(true),
         })
+
         if (s) instances.current[pageID] = s
+
+        for (let key in instances.current) {
+          instances.current[key].config.playMode =
+            instances.current[key].config.key === pageID ? 'drag' : 'none'
+        }
       }
     }
   }, [pageID, list])

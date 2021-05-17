@@ -18,20 +18,6 @@ class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <link
-            rel="preload"
-            href="/fonts/JetBrainsMono-VariableFont_wght.woff2"
-            as="font"
-            type="font/woff2"
-            crossOrigin="anonymous"
-          />
-          <link
-            rel="preload"
-            href="/fonts/JetBrainsMono-Italic-VariableFont_wght.woff2"
-            as="font"
-            type="font/woff2"
-            crossOrigin="anonymous"
-          />
           <link rel="shortcut icon" href="/favicon.png" type="image/png" />
           <link
             href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
