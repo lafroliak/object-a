@@ -72,8 +72,8 @@ export const stripeRouter = createRouter()
         },
         success_url: `${
           process.env.VERCEL_URL || process.env.SITE_URL
-        }success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.VERCEL_URL || process.env.SITE_URL}cancel`,
+        }/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.VERCEL_URL || process.env.SITE_URL}/cancel`,
       }
       if (input.items.length > 0) {
         options.line_items = input.items
