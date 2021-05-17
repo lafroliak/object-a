@@ -129,7 +129,7 @@ export const crystallizeRouter = createRouter()
       cart: z.unknown(),
       charge: z.unknown(),
     }),
-    async resolve({ input }): Promise<string> {
+    async resolve({ input }): Promise<{ id: string }> {
       const normalizedInput = normaliseOrderModel({
         cart: input.cart as Product[],
         charge: input.charge as Stripe.Charge,
@@ -137,7 +137,7 @@ export const crystallizeRouter = createRouter()
 
       const { data } = await createCrystallizeOrder(normalizedInput)
 
-      return (data as Mutation).orders.create.id
+      return (data as Mutation).orders.create
     },
   })
   .query('get-order', {

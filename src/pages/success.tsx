@@ -67,8 +67,10 @@ function SuccessPage() {
                               charge,
                             },
                             {
-                              onSuccess: (orderID) => {
-                                setOrderID(orderID)
+                              onSuccess: (order) => {
+                                if (order) {
+                                  setOrderID(order.id)
+                                }
                               },
                             },
                           )
