@@ -50,11 +50,11 @@ function MyApp({
     <>
       <DefaultSeo
         title={publicRuntimeConfig.SITE_NAME}
-        canonical={process.env.VERCEL_URL || publicRuntimeConfig.SITE_URL}
+        canonical={publicRuntimeConfig.SITE_URL}
         openGraph={{
           type: 'website',
           locale: 'en_IE',
-          url: process.env.VERCEL_URL || publicRuntimeConfig.SITE_URL,
+          url: publicRuntimeConfig.SITE_URL,
           site_name: publicRuntimeConfig.SITE_NAME,
         }}
         twitter={{

@@ -33,7 +33,6 @@ class MyDocument extends Document {
             crossOrigin="anonymous"
           />
           <link rel="shortcut icon" href="/favicon.png" type="image/png" />
-          {/* <link href="/fonts/JetBrainsMono.css" rel="stylesheet" /> */}
           <link
             href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
             rel="stylesheet"
