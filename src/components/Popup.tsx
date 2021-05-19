@@ -55,17 +55,14 @@ function Popup({ opened, onClose, side, content, as, layoutId }: Props) {
               animate="opened"
               exit="closed"
               variants={variants[side]}
-              className={clsx(
-                'fixed inset-0 flex flex-row bg-color-100 dark:bg-color-800',
-                {
-                  'items-start': side === SIDES.Top,
-                  'justify-end top-10 bottom-20 md:top-12 md:bottom-12':
-                    side === SIDES.Right,
-                  'items-end': side === SIDES.Bottom,
-                  'justify-start top-10 bottom-20 md:top-12 md:bottom-12':
-                    side === SIDES.Left,
-                },
-              )}
+              className={clsx('fixed inset-0 flex flex-row', {
+                'items-start': side === SIDES.Top,
+                'justify-end top-10 bottom-20 md:right-12 md:top-12 md:bottom-12':
+                  side === SIDES.Right,
+                'items-end': side === SIDES.Bottom,
+                'justify-start top-10 bottom-20 md:top-12 md:bottom-12':
+                  side === SIDES.Left,
+              })}
             >
               <motion.div
                 layoutId="popup_closer"
@@ -79,7 +76,7 @@ function Popup({ opened, onClose, side, content, as, layoutId }: Props) {
               />
               <div
                 className={clsx(
-                  'flex-shrink-0 min-h-0 overflow-y-auto overscroll-auto scrollzone',
+                  'flex-shrink-0 min-h-0 bg-color-100 dark:bg-color-800 overflow-y-auto scrollzone',
                   {
                     'max-w-[calc(100vw-2.5rem)] min-w-[33vw]':
                       side === SIDES.Left || side === SIDES.Right,

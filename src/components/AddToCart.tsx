@@ -2,10 +2,7 @@ import { memo, useCallback } from 'react'
 
 import { Product } from '~lib/crystallize/types'
 import useCart from '~stores/useCart'
-import useDrawer from '~stores/useDrawer'
 import type { Option } from '~typings/utils'
-
-import { SIDES } from './Drawers'
 
 type Props = {
   item: Option<Product>
@@ -15,7 +12,7 @@ function AddToCart({ item, sku }: Props) {
   const items = useCart((state) => state.items)
   const addItem = useCart((state) => state.addItem)
   const deleteItem = useCart((state) => state.deleteItem)
-  const open = useDrawer((state) => state.open)
+  // const open = useDrawer((state) => state.open)
   const isItemInCart = items.find((i) => i.id === item?.id)
 
   const handleClick = useCallback(() => {
@@ -33,12 +30,12 @@ function AddToCart({ item, sku }: Props) {
     }
   }, [item, addItem, deleteItem, sku, isItemInCart])
 
-  const handleNow = useCallback(() => {
-    if (!item || typeof addItem !== 'function') return
+  // const handleNow = useCallback(() => {
+  //   if (!item || typeof addItem !== 'function') return
 
-    addItem({ ...item, variants: item.variants?.filter((v) => v?.sku == sku) })
-    open(SIDES.Right)
-  }, [item, addItem, open, sku])
+  //   addItem({ ...item, variants: item.variants?.filter((v) => v?.sku == sku) })
+  //   open(SIDES.Right)
+  // }, [item, addItem, open, sku])
 
   return (
     <div className="space-x-8">
@@ -49,13 +46,13 @@ function AddToCart({ item, sku }: Props) {
       >
         [{isItemInCart ? 'remove from cart' : 'add to cart'}]
       </button>
-      <button
+      {/* <button
         type="button"
         onClick={handleNow}
         className="inline-block uppercase"
       >
         [buy now]
-      </button>
+      </button> */}
     </div>
   )
 }

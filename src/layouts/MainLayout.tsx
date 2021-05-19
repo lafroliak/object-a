@@ -1,7 +1,8 @@
 import clsx from 'clsx'
 import getConfig from 'next/config'
+import { useRouter } from 'next/dist/client/router'
 import dynamic from 'next/dynamic'
-import { PropsWithChildren, ReactNode } from 'react'
+import { PropsWithChildren, ReactNode, useEffect, useRef } from 'react'
 
 import Header from '~components/Header'
 
@@ -17,6 +18,15 @@ const Drawers = dynamic(import('~components/Drawers'), {
 const { publicRuntimeConfig } = getConfig()
 
 function MainLayout({ children }: PropsWithChildren<unknown>) {
+  const main = useRef<HTMLElement>(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    if (main.current) {
+      main.current.scrollTop = 0
+    }
+  }, [router.asPath])
+
   return (
     <>
       <div
@@ -29,8 +39,9 @@ function MainLayout({ children }: PropsWithChildren<unknown>) {
           {publicRuntimeConfig.SITE_NAME}
         </h1>
         <main
+          ref={main}
           className={clsx(
-            'relative max-h-[calc(100vh-7.5rem)] md:max-h-[calc(100vh-6rem)] bg-color-200 overflow-y-auto md:overflow-x-hidden scrollzone dark:bg-color-900',
+            'relative max-h-[calc(100vh-5rem)] md:max-h-[calc(100vh-6rem)] bg-color-200 overflow-y-auto md:overflow-x-hidden scrollzone dark:bg-color-900',
             styles.main,
           )}
         >

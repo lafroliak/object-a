@@ -19,7 +19,16 @@ function Showcase() {
       {products?.map((item, idx) => (
         <Link
           key={`showcase-${item.id}-${idx}`}
-          href={item?.path ? `/catalogue${item.path}` : '/'}
+          href={
+            item?.path
+              ? {
+                  pathname: '/catalogue/[...catalogue]',
+                  query: {
+                    catalogue: decodeURIComponent(item.path).replace(/^\//, ''),
+                  },
+                }
+              : '/'
+          }
         >
           <a className="flex flex-col flex-shrink-0 w-64 h-full space-y-2">
             <ShowcaseCard item={item} isLink />

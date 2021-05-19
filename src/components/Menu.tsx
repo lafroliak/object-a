@@ -50,7 +50,15 @@ export default function Menu() {
                     page.path === '/homepage'
                       ? '/'
                       : page.path
-                      ? `/catalogue${page.path}`
+                      ? {
+                          pathname: '/catalogue/[...catalogue]',
+                          query: {
+                            catalogue: decodeURIComponent(page.path).replace(
+                              /^\//,
+                              '',
+                            ),
+                          },
+                        }
                       : '/'
                   }
                 >

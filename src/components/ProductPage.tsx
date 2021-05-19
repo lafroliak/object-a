@@ -13,6 +13,7 @@ import {
   SingleLineContent,
 } from '~lib/crystallize/types'
 import { isWebpSupported } from '~lib/isWebpSupported'
+import useDrawer from '~stores/useDrawer'
 import { Option } from '~typings/utils'
 
 import AddToCart from './AddToCart'
@@ -42,6 +43,7 @@ export default function ProductPage({ page }: Props) {
   const [popupOpened, setPopupOpened] = useState<boolean>(false)
   const [sku, setSKU] = useState<Option<string>>(null)
   const [state, setState] = useState<Option<'Images' | 'Models'>>(null)
+  const openedDrawer = useDrawer((state) => state.opened)
 
   useEffect(() => {
     const defaultVariant = page.variants?.find((v) => (v?.stock ?? 0) > 0)
@@ -62,6 +64,10 @@ export default function ProductPage({ page }: Props) {
       setSize(ref.current.getBoundingClientRect().width ?? 0)
     }
   }, [ref])
+
+  useEffect(() => {
+    if (openedDrawer) setPopupOpened(false)
+  }, [openedDrawer])
 
   return (
     <>
@@ -274,7 +280,7 @@ export default function ProductPage({ page }: Props) {
                 >
                   {(content) => (
                     <div className="space-y-2">
-                      <div className="pb-1 text-xs border-b border-color-500">
+                      <div className="pb-1 text-xs font-semibold border-b border-color-500">
                         {'Material'}
                       </div>
                       <div className="text-sm">{content.text}</div>
@@ -286,11 +292,11 @@ export default function ProductPage({ page }: Props) {
             <IfElse predicate={page.variants}>
               {(variants) => (
                 <div className="space-y-4">
-                  <div className="pb-1 text-xs border-b border-color-500">
-                    {'Size '}
+                  <div className="flex flex-row justify-between w-full pb-1 text-xs font-semibold border-b border-color-500">
+                    <span>{'Size '}</span>
                     <button
                       type="button"
-                      className="cursor-pointer"
+                      className="uppercase cursor-pointer focus:outline-none"
                       onClick={() => void setPopupOpened(true)}
                     >
                       [size guide]
@@ -343,7 +349,7 @@ export default function ProductPage({ page }: Props) {
             <IfElse predicate={page.variants?.[0]?.priceVariants?.[0]?.price}>
               {(price) => (
                 <div className="space-y-2">
-                  <div className="pb-1 text-xs border-b border-color-500">
+                  <div className="pb-1 text-xs font-semibold border-b border-color-500">
                     {'Price'}
                   </div>
                   <div className="text-sm">
@@ -375,7 +381,11 @@ export default function ProductPage({ page }: Props) {
         onClose={() => void setPopupOpened(false)}
         as="aside"
         side={SIDES.Right}
-        content={<PageContent path="/size-guide" />}
+        content={
+          <div className="p-8 space-y-6">
+            <PageContent path="/size-guide" />
+          </div>
+        }
       />
     </>
   )

@@ -38,12 +38,14 @@ function Sequencer({ pageID, list, placeholder, width = 0 }: Props) {
         })
 
         if (s) instances.current[pageID] = s
-
-        for (let key in instances.current) {
-          instances.current[key].config.playMode =
-            instances.current[key].config.key === pageID ? 'drag' : 'none'
-        }
       }
+
+      for (let key in instances.current) {
+        instances.current[key].config.playMode =
+          instances.current[key].config.key === pageID ? 'drag' : 'none'
+      }
+
+      instances.current[pageID].drawImage()
     }
   }, [pageID, list])
 
@@ -51,7 +53,7 @@ function Sequencer({ pageID, list, placeholder, width = 0 }: Props) {
     <>
       <canvas
         className={clsx(
-          'absolute inset-0 w-full h-full opacity-0  cursor-grab',
+          'absolute inset-0 w-full h-full opacity-0 transition-opacity duration-200 cursor-grab',
           {
             'opacity-100': loaded,
             'cursor-grabbing': dragging,
@@ -66,7 +68,7 @@ function Sequencer({ pageID, list, placeholder, width = 0 }: Props) {
       <IfElse predicate={placeholder && !loaded}>
         {() => (
           <div
-            className="absolute inset-0 w-full h-full bg-center bg-no-repeat bg-contain filter blur"
+            className="absolute inset-0 w-full h-full transition-opacity duration-200 bg-center bg-no-repeat bg-contain filter blur"
             style={{ backgroundImage: `url(${placeholder})` }}
           />
         )}
@@ -90,7 +92,7 @@ function Sequencer({ pageID, list, placeholder, width = 0 }: Props) {
           </div>
           <div className="text-xs">
             <IfElse predicate={loaded} placeholder={<>loading...</>}>
-              {() => <>drag for rotate</>}
+              {() => <>drag to rotate</>}
             </IfElse>
           </div>
         </div>

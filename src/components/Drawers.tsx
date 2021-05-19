@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/dist/client/router'
 import dynamic from 'next/dynamic'
 import { memo, useEffect } from 'react'
-import { useMedia, usePrevious } from 'react-use'
+import { usePrevious } from 'react-use'
 
 import useDrawer from '~stores/useDrawer'
 
@@ -13,21 +13,25 @@ import IfElse from './IfElse'
 
 const PageContent = dynamic(import('./PageContent'), {
   loading: function Placeholder() {
-    return <p>[loading...]</p>
+    return <div>[loading...]</div>
   },
   ssr: false,
 })
 
 const Menu = dynamic(import('./Menu'), {
   loading: function Placeholder() {
-    return <p>[loading...]</p>
+    return <div>[loading...]</div>
   },
   ssr: false,
 })
 
 const Showcase = dynamic(import('./Showcase'), {
   loading: function Placeholder() {
-    return <p>[loading...]</p>
+    return (
+      <div className="w-full h-[calc(100vh-5rem)] md:h-[calc(100vh-6rem)] bg-color-500 animate-pulse">
+        [loading...]
+      </div>
+    )
   },
   ssr: false,
 })
@@ -46,7 +50,6 @@ function Drawers() {
   const opened = useDrawer((state) => state.opened)
   const close = useDrawer((state) => state.close)
   const toggle = useDrawer((state) => state.toggle)
-  const isSM = useMedia('(max-width: 767px)')
   const router = useRouter()
   const prevPathname = usePrevious(router.asPath)
 
@@ -96,7 +99,7 @@ function Drawers() {
         }
         content={<Cart />}
       />
-      <AnimatePresence>
+      {/* <AnimatePresence>
         <IfElse predicate={isSM && opened !== SIDES.Left}>
           {() => (
             <Drawer
@@ -115,7 +118,7 @@ function Drawers() {
             />
           )}
         </IfElse>
-      </AnimatePresence>
+      </AnimatePresence> */}
       <Drawer
         layoutId={SIDES.Left}
         as="aside"
@@ -129,7 +132,11 @@ function Drawers() {
             [about]
           </button>
         }
-        content={<PageContent path="/about" />}
+        content={
+          <div className="p-8">
+            <PageContent path="/about" />
+          </div>
+        }
       />
       <Drawer
         as="aside"

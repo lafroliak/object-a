@@ -88,7 +88,7 @@ function CataloguePage({
         predicate={catalogue?.type === 'document' ? (catalogue as Item) : null}
       >
         {(page) => (
-          <section className="w-full min-h-full mx-auto space-y-6 text-sm bg-color-100 dark:bg-color-800 max-w-prose">
+          <section className="w-full min-h-full px-8 py-12 mx-auto space-y-6 text-sm bg-color-100 dark:bg-color-800 max-w-prose">
             <DocumentPage page={page} />
           </section>
         )}

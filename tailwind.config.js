@@ -46,6 +46,7 @@ module.exports = {
       },
       screens: {
         sm: { max: '767px' },
+        touch: { raw: '(hover: none) and (pointer: coarse)' },
       },
       zIndex: {
         '-1': '-1',

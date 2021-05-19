@@ -14,7 +14,19 @@ function Products({ columns }: Props) {
       {(columns || []).map((c, i) => (
         <Link
           key={c.itemId}
-          href={c.item?.path ? `/catalogue${c.item.path}` : '/'}
+          href={
+            c.item?.path
+              ? {
+                  pathname: '/catalogue/[...catalogue]',
+                  query: {
+                    catalogue: decodeURIComponent(c.item.path).replace(
+                      /^\//,
+                      '',
+                    ),
+                  },
+                }
+              : '/'
+          }
         >
           <a className="block w-full">
             <ProductCard item={c.item} index={i} />

@@ -73,11 +73,11 @@ export default function DocumentPage({ page }: Props) {
                 <div className="w-full max-w-full overflow-x-auto scrollzone">
                   <table className="table text-xs text-center table-fixed">
                     <thead className="table-header-group border-b border-color-500">
-                      <th className="px-2 pb-1">EU SIZE</th>
+                      <tr className="px-2 pb-1">EU SIZE</tr>
                       {content.sections?.[0]?.properties?.map((prop) => (
-                        <th key={prop.key} className="px-2 pb-1">
+                        <tr key={prop.key} className="px-2 pb-1">
                           {prop.key}
-                        </th>
+                        </tr>
                       ))}
                     </thead>
                     <tbody className="table-row-group">

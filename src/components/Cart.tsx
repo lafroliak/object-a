@@ -18,7 +18,7 @@ function Cart() {
   const opened = useDrawer((state) => state.opened)
   const items = useCart((state) => state.items)
   const totals = useCart((state) => state.totals)
-  const clearItems = useCart((state) => state.clearItems)
+  const deleteItem = useCart((state) => state.deleteItem)
 
   return (
     <motion.div
@@ -42,19 +42,40 @@ function Cart() {
               <div key={item.id} className="w-full space-y-2">
                 <Link
                   key={`showcase-${item.id}-${idx}`}
-                  href={item?.path ? `/catalogue${item.path}` : '/'}
+                  href={
+                    item?.path
+                      ? {
+                          pathname: '/catalogue/[...catalogue]',
+                          query: {
+                            catalogue: decodeURIComponent(item.path).replace(
+                              /^\//,
+                              '',
+                            ),
+                          },
+                        }
+                      : '/'
+                  }
                 >
                   <a>
                     <ShowcaseCard item={item} isLink />
                   </a>
                 </Link>
-                <div className="text-center">
-                  ${item.variants?.[0].priceVariants?.[0]?.price}
+                <div className="text-xs text-center">
+                  <span className="font-semibold">
+                    ${item.variants?.[0].priceVariants?.[0]?.price}{' '}
+                  </span>
+                  <button
+                    type="button"
+                    className="uppercase cursor-pointer focus:outline-none"
+                    onClick={() => deleteItem(item.id)}
+                  >
+                    [remove from cart]
+                  </button>
                 </div>
               </div>
             ))}
             <div className="space-y-2">
-              <div className="pb-1 text-xs border-b border-color-500">
+              <div className="pb-1 text-xs font-semibold border-b border-color-500">
                 {'Total'}
               </div>
               <div className="text-sm">
@@ -63,19 +84,6 @@ function Cart() {
                 {totals().net} {totals().currency?.toUpperCase()}
               </div>
             </div>
-            <IfElse predicate={totals().quantity > 0}>
-              {() => (
-                <>
-                  <button
-                    type="button"
-                    className="uppercase cursor-pointer focus:outline-none"
-                    onClick={clearItems}
-                  >
-                    [clean cart]
-                  </button>
-                </>
-              )}
-            </IfElse>
             <StripeWrapper>
               <Payment />
             </StripeWrapper>

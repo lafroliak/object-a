@@ -40,10 +40,29 @@ body {
 
 .scrollzone {
   -webkit-overflow-scrolling: touch;
-
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.scroll-snap-none {
+  scroll-snap-type: none;
+}
+.scroll-snap-x {
+  scroll-snap-type: x;
+}
+.scroll-snap-y {
+  scroll-snap-type: y;
+}
+
+.snap-start {
+  scroll-snap-align: start;
+}
+.snap-end {
+  scroll-snap-align: end;
+}
+.snap-center {
+  scroll-snap-align: center;
 }

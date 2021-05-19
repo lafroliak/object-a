@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { memo, useState } from 'react'
 
+import useMediaQuery from '~hooks/useMediaQuery'
 import { Product } from '~lib/crystallize/types'
 import { isWebpSupported } from '~lib/isWebpSupported'
 import { Option } from '~typings/utils'
@@ -18,6 +19,7 @@ type Props = {
 function ProductCard({ item, index = 0 }: Props) {
   const [isHovered, setHovered] = useState(false)
   const [isTap, setTap] = useState(false)
+  const isTouchScreen = useMediaQuery('isTouchScreen')
   // const x = useMotionValue(0)
 
   if (!item) return null
@@ -66,7 +68,7 @@ function ProductCard({ item, index = 0 }: Props) {
           'right-1/4 left-12': index % 2 !== 0,
         })}
       />
-      <IfElse predicate={image?.url}>
+      <IfElse predicate={image}>
         {(prop) => (
           <div
             className={clsx(
@@ -74,13 +76,29 @@ function ProductCard({ item, index = 0 }: Props) {
               'relative grid w-full aspect-h-1 aspect-w-1',
             )}
           >
-            <CollapsableImage
-              image={prop}
-              placeholder={placeholder?.url}
-              isHovered={isHovered}
-              isTap={isTap}
-              inverted
-            />
+            <IfElse
+              predicate={!isTouchScreen}
+              placeholder={
+                <div className="absolute inset-0 grid overflow-hidden place-items-center">
+                  <img
+                    src={prop.url}
+                    alt={`${item?.name || ''}`}
+                    width={prop.width}
+                    height={prop.height || prop.width}
+                  />
+                </div>
+              }
+            >
+              {() => (
+                <CollapsableImage
+                  image={prop.url}
+                  placeholder={placeholder?.url}
+                  isHovered={isHovered}
+                  isTap={isTap}
+                  inverted
+                />
+              )}
+            </IfElse>
           </div>
         )}
       </IfElse>

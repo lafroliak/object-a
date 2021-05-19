@@ -14,8 +14,9 @@ import {
   useRef,
   useState,
 } from 'react'
-import { useMedia, useWindowSize } from 'react-use'
+import { useWindowSize } from 'react-use'
 
+import useMediaQuery from '~hooks/useMediaQuery'
 import useDrawer from '~stores/useDrawer'
 
 import * as styles from './Drawer.module.css'
@@ -50,7 +51,7 @@ function Drawer({
   const opened = useDrawer((state) => state.opened)
   const open = useDrawer((state) => state.open)
   const close = useDrawer((state) => state.close)
-  const isSM = useMedia('(max-width: 767px)')
+  const isSM = useMediaQuery('isSM')
   const { width: windowSize, height: windowHeight } = useWindowSize()
   const constrols = useAnimation()
   const isSidebar = ([SIDES.Left, SIDES.Right] as Sides[]).includes(side)
