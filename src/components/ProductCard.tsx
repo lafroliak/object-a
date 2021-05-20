@@ -20,6 +20,7 @@ function ProductCard({ item, index = 0 }: Props) {
   const [isHovered, setHovered] = useState(false)
   const [isTap, setTap] = useState(false)
   const isTouchScreen = useMediaQuery('isTouchScreen')
+  const isLG = useMediaQuery('isLG')
   // const x = useMotionValue(0)
 
   if (!item) return null
@@ -33,7 +34,8 @@ function ProductCard({ item, index = 0 }: Props) {
   const placeholder = (images?.[0] || variant?.image)?.variants?.[0]
   const image = (images?.[0] || variant?.image)?.variants?.find(
     (img) =>
-      img.width === 500 && img.url.includes(isWebpSupported() ? 'webp' : 'png'),
+      img.width === (isLG ? 768 : 500) &&
+      img.url.includes(isWebpSupported() ? 'webp' : 'png'),
   )
 
   return (

@@ -41,7 +41,14 @@ export default function Menu() {
           {pages
             ?.filter(
               (p) =>
-                p.path && !['/about', '/success', '/cancel'].includes(p.path),
+                p.path &&
+                ![
+                  '/about',
+                  '/success',
+                  '/cancel',
+                  '/homepage',
+                  '/size-guide',
+                ].includes(p.path),
             )
             .map((page) => (
               <li key={page.path}>

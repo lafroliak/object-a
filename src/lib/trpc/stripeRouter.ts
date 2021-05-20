@@ -4,9 +4,7 @@ import * as z from 'zod'
 import { stripe } from '~lib/stripe/createClient'
 
 import { createRouter } from '../../pages/api/trpc/[trpc]'
-import ALLOWED_COUNTRY from '../stripe/allowedCountries'
 
-// Important: only use this export with SSR/SSG
 export const stripeRouter = createRouter()
   .query('checkout-session', {
     input: z.object({
@@ -60,10 +58,10 @@ export const stripeRouter = createRouter()
     async resolve({ input }) {
       const options: Stripe.Checkout.SessionCreateParams = {
         payment_method_types: ['card'],
-        // shipping_rates: [process.env.SHIPPING_RATE || ''],
+        shipping_rates: [process.env.SHIPPING_RATE!],
         billing_address_collection: 'auto',
         shipping_address_collection: {
-          allowed_countries: ALLOWED_COUNTRY,
+          allowed_countries: ['US', 'CA'],
         },
         customer_email: input.email,
         mode: 'payment',
