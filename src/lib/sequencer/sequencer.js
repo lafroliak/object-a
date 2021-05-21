@@ -57,10 +57,8 @@ export class S {
 
     // create a default canvas in case none is added:
     if (this.config.canvas === null) {
-      const c = document.createElement('canvas')
-      document.body.appendChild(c)
-      this.config.canvas = c
-      this.config.fitFirstImage = true
+      console.log('need canvas')
+      return
     }
 
     this.pointer = { x: 0, y: 0, down: false }
