@@ -1,15 +1,24 @@
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { memo, useState } from 'react'
+import dynamic from 'next/dynamic'
 
 import useMediaQuery from '~hooks/useMediaQuery'
 import { Product } from '~lib/crystallize/types'
 import { isWebpSupported } from '~lib/isWebpSupported'
 import { Option } from '~typings/utils'
 
-import CollapsableImage from './CollapsableImage'
 import IfElse from './IfElse'
 import * as styles from './ProductCard.module.css'
+
+const CollapsableImage = dynamic(import('./CollapsableImage'), {
+  loading: function Placeholder() {
+    return (
+      <div className="absolute inset-0 bg-gradient-to-bl from-color-100 to-color-200 dark:from-color-800 dark:to-color-900 animate-pulse" />
+    )
+  },
+  ssr: false,
+})
 
 type Props = {
   item: Option<Product>
@@ -19,8 +28,6 @@ type Props = {
 function ProductCard({ item, index = 0 }: Props) {
   const [isHovered, setHovered] = useState(false)
   const [isTap, setTap] = useState(false)
-  const isTouchScreen = useMediaQuery('isTouchScreen')
-  const isSM = useMediaQuery('isSM')
   const isLG = useMediaQuery('isLG')
   // const x = useMotionValue(0)
 
@@ -79,29 +86,13 @@ function ProductCard({ item, index = 0 }: Props) {
               'relative grid w-full aspect-h-1 aspect-w-1',
             )}
           >
-            <IfElse
-              predicate={!isTouchScreen && !isSM}
-              placeholder={
-                <div className="absolute inset-0 grid overflow-hidden place-items-center">
-                  <img
-                    src={prop.url}
-                    alt={`${item?.name || ''}`}
-                    width={prop.width}
-                    height={prop.height || prop.width}
-                  />
-                </div>
-              }
-            >
-              {() => (
-                <CollapsableImage
-                  image={prop.url}
-                  placeholder={placeholder?.url}
-                  isHovered={isHovered}
-                  isTap={isTap}
-                  inverted
-                />
-              )}
-            </IfElse>
+            <CollapsableImage
+              image={prop}
+              placeholder={placeholder?.url}
+              isHovered={isHovered}
+              isTap={isTap}
+              inverted
+            />
           </div>
         )}
       </IfElse>
