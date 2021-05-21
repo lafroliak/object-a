@@ -8,12 +8,18 @@
  *         https://github.com/ertdfgcvb/Sequencer
  */
 
-/* eslint-disable */
-
 import context from './context.js'
 import { parse } from './parser.js'
 
-class S {
+export const instances = {}
+
+function make(cfg) {
+  const s = new S(cfg)
+  if (s !== false) instances[cfg.key] = s
+  return s
+}
+
+export class S {
   constructor(opts) {
     const defaults = {
       key: null,
@@ -84,8 +90,6 @@ class S {
       console.log('load() can be called only once.')
     }
 
-    this.images = []
-
     new Preloader(
       this.images,
       this.list,
@@ -126,36 +130,33 @@ class S {
   nextImage(loop) {
     if (this.config.playMode === 'none') return
     if (!loop) loop = this.config.loop
-    const images = this.images.filter(i => this.list.includes(i.src))
     if (loop === 'pong') {
       this.current += this.pongSign
-      if (this.current >= images.length - 1) {
-        // this.current could ev. change by other playmodes, so extra-checks are necessary
+      if (this.current >= this.images.length - 1) {
+        //this.current could ev. change by other playmodes, so extra-checks are necessary
         this.pongSign = -1
-        this.current = images.length - 1
+        this.current = this.images.length - 1
       } else if (this.current <= 0) {
         this.pongSign = 1
         this.current = 0
       }
       this.drawImage(this.current)
     } else {
-      this.drawImage(++this.current % images.length) // loop
+      this.drawImage(++this.current % this.images.length) //loop
     }
   }
 
   drawImage(id) {
     if (this.config.playMode === 'none') return
-    const images = this.images.filter(i => this.list.includes(i.src))
     if (id === undefined) id = this.current
-    if (id < 0 || id >= images.length) return
+    if (id < 0 || id >= this.images.length) return
     const r = this.config.hiDPI ? window.devicePixelRatio : 1
     const cw = this.ctx.canvas.width / r
     const ch = this.ctx.canvas.height / r
     const ca = cw / ch
-    const img = images[id]
+    const img = this.images[id]
     const ia = img.width / img.height
-    let iw
-    let ih
+    let iw, ih
 
     if (this.config.scaleMode == 'cover') {
       if (ca > ia) {
@@ -174,7 +175,7 @@ class S {
         iw = ih * ia
       }
     } else {
-      // this.config.scaleMode == 'auto'
+      //this.config.scaleMode == 'auto'
       iw = img.width
       ih = img.height
     }
@@ -194,8 +195,8 @@ class S {
     const c = this.ctx.canvas
     c.width = w * r
     c.height = h * r
-    c.style.width = `${w}px`
-    c.style.height = `${h}px`
+    c.style.width = w + 'px'
+    c.style.height = h + 'px'
     this.drawImage()
   }
 }
@@ -247,8 +248,7 @@ function queueComplete(self, e) {
 }
 
 function pointerDown(self, e) {
-  let ox
-  let oy
+  let ox, oy
   if (e.touches) {
     ox = e.touches[0].pageX - e.touches[0].target.offsetLeft
     oy = e.touches[0].pageY - e.touches[0].target.offsetTop
@@ -275,8 +275,7 @@ function relativeMove(self, e) {
 
   const t = self.images.length
 
-  let ox
-  let oy
+  let ox, oy
   if (e.touches) {
     ox = e.touches[0].pageX - e.touches[0].target.offsetLeft
     oy = e.touches[0].pageY - e.touches[0].target.offsetTop
@@ -294,7 +293,7 @@ function relativeMove(self, e) {
 
   let id = self.pointer.currentId + Math.floor(dist / self.config.dragAmount)
   if (id < 0) id = t - (-id % t)
-  else if (id > t) id %= t
+  else if (id > t) id = id % t
 
   if (id != self.current) {
     self.drawImage(id)
@@ -316,8 +315,7 @@ function absoluteMove(self, e) {
   const t = self.images.length
   const r = self.config.hiDPI ? window.devicePixelRatio : 1
 
-  let ox
-  let oy
+  let ox, oy
   if (e.touches) {
     ox = e.touches[0].pageX - e.touches[0].target.offsetLeft
     oy = e.touches[0].pageY - e.touches[0].target.offsetTop
@@ -326,8 +324,7 @@ function absoluteMove(self, e) {
     oy = e.offsetY
   }
 
-  let m
-  let w
+  let m, w
   if (self.config.direction == 'x') {
     w = self.ctx.canvas.width / r
     m = ox
@@ -368,7 +365,7 @@ function Preloader(
     if (current >= fileList.length - 1) return
     current++
 
-    // console.log('Loading ' + fileList[current] + '...')
+    //console.log('Loading ' + fileList[current] + '...')
     const img = new Image()
     img.src = fileList[current]
     ;(function (id) {
@@ -376,8 +373,8 @@ function Preloader(
       img.onload = (e) => {
         if (typeof imageLoadCallback === 'function')
           imageLoadCallback({
-            id,
-            img,
+            id: id,
+            img: img,
             count: ++count,
             total: fileList.length,
           })
@@ -392,11 +389,14 @@ function Preloader(
         }
       }
       img.onerror = (e) => {
-        console.error(`Error with: ${fileList[id]}`)
+        console.error('Error with: ' + fileList[id])
       }
     })(current)
     arrayToPopulate.push(img)
   }
 }
 
-export default S
+export default {
+  make: make,
+  instances: instances,
+}

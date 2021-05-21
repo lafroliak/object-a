@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { memo, useEffect, useRef, useState } from 'react'
 
-import S from '~lib/sequencer/sequencer'
+import SequenceMaker, { instances, S } from '~lib/sequencer/sequencer'
 
 import IconRotate from './IconRotate'
 import IfElse from './IfElse'
@@ -18,35 +18,33 @@ function Sequencer({ pageID, list, placeholder, width = 0 }: Props) {
   const [loaded, setLoaded] = useState<boolean>(false)
   const [dragging, setDragging] = useState<boolean>(false)
   const canvas = useRef<HTMLCanvasElement>(null)
-  const instances = useRef<Record<string, S>>({})
 
   useEffect(() => {
     if (typeof window !== undefined) {
-      if (!instances.current[pageID]) {
-        setLoaded(false)
+      setLoaded(false)
 
-        const s = new S({
-          key: pageID,
-          list,
-          scaleMode: 'contain',
-          playMode: 'none',
-          direction: 'x',
-          autoLoad: 'all',
-          canvas: canvas.current,
-          hiDPI: false,
-          queueComplete: () => void setLoaded(true),
-        })
-
-        if (s) instances.current[pageID] = s
-      }
-
-      for (let key in instances.current) {
-        instances.current[key].config.playMode =
-          instances.current[key].config.key === pageID ? 'drag' : 'none'
-      }
-
-      instances.current[pageID].drawImage()
+      SequenceMaker.make({
+        key: pageID,
+        list,
+        scaleMode: 'contain',
+        playMode: 'none',
+        direction: 'x',
+        autoLoad: 'all',
+        canvas: canvas.current,
+        hiDPI: false,
+        queueComplete: () => void setLoaded(true),
+      })
     }
+
+    for (let key in instances as Record<string, S>) {
+      ;(instances as Record<string, S>)[key].config.playMode =
+        (instances as Record<string, S>)[key].config.key === pageID
+          ? 'drag'
+          : 'none'
+    }
+
+    console.log('Boom', !!instances)
+    ;(instances as Record<string, S>)[pageID].drawImage()
   }, [pageID, list])
 
   return (
