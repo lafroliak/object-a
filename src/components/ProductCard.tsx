@@ -20,6 +20,7 @@ function ProductCard({ item, index = 0 }: Props) {
   const [isHovered, setHovered] = useState(false)
   const [isTap, setTap] = useState(false)
   const isTouchScreen = useMediaQuery('isTouchScreen')
+  const isSM = useMediaQuery('isSM')
   const isLG = useMediaQuery('isLG')
   // const x = useMotionValue(0)
 
@@ -79,7 +80,7 @@ function ProductCard({ item, index = 0 }: Props) {
             )}
           >
             <IfElse
-              predicate={!isTouchScreen}
+              predicate={!isTouchScreen && !isSM}
               placeholder={
                 <div className="absolute inset-0 grid overflow-hidden place-items-center">
                   <img
