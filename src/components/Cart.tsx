@@ -80,7 +80,7 @@ function Cart() {
               </div>
               <div className="text-sm">
                 {totals().quantity}
-                {' item(s) for '}
+                {' item / Total '}
                 {totals().net} {totals().currency?.toUpperCase()}
               </div>
             </div>

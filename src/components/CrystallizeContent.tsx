@@ -8,8 +8,19 @@ import { memo } from 'react'
 import { RichTextContent } from '~lib/crystallize/types'
 
 const overrides = {
-  p: function Paragraph(props: NodeProps) {
-    return <p className="text-capsize" {...props} />
+  paragraph: function Paragraph(props: NodeProps) {
+    return (
+      <p className="text-capsize">
+        <NodeContent {...props} />
+      </p>
+    )
+  },
+  'unordered-list': function Ul(props: NodeProps) {
+    return (
+      <ul className="list-disc list-inside">
+        <NodeContent {...props} />
+      </ul>
+    )
   },
   link: function Link(props: NodeProps) {
     return (

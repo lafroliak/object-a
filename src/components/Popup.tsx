@@ -57,10 +57,10 @@ function Popup({ opened, onClose, side, content, as, layoutId }: Props) {
               variants={variants[side]}
               className={clsx('fixed inset-0 flex flex-row', {
                 'items-start': side === SIDES.Top,
-                'justify-end top-10 bottom-20 md:right-12 md:top-12 md:bottom-12':
+                'justify-end top-10 bottom-10 md:right-12 md:top-12 md:bottom-12':
                   side === SIDES.Right,
                 'items-end': side === SIDES.Bottom,
-                'justify-start top-10 bottom-20 md:top-12 md:bottom-12':
+                'justify-start top-10 bottom-10 md:top-12 md:bottom-12':
                   side === SIDES.Left,
               })}
             >

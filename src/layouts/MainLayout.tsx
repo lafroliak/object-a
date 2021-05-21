@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic'
 import { PropsWithChildren, ReactNode, useEffect, useRef } from 'react'
 
 import Header from '~components/Header'
+import TailwindCSS from '~components/TailwindCSS'
 
 import * as styles from './MainLayout.module.css'
 
@@ -50,6 +51,7 @@ function MainLayout({ children }: PropsWithChildren<unknown>) {
       </div>
       <Drawers />
       <Header />
+      <TailwindCSS />
     </>
   )
 }

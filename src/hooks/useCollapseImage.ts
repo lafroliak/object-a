@@ -171,13 +171,13 @@ export default function useCollapseImage({
           //   let x = i % cols
           //   let y = Math.floor(i / cols)
           //   let check = active[y][x]
-          //   // if (check) {
-          //   cx.drawImage(
-          //     imc,
-          //     ...spx([...check.slice(0, 2), 1, 1]),
-          //     ...spx([x, y, 1, 1])
-          //   )
-          //   // }
+          //   if (check) {
+          //     cx.drawImage(
+          //       imc,
+          //       ...spx([...(check.slice(0, 2) as [number, number]), 1, 1]),
+          //       ...spx([x, y, 1, 1]),
+          //     )
+          //   }
           // }
 
           renderM()
