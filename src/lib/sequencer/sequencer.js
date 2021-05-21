@@ -11,35 +11,39 @@
 import context from './context.js'
 import { parse } from './parser.js'
 
-export const instances = {}
+export const instances = []
 
 function make(cfg) {
   const s = new S(cfg)
-  if (s !== false) instances[cfg.key] = s
+  if (s !== false) instances.push(s)
   return s
+}
+
+const defaults = {
+  key: null,
+  canvas: null,
+  list: [],
+  from: '',
+  to: '',
+  step: 1, // increment: to load only even images use 2, etc
+  scaleMode: 'cover', // as in CSS3, can be: auto, cover, contain
+  direction: 'x', // mouse direction, can be x, -x, y, -y, applies only if playMode is 'drag' or 'hover'
+  playMode: 'drag', // none, drag, hover, auto    TODO: remove auto, add loop, pong, once
+  loop: 'loop', // loop, pong or none         TODO: remove
+  interval: 0, // interval in milliseconds between each frame, applies only if playMode is 'auto'
+  autoLoad: 'all', // all, first, none: triggers the loading of the queue immediatly, can be disabled to be triggered in a different moment
+  fitFirstImage: false, // resizes the canvas to the size of the first loaded image in the sequence
+  showLoadedImages: false, // don't display images while loading
+  dragAmount: 10,
+  hiDPI: true,
 }
 
 export class S {
   constructor(opts) {
-    const defaults = {
-      key: null,
-      canvas: null,
-      list: [],
-      from: '',
-      to: '',
-      step: 1, // increment: to load only even images use 2, etc
-      scaleMode: 'cover', // as in CSS3, can be: auto, cover, contain
-      direction: 'x', // mouse direction, can be x, -x, y, -y, applies only if playMode is 'drag' or 'hover'
-      playMode: 'drag', // none, drag, hover, auto    TODO: remove auto, add loop, pong, once
-      loop: 'loop', // loop, pong or none         TODO: remove
-      interval: 0, // interval in milliseconds between each frame, applies only if playMode is 'auto'
-      autoLoad: 'all', // all, first, none: triggers the loading of the queue immediatly, can be disabled to be triggered in a different moment
-      fitFirstImage: false, // resizes the canvas to the size of the first loaded image in the sequence
-      showLoadedImages: false, // don't display images while loading
-      dragAmount: 10,
-      hiDPI: true,
-    }
+    this.reset(opts)
+  }
 
+  reset(opts) {
     this.config = { ...defaults, ...opts }
 
     if (
@@ -60,6 +64,7 @@ export class S {
     }
 
     this.pointer = { x: 0, y: 0, down: false }
+    this.loaded = false
     this.current = -1
     this.images = []
     this.directionSign = /-/.test(this.config.direction) ? -1 : 1
@@ -86,9 +91,10 @@ export class S {
   }
 
   load() {
-    this.load = function () {
-      console.log('load() can be called only once.')
-    }
+    // this.load = function () {
+    //   console.log('load() can be called only once.')
+    // }
+    if (this.loaded) return
 
     new Preloader(
       this.images,
@@ -227,6 +233,7 @@ function imageLoad(self, e) {
       self.config.fitFirstImage = false
     }
     self.drawImage(0)
+    self.loaded = true
     self.current = 0 // TODO: could be better
   }
 }

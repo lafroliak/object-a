@@ -177,7 +177,7 @@ export default function ProductPage({ page }: Props) {
                         >
                           {images.map((image) => (
                             <div
-                              key={image.key}
+                              key={image.url}
                               className="relative w-[95vw] h-[95vw] md:w-[75vmin] md:h-[75vmin]"
                             >
                               <img
