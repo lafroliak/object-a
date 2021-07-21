@@ -74,6 +74,7 @@ const renderBlock = (
         <Products
           key={`${ComponentType.GridRelations}-${idx}`}
           columns={columns as GridRow['columns']}
+          isModelsList={idx === 3}
         />
       ),
     )
