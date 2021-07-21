@@ -59,7 +59,9 @@ export default function Payment() {
 
   return (
     <div className="space-y-2">
-      <div className="pb-1 text-xs border-b font-semibold border-color-500">{'Customer'}</div>
+      <div className="pb-1 text-xs border-b font-semibold border-color-500">
+        {'Customer'}
+      </div>
       <form onSubmit={onSubmit} className="space-y-4">
         <fieldset className="space-y-2">
           <label htmlFor={'email'} className="block text-xs">

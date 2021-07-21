@@ -1,17 +1,19 @@
 import 'tailwindcss/tailwind.css'
 import '~styles/global.css'
 
+import { httpLink } from '@trpc/client/links/httpLink'
+import { loggerLink } from '@trpc/client/links/loggerLink'
+import { withTRPC } from '@trpc/next'
 import type { AppProps } from 'next/app'
 import getConfig from 'next/config'
 import { DefaultSeo } from 'next-seo'
-import { ReactNode, useState } from 'react'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { Hydrate } from 'react-query/hydration'
+import { ReactNode } from 'react'
 import { useEffectOnce } from 'react-use'
+import superjson from 'superjson'
 
-import GlobalStateProvider from '~components/GlobalStateProvider'
-import { trpc } from '~lib/trpc'
 import useCart from '~stores/useCart'
+
+import { AppRouter } from './api/trpc/[trpc]'
 
 const { publicRuntimeConfig } = getConfig()
 
@@ -30,21 +32,6 @@ function MyApp({
   useEffectOnce(() => {
     setSession()
   })
-
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            cacheTime: Infinity,
-            staleTime: Infinity,
-            refetchOnWindowFocus: false,
-            refetchOnMount: false,
-            notifyOnChangeProps: 'tracked',
-          },
-        },
-      }),
-  )
 
   return (
     <>
@@ -67,29 +54,61 @@ function MyApp({
           },
         ]}
       />
-      <QueryClientProvider client={queryClient}>
-        <Hydrate state={trpc.useDehydratedState(pageProps?.dehydratedState)}>
-          <GlobalStateProvider>
-            {getLayout(<Component {...pageProps} />)}
-          </GlobalStateProvider>
-        </Hydrate>
-      </QueryClientProvider>
+      {getLayout(<Component {...pageProps} />)}
     </>
   )
 }
 
-// MyApp.getInitialProps = async function getInitialProps() {
-//   const ctx = await createContext()
-//   const ssr = trpc.ssr(appRouter, ctx)
+function getBaseUrl() {
+  if (process.browser) {
+    return ''
+  }
+  // reference for vercel.com
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`
+  }
 
-//   await ssr.prefetchQuery('crystallize.get-all-pages')
-//   await ssr.prefetchQuery('crystallize.get-all-products')
+  // assume localhost
+  return `http://localhost:${process.env.PORT ?? 3000}`
+}
 
-//   return {
-//     appProps: {
-//       dehydratedState: ssr.dehydrate(),
-//     },
-//   }
-// }
-
-export default MyApp
+export default withTRPC<AppRouter>({
+  config() {
+    /**
+     * If you want to use SSR, you need to use the server's full URL
+     * @link https://trpc.io/docs/ssr
+     */
+    return {
+      /**
+       * @link https://trpc.io/docs/links
+       */
+      links: [
+        // adds pretty logs to your console in development and logs errors in production
+        loggerLink({
+          enabled: (opts) =>
+            process.env.NODE_ENV === 'development' ||
+            (opts.direction === 'down' && opts.result instanceof Error),
+        }),
+        httpLink({
+          url: `${getBaseUrl()}/api/trpc`,
+        }),
+      ],
+      /**
+       * @link https://trpc.io/docs/data-transformers
+       */
+      transformer: superjson,
+      /**
+       * @link https://react-query.tanstack.com/reference/QueryClient
+       */
+      queryClientConfig: {
+        defaultOptions: {
+          queries: { staleTime: 1000 * 60, refetchOnWindowFocus: true },
+        },
+      },
+    }
+  },
+  /**
+   * @link https://trpc.io/docs/ssr
+   */
+  ssr: false,
+})(MyApp)

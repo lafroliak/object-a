@@ -88,9 +88,8 @@ function CollapsableImage(props: Props) {
 
   useEffect(() => {
     if (hide && image?.url) {
-      let img: HTMLCanvasElement | HTMLImageElement = document.createElement(
-        'img',
-      )
+      let img: HTMLCanvasElement | HTMLImageElement =
+        document.createElement('img')
       img.onload = () => {
         setLoaded(true)
       }

@@ -52,16 +52,8 @@ export default function useCollapseImage({
       clearRenderRef.current = false
       const c = cref.current
       const cx = c?.getContext('2d')
-      const {
-        cells,
-        ordered,
-        threshold,
-        grid,
-        cols,
-        rows,
-        imc,
-        tiles,
-      } = state.current
+      const { cells, ordered, threshold, grid, cols, rows, imc, tiles } =
+        state.current
 
       // active
       const active: [number | null, number | null, boolean][][] = [
@@ -145,7 +137,8 @@ export default function useCollapseImage({
         if (leastActive && c && cx) {
           cx.clearRect(0, 0, c.width, c.height)
         }
-        if (!moved) {
+
+        if (!moved && cx) {
           // only draw when done
           for (let i = 0; i < cells; i += 1) {
             const x = i % cols
@@ -154,8 +147,7 @@ export default function useCollapseImage({
             if (
               !Number.isNaN(check[0]) &&
               !Number.isNaN(check[1]) &&
-              check[2] &&
-              cx
+              check[2]
             ) {
               cx.drawImage(
                 imc,
@@ -195,9 +187,8 @@ export default function useCollapseImage({
 
       if (!c) return
 
-      let img: HTMLCanvasElement | HTMLImageElement = document.createElement(
-        'img',
-      )
+      let img: HTMLCanvasElement | HTMLImageElement =
+        document.createElement('img')
       img.onload = () => {
         const aspect = img.width / img.height
         const parrentWidth = c.parentElement?.offsetWidth || window.innerWidth

@@ -38,7 +38,7 @@ function Sequencer({ pageID, list, placeholder, width = 0 }: Props) {
       hiDPI: false,
       queueComplete: () => void setLoaded(true),
     })
-  }, [pageID, list, canvas])
+  }, [pageID, list, canvas, sequencer])
 
   return (
     <>

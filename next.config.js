@@ -12,11 +12,9 @@ module.exports = {
   env: ENV_VARS,
   publicRuntimeConfig: ENV_VARS,
   poweredByHeader: false,
+  webpack5: true,
   images: {
     domains: ['media.crystallize.com'],
-  },
-  future: {
-    webpack5: true,
   },
   experimental: { optimizeCss: true },
   typescript: {

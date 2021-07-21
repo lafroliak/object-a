@@ -1,9 +1,9 @@
 import Link from 'next/link'
 
+import { trpc } from '~lib/trpc'
 import useDrawer from '~stores/useDrawer'
 
 import { SIDES } from './Drawers'
-import { useGlobalState } from './GlobalStateProvider'
 
 const DRAWERS = [
   { side: SIDES.Right, name: '[cart]', disabled: false },
@@ -12,7 +12,8 @@ const DRAWERS = [
 ]
 
 export default function Menu() {
-  const { pages } = useGlobalState()
+  const { data: pagesData } = trpc.useQuery(['crystallize.get-all-pages'])
+  const pages = pagesData?.pages
   const toggle = useDrawer((state) => state.toggle)
 
   return (

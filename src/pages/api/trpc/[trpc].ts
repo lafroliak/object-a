@@ -21,6 +21,7 @@ export function createRouter() {
 }
 
 const router = createRouter()
+  .transformer(superjson)
   .merge('crystallize.', crystallizeRouter)
   .merge('stripe.', stripeRouter)
 
@@ -30,8 +31,13 @@ export type AppRouter = typeof router
 export default trpcNext.createNextApiHandler({
   router,
   createContext,
-  transformer: superjson,
   onError({ error }) {
     console.error('[trpc]: ', error)
+  },
+  /**
+   * Enable query batching
+   */
+  batching: {
+    enabled: true,
   },
 })

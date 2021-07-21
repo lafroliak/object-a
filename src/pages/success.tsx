@@ -1,7 +1,6 @@
 import { useRouter } from 'next/dist/client/router'
 import { Fragment, useEffect, useState } from 'react'
 
-import { useGlobalState } from '~components/GlobalStateProvider'
 import IfElse from '~components/IfElse'
 import PageContent from '~components/PageContent'
 import ShowcaseCard from '~components/ShowcaseCard'
@@ -18,11 +17,15 @@ function SuccessPage() {
   const { mutate: orderByPaymentID } = trpc.useMutation(
     'crystallize.order-by-payment-id',
   )
-  const { data: order, refetch, isFetched } = trpc.useQuery(
-    ['crystallize.get-order', { id: orderID ?? '' }],
-    { enabled: !!orderID },
-  )
-  const { products } = useGlobalState()
+  const {
+    data: order,
+    refetch,
+    isFetched,
+  } = trpc.useQuery(['crystallize.get-order', { id: orderID ?? '' }], {
+    enabled: !!orderID,
+  })
+  const { data: productsData } = trpc.useQuery(['crystallize.get-all-products'])
+  const products = productsData?.products
   const { mutate: getPaymentIntent } = trpc.useMutation(
     'stripe.payment-intents',
   )
@@ -111,7 +114,7 @@ function SuccessPage() {
       >
         {(items) => (
           <Fragment>
-            <div className="pb-1 text-xs border-b font-semibold border-color-500">
+            <div className="pb-1 text-xs font-semibold border-b border-color-500">
               {'Your purchase'}
             </div>
             <div className="w-full space-y-4">
@@ -131,7 +134,7 @@ function SuccessPage() {
       <IfElse predicate={quantity}>
         {(qnt) => (
           <div className="space-y-2">
-            <div className="pb-1 text-xs border-b font-semibold border-color-500">
+            <div className="pb-1 text-xs font-semibold border-b border-color-500">
               {'Total'}
             </div>
             <div className="text-sm">{qnt} USD</div>
@@ -141,7 +144,7 @@ function SuccessPage() {
       <IfElse predicate={shipping}>
         {(shp) => (
           <div className="space-y-2">
-            <div className="pb-1 text-xs border-b font-semibold border-color-500">
+            <div className="pb-1 text-xs font-semibold border-b border-color-500">
               {'Shipping'}
             </div>
             <div className="text-sm">{shp} USD</div>
@@ -151,7 +154,7 @@ function SuccessPage() {
       <IfElse predicate={receipt} placeholder={<>loading...</>}>
         {(rsp) => (
           <div className="space-y-2">
-            <div className="pb-1 text-xs border-b font-semibold border-color-500">
+            <div className="pb-1 text-xs font-semibold border-b border-color-500">
               {'Receipt'}
             </div>
             <a

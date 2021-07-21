@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { motion } from 'framer-motion'
-import { memo, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { memo, useState } from 'react'
 
 import useMediaQuery from '~hooks/useMediaQuery'
 import { Product } from '~lib/crystallize/types'

@@ -18,8 +18,10 @@ export default function DocumentPage({ page }: Props) {
     <>
       <IfElse
         predicate={
-          (page.components?.find((c) => c?.name === 'Title')
-            ?.content as SingleLineContent)?.text
+          (
+            page.components?.find((c) => c?.name === 'Title')
+              ?.content as SingleLineContent
+          )?.text
         }
       >
         {(title) => <h1 className="text-base">{title}</h1>}

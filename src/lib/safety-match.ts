@@ -7,7 +7,7 @@ const MEMBER_TYPE = Symbol()
 export type MemberType<
   TaggedUnionT extends {
     [MEMBER_TYPE]: any
-  }
+  },
 > = TaggedUnionT[typeof MEMBER_TYPE]
 
 type DefObjSuper = { [key: string]: None | ((...args: any[]) => any) }
@@ -27,7 +27,7 @@ type CasesObjFull<DefObj extends DefObjSuper> = {
 }
 
 type if_you_are_seeing_this_then_your_match_didnt_either_handle_all_cases_or_provide_a_default_handler_using_underscore<
-  DefObj extends DefObjSuper
+  DefObj extends DefObjSuper,
 > = Partial<CasesObjFull<DefObj>> & {
   _: <Property extends keyof DataMap<DefObj>>(
     data: DataMap<DefObj>[Property],

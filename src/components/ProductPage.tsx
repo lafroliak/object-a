@@ -356,8 +356,10 @@ export default function ProductPage({ page }: Props) {
                     ${price}
                     <IfElse
                       predicate={
-                        (page.components?.find((c) => c?.name === 'Sold out')
-                          ?.content as BooleanContent)?.value
+                        (
+                          page.components?.find((c) => c?.name === 'Sold out')
+                            ?.content as BooleanContent
+                        )?.value
                       }
                     >
                       {() => (

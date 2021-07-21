@@ -6,15 +6,7 @@ import {
   useMotionValue,
 } from 'framer-motion'
 import { HTMLMotionComponents } from 'framer-motion/types/render/html/types'
-import {
-  memo,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
-import { useWindowSize } from 'react-use'
+import { memo, ReactNode, useCallback, useEffect, useRef } from 'react'
 
 import useMediaQuery from '~hooks/useMediaQuery'
 import useDrawer from '~stores/useDrawer'
@@ -46,17 +38,16 @@ function Drawer({
   disabled = false,
 }: Props) {
   const ref = useRef<HTMLDivElement>(null)
-  const [size, setSize] = useState<number>(0)
 
   const opened = useDrawer((state) => state.opened)
   const open = useDrawer((state) => state.open)
   const close = useDrawer((state) => state.close)
   const isSM = useMediaQuery('isSM')
-  const { width: windowSize, height: windowHeight } = useWindowSize()
   const constrols = useAnimation()
   const isSidebar = ([SIDES.Left, SIDES.Right] as Sides[]).includes(side)
-  const width = ref.current?.getBoundingClientRect().width
-  const height = ref.current?.getBoundingClientRect().height
+  const width = ref.current?.getBoundingClientRect().width ?? 0
+  const height = ref.current?.getBoundingClientRect().height ?? 0
+  const size = isSidebar ? width : height
   const x = useMotionValue(0)
   const y = useMotionValue(0)
   const dragControls = useDragControls()
@@ -64,16 +55,6 @@ function Drawer({
   function startDrag(event: any) {
     dragControls.start(event, { snapToCursor: true })
   }
-
-  useEffect(() => {
-    if (ref.current) {
-      setSize(
-        isSidebar
-          ? ref.current.getBoundingClientRect().width
-          : ref.current.getBoundingClientRect().height,
-      )
-    }
-  }, [width, height, windowSize, windowHeight, isSidebar])
 
   useEffect(() => {
     if (!disabled) {
@@ -210,7 +191,8 @@ function Drawer({
             styles.handler,
             {
               'opacity-0': disabled,
-              'opacity-30 cursor-grab active:cursor-grabbing md:hover:opacity-100 md:hover:border-opacity-100': !disabled,
+              'opacity-30 cursor-grab active:cursor-grabbing md:hover:opacity-100 md:hover:border-opacity-100':
+                !disabled,
               'border-b-2': side === SIDES.Top,
               'border-l-2': side === SIDES.Right,
               'border-t-2': side === SIDES.Bottom || side === SIDES.LeftHandler,

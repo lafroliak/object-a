@@ -2,12 +2,14 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { memo } from 'react'
 
-import { useGlobalState } from './GlobalStateProvider'
+import { trpc } from '~lib/trpc'
+
 import * as styles from './Showcase.module.css'
 import ShowcaseCard from './ShowcaseCard'
 
 function Showcase() {
-  const { products } = useGlobalState()
+  const { data: productsData } = trpc.useQuery(['crystallize.get-all-products'])
+  const products = productsData?.products
 
   return (
     <div
