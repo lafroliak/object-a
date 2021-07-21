@@ -138,7 +138,9 @@ export default function useCollapseImage({
           cx.clearRect(0, 0, c.width, c.height)
         }
 
-        if (!moved && cx) {
+        if (!moved && cx && c) {
+          cx.clearRect(0, 0, c.width, c.height)
+
           // only draw when done
           for (let i = 0; i < cells; i += 1) {
             const x = i % cols
