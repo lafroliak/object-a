@@ -1,6 +1,6 @@
 import Stripe from 'stripe'
 
-export default [
+export const allowedCountries = [
   'AC',
   'AD',
   'AE',
@@ -238,4 +238,6 @@ export default [
   'ZM',
   'ZW',
   'ZZ',
-] as Array<Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry>
+]
+
+export default allowedCountries as Array<Stripe.Checkout.SessionCreateParams.ShippingAddressCollection.AllowedCountry>

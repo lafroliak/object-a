@@ -1,5 +1,11 @@
 import { client } from './client'
 
+export async function getAddressList() {
+  const addressList = await client.address.list()
+
+  return addressList.results
+}
+
 export async function validateAddress(address: Shippo.CreateAddressRequest) {
   const validatedAddress = await client.address.create(address)
 

@@ -175,6 +175,7 @@ declare namespace Shippo {
     }
     address: {
       create: (request: CreateAddressRequest) => Promise<Address>
+      list: () => Promise<{ results: Address[]; messages?: string[] }>
     }
     transaction: {
       create: (request: CreateTransactionRequest) => Promise<Transaction>

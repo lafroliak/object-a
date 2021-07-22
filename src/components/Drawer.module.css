@@ -66,29 +66,29 @@
       grid-template-rows: 1fr var(--name-size) var(--handler-size);
     }
     &.right {
+      --drawer-size: calc((100vw / 3 * 2) - (var(--side-size) * 2));
       grid-template-columns: var(--handler-size) var(--name-size) 1fr;
     }
     &.bottom {
       grid-template-rows: var(--handler-size) var(--name-size) 1fr;
     }
     &.left {
-      --drawer-size: calc((100vw / 3 * 2) - (var(--side-size) * 2));
       grid-template-columns: 1fr var(--name-size) var(--handler-size);
     }
   }
   @media (min-width: 768px) and (max-width: 1023px) {
-    &.right {
+    &.left {
       --drawer-size: calc((100vw / 3 * 2) - (var(--side-size) * 2));
     }
   }
   @media (min-width: 1024px) and (max-width: 1279px) {
-    &.right {
+    &.left {
       --drawer-size: calc((100vw / 2) - (var(--side-size) * 2));
     }
   }
   @media (min-width: 1280px) {
-    &.right {
-      --drawer-size: calc((100vw / 3) - (var(--side-size) * 2));
+    &.left {
+      --drawer-size: calc((100vw / 3 * 2) - (var(--side-size) * 2));
     }
   }
   @media (max-height: 599px) and (orientation: landscape) {

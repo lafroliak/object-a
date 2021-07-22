@@ -176,18 +176,18 @@ export default function ProductPage({ page }: Props) {
                           className="absolute inset-0 grid grid-flow-col md:grid-flow-row grid-col-[minmax(min-content,max-content)] md:grid-row-[minmax(min-content,max-content)] gap-4 overflow-x-auto place-items-center md:overflow-y-auto md:overflow-x-hidden scrollzone bg-color-200 dark:bg-color-900"
                         >
                           {images.map((image) => (
-                            <div
+                            <picture
                               key={image.url}
                               className="relative w-[95vw] h-[95vw] md:w-[75vmin] md:h-[75vmin]"
                             >
                               <img
-                                src={image.url}
-                                alt={page.name ?? ''}
-                                width={image.width}
-                                height={image.height || 'auto'}
-                                className="absolute inset-0 w-full h-full"
+                                className="absolute inset-0 object-contain w-full h-full overflow-hidden"
+                                src={prop.url}
+                                alt={`${item?.name || ''}`}
+                                width={prop.width}
+                                height={prop.height || prop.width}
                               />
-                            </div>
+                            </picture>
                           ))}
                         </motion.div>
                       )}

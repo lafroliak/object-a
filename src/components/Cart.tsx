@@ -39,7 +39,10 @@ function Cart() {
         {(itms) => (
           <>
             {itms.map((item, idx) => (
-              <div key={item.id} className="w-full space-y-2">
+              <div
+                key={item.id}
+                className="flex flex-col items-center w-full space-y-2"
+              >
                 <Link
                   key={`showcase-${item.id}-${idx}`}
                   href={
@@ -56,11 +59,11 @@ function Cart() {
                       : '/'
                   }
                 >
-                  <a>
+                  <a className="block w-96">
                     <ShowcaseCard item={item} isLink />
                   </a>
                 </Link>
-                <div className="text-xs text-center">
+                <div className="text-xs">
                   <span className="font-semibold">
                     ${item.variants?.[0].priceVariants?.[0]?.price}{' '}
                   </span>

@@ -67,28 +67,28 @@ export const stripeRouter = createRouter()
         metadata: {
           skus: input.skus,
         },
-        payment_intent_data: {
-          receipt_email: input.email,
-          shipping: {
-            name: 'John...',
-            carrier: 'UPS',
-            phone: '+1231232423',
-            tracking_number: '4343343',
-            address: {
-              line1: 'undefined',
-              line2: undefined,
-              city: undefined,
-              country: undefined,
-              postal_code: undefined,
-              state: undefined,
-            },
-          },
-        },
-        customer_update: {
-          name: 'auto',
-          address: 'auto',
-          shipping: 'auto',
-        },
+        // payment_intent_data: {
+        //   receipt_email: input.email,
+        //   shipping: {
+        //     name: 'John...',
+        //     carrier: 'UPS',
+        //     phone: '+1231232423',
+        //     tracking_number: '4343343',
+        //     address: {
+        //       line1: 'undefined',
+        //       line2: undefined,
+        //       city: undefined,
+        //       country: undefined,
+        //       postal_code: undefined,
+        //       state: undefined,
+        //     },
+        //   },
+        // },
+        // customer_update: {
+        //   name: 'auto',
+        //   address: 'auto',
+        //   shipping: 'auto',
+        // },
         success_url: `${process.env.SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.SITE_URL}/cancel`,
       }

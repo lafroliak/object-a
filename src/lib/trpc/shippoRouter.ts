@@ -3,6 +3,7 @@ import * as z from 'zod'
 import {
   createShipment,
   createTransaction,
+  getAddressList,
   validateAddress,
 } from '~lib/shippo/api'
 import { createRouter } from '~pages/api/trpc/[trpc]'
@@ -98,8 +99,6 @@ const addressRequest = z.object({
   zip: z.string(),
   state: z.string(),
   country: z.string(),
-  async: z.boolean().optional(),
-  validate: z.boolean().optional(),
 })
 
 const shipmentRequest = z.object({
@@ -118,6 +117,18 @@ const transactionRequest = z.object({
 })
 
 export const shippoRouter = createRouter()
+  .query('getAddressList', {
+    async resolve({ ctx, input }) {
+      ctx.res?.setHeader(
+        'Cache-Control',
+        'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
+      )
+
+      const addressList = await getAddressList()
+
+      return addressList
+    },
+  })
   .mutation('validateAddress', {
     input: addressRequest,
     async resolve({ ctx, input }) {
@@ -126,7 +137,18 @@ export const shippoRouter = createRouter()
         'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
       )
 
-      const validatedAddress = await validateAddress(input)
+      const validatedAddress = await validateAddress({
+        name: input.name,
+        street1: input.street1,
+        street2: input.street2,
+        street3: input.street3,
+        city: input.city,
+        zip: input.zip,
+        state: input.state,
+        country: input.country,
+        async: false,
+        validate: true,
+      })
 
       return validatedAddress
     },
