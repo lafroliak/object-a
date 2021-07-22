@@ -2,8 +2,7 @@ import Stripe from 'stripe'
 import * as z from 'zod'
 
 import { stripe } from '~lib/stripe/createClient'
-
-import { createRouter } from '../../pages/api/trpc/[trpc]'
+import { createRouter } from '~pages/api/trpc/[trpc]'
 
 export const stripeRouter = createRouter()
   .query('checkout-session', {
@@ -67,6 +66,28 @@ export const stripeRouter = createRouter()
         mode: 'payment',
         metadata: {
           skus: input.skus,
+        },
+        payment_intent_data: {
+          receipt_email: input.email,
+          shipping: {
+            name: 'John...',
+            carrier: 'UPS',
+            phone: '+1231232423',
+            tracking_number: '4343343',
+            address: {
+              line1: 'undefined',
+              line2: undefined,
+              city: undefined,
+              country: undefined,
+              postal_code: undefined,
+              state: undefined,
+            },
+          },
+        },
+        customer_update: {
+          name: 'auto',
+          address: 'auto',
+          shipping: 'auto',
         },
         success_url: `${process.env.SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.SITE_URL}/cancel`,

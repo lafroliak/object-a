@@ -1,5 +1,26 @@
 import { client } from './client'
 
+export async function validateAddress(address: Shippo.CreateAddressRequest) {
+  const validatedAddress = await client.address.create(address)
+
+  return validatedAddress
+}
+
+export async function createShipment(shipment: Shippo.CreateShipmentRequest) {
+  const createdShipment = await client.shipment.create(shipment)
+
+  return createdShipment
+}
+
+export async function createTransaction(
+  transaction: Shippo.CreateTransactionRequest,
+) {
+  const createdTransaction = await client.transaction.create(transaction)
+
+  return createdTransaction
+}
+
+/* 
 const addressFrom = {
   name: 'Ms Hippo',
   company: 'client',
@@ -33,7 +54,7 @@ const parcelOne = {
   distance_unit: 'in',
   weight: '2',
   mass_unit: 'lb',
-}
+} as Shippo.Parcel
 
 const parcelTwo = {
   length: '5',
@@ -42,13 +63,20 @@ const parcelTwo = {
   distance_unit: 'in',
   weight: '2',
   mass_unit: 'lb',
-}
+} as Shippo.Parcel
 
 const shipment = {
   address_from: addressFrom,
   address_to: addressTo,
   parcels: [parcelOne, parcelTwo],
 }
+
+client.shipment.create({
+  address_from: addressFrom,
+  address_to: addressTo,
+  parcels: [parcelOne, parcelTwo],
+  async: false,
+})
 
 client.transaction
   .create({
@@ -80,3 +108,4 @@ client.transaction
       console.log('There was an error creating transaction : %s', err.detail)
     },
   )
+*/

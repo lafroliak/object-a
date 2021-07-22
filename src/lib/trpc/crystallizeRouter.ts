@@ -12,8 +12,7 @@ import {
 import { getAllPages, getAllProducts } from '~lib/crystallize/queries'
 import { Item, Product } from '~lib/crystallize/types'
 import { Mutation, Query, StripePayment } from '~lib/crystallize/types-orders'
-
-import { createRouter } from '../../pages/api/trpc/[trpc]'
+import { createRouter } from '~pages/api/trpc/[trpc]'
 
 // Important: only use this export with SSR/SSG
 export const crystallizeRouter = createRouter()

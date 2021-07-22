@@ -10,10 +10,10 @@ interface SiteMap {
   canonicalPageMap: CanonicalPageMap
 }
 
-export default async (
+export default async function SitemapXml(
   req: NextApiRequest,
   res: NextApiResponse,
-): Promise<void> => {
+): Promise<void> {
   if (req.method !== 'GET') {
     return res.status(405).send({ error: 'method not allowed' })
   }

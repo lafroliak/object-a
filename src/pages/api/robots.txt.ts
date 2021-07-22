@@ -1,9 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 
-export default async (
+export default async function RobotsTxt(
   req: NextApiRequest,
   res: NextApiResponse,
-): Promise<void> => {
+): Promise<void> {
   if (req.method !== 'GET') {
     return res.status(405).send({ error: 'method not allowed' })
   }
