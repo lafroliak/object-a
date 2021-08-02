@@ -1,8 +1,17 @@
 import Stripe from 'stripe'
 import * as z from 'zod'
-
+import allowedCountries from '~lib/stripe/allowedCountries'
 import { stripe } from '~lib/stripe/createClient'
 import { createRouter } from '~pages/api/trpc/[trpc]'
+
+const address = z.object({
+  line1: z.string(),
+  line2: z.string().optional(),
+  city: z.string().optional(),
+  postal_code: z.string().optional(),
+  state: z.string().optional(),
+  country: z.string().optional(),
+})
 
 export const stripeRouter = createRouter()
   .query('checkout-session', {
@@ -53,42 +62,33 @@ export const stripeRouter = createRouter()
         }),
       ),
       skus: z.string(),
+      shipping: z
+        .object({
+          name: z.string(),
+          carrier: z.string().optional(),
+          phone: z.string().optional(),
+          tracking_number: z.string().optional(),
+          address,
+        })
+        .optional(),
     }),
     async resolve({ input }) {
       const options: Stripe.Checkout.SessionCreateParams = {
         payment_method_types: ['card'],
-        shipping_rates: [process.env.SHIPPING_RATE!],
+        // shipping_rates: [process.env.SHIPPING_RATE!], // NOPE!
         billing_address_collection: 'auto',
         shipping_address_collection: {
-          allowed_countries: ['US', 'CA'],
+          allowed_countries: allowedCountries,
         },
         customer_email: input.email,
         mode: 'payment',
         metadata: {
           skus: input.skus,
         },
-        // payment_intent_data: {
-        //   receipt_email: input.email,
-        //   shipping: {
-        //     name: 'John...',
-        //     carrier: 'UPS',
-        //     phone: '+1231232423',
-        //     tracking_number: '4343343',
-        //     address: {
-        //       line1: 'undefined',
-        //       line2: undefined,
-        //       city: undefined,
-        //       country: undefined,
-        //       postal_code: undefined,
-        //       state: undefined,
-        //     },
-        //   },
-        // },
-        // customer_update: {
-        //   name: 'auto',
-        //   address: 'auto',
-        //   shipping: 'auto',
-        // },
+        payment_intent_data: {
+          receipt_email: input.email,
+          shipping: input.shipping,
+        },
         success_url: `${process.env.SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.SITE_URL}/cancel`,
       }

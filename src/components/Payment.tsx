@@ -14,47 +14,18 @@ import useCart from '~stores/useCart'
 
 import IfElse from './IfElse'
 
-export default function Payment() {
+function CustomerForm() {
   const customer = useCart((state) => state.customer)
   const updateCustomer = useCart((state) => state.updateCustomer)
-  const items = useCart((state) => state.items)
-  const { mutate } = trpc.useMutation('stripe.create-checkout-session')
-  // const { mutate } = trpc.useMutation('shippo.validateAddress')
-  // const { mutate } = trpc.useMutation('shippo.createShipment')
-  const { data } = trpc.useQuery(['geo.getLocation'])
-  // const { data: addressList } = trpc.useQuery(['shippo.getAddressList'])
-  const stripe = useStripe()
-
-  // console.log(addressList)
-
-  const [selectedCountry, selectCountry] = useState<
-    typeof allowedCountriesList[number]['value'] | null
-  >(null)
-
-  useEffect(() => {
-    selectCountry(
-      allowedCountriesList.find((country) =>
-        customer?.addresses?.find(
-          (a) => a.type === AddressType.Delivery && country.value === a.country,
-        ),
-      )?.value ||
-        data?.country_code ||
-        null,
-    )
-  }, [customer?.addresses, data?.country_code])
 
   const schema = z.object({
     email: z.string().email(),
     firstName: z.string(),
     middleName: z.string().optional(),
     lastName: z.string().optional(),
-    country: z.string(),
-    street: z.string(),
-    street2: z.string().optional(),
-    city: z.string(),
-    state: z.string(),
-    postalCode: z.string(),
+    phone: z.string().optional(),
   })
+
   const {
     register,
     handleSubmit,
@@ -67,6 +38,9 @@ export default function Payment() {
     if (Object.keys(errors).length !== 0) return
 
     updateCustomer({
+      firstName: data.firstName,
+      middleName: data.middleName,
+      lastName: data.lastName,
       addresses: [
         {
           type: AddressType.Billing,
@@ -78,77 +52,18 @@ export default function Payment() {
           firstName: data.firstName,
           middleName: data.middleName,
           lastName: data.lastName,
-          country: data.country,
-          street: data.street,
-          street2: data.street2,
-          city: data.city,
-          state: data.state,
-          postalCode: data.postalCode,
+          phone: data.phone,
         },
       ],
     })
-
-    // mutate(
-    //   {
-    //     address_from: {},
-    //     address_to: {
-    //       name: `${data.firstName}${
-    //         data.middleName ? ` ${data.middleName}` : ''
-    //       }${data.lastName ? ` ${data.lastName}` : ''}`,
-    //       country: data.country,
-    //       street1: data.street,
-    //       street2: data.street2,
-    //       city: data.city,
-    //       state: data.state,
-    //       zip: data.postalCode,
-    //     },
-    //   },
-    //   {
-    //     onSuccess: (res) => {
-    //       console.log(res)
-    //     },
-    //   },
-    // )
-    // mutate(
-    //   {
-    //     name: `${data.firstName}${
-    //       data.middleName ? ` ${data.middleName}` : ''
-    //     }${data.lastName ? ` ${data.lastName}` : ''}`,
-    //     country: data.country,
-    //     street1: data.street,
-    //     street2: data.street2,
-    //     city: data.city,
-    //     state: data.state,
-    //     zip: data.postalCode,
-    //   },
-    //   {
-    //     onSuccess: (res) => {
-    //       console.log(res)
-    //     },
-    //   },
-    // )
-    mutate(
-      {
-        email: data.email,
-        items: normalizeItems(items),
-        skus: getSKUs(items),
-      },
-      {
-        onSuccess: (session) => {
-          if (stripe && session) {
-            stripe.redirectToCheckout({ sessionId: session.id })
-          }
-        },
-      },
-    )
   })
 
   return (
-    <div className="space-y-2">
+    <>
+      <div className="pb-1 text-xs font-semibold border-b border-color-500">
+        {'Customer'}
+      </div>
       <form onSubmit={onSubmit} className="space-y-4">
-        <div className="pb-1 text-xs font-semibold border-b border-color-500">
-          {'Customer'}
-        </div>
         <fieldset className="space-y-2">
           <label htmlFor={'email'} className="block text-xs">
             Email <small className="italic">required</small>
@@ -210,9 +125,237 @@ export default function Payment() {
             autoComplete="family-name"
           />
         </fieldset>
-        <div className="pb-1 text-xs font-semibold border-b border-color-500">
-          {'Address'}
-        </div>
+        <fieldset className="space-y-2">
+          <label htmlFor={'phone'} className="block text-xs">
+            Phone Number <small className="italic">optional</small>
+          </label>
+          <input
+            className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
+            {...register('phone')}
+            name="phone"
+            type="tel"
+            defaultValue={
+              customer?.addresses?.find((a) => a.type === AddressType.Delivery)
+                ?.phone ?? ''
+            }
+            placeholder="+1 222 333 444444"
+            autoComplete="tel"
+          />
+        </fieldset>
+        <button
+          type="submit"
+          className="uppercase cursor-pointer focus:outline-none"
+        >
+          [next]
+        </button>
+      </form>
+    </>
+  )
+}
+
+function AddressForm() {
+  const customer = useCart((state) => state.customer)
+  const updateCustomer = useCart((state) => state.updateCustomer)
+  const items = useCart((state) => state.items)
+  const { mutate: validateAddress } = trpc.useMutation('shippo.validateAddress')
+  const { mutate: createCustomDeclaration } = trpc.useMutation(
+    'shippo.createCustomDeclaration',
+  )
+  const { mutate: createShipment } = trpc.useMutation('shippo.createShipment')
+  const { data: addressFrom } = trpc.useQuery(['shippo.getAddressFrom'])
+  const { data } = trpc.useQuery(['geo.getLocation'])
+
+  const [selectedCountry, selectCountry] = useState<
+    typeof allowedCountriesList[number]['value'] | null
+  >(null)
+
+  useEffect(() => {
+    selectCountry(
+      allowedCountriesList.find((country) =>
+        customer?.addresses?.find(
+          (a) => a.type === AddressType.Delivery && country.value === a.country,
+        ),
+      )?.value ||
+        data?.country_code ||
+        null,
+    )
+  }, [customer?.addresses, data?.country_code])
+
+  const schema = z.object({
+    country: z.string(),
+    street: z.string(),
+    street2: z.string().optional(),
+    city: z.string(),
+    state: z.string(),
+    postalCode: z.string(),
+  })
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+  })
+
+  const onSubmit = handleSubmit((data) => {
+    if (Object.keys(errors).length !== 0 || !addressFrom) return
+
+    validateAddress(
+      {
+        name: `${customer?.firstName || ''}${
+          customer?.middleName ? ` ${customer?.middleName}` : ''
+        }${customer?.lastName ? ` ${customer?.lastName}` : ''}`,
+        country: data.country,
+        street1: data.street,
+        street2: data.street2,
+        city: data.city,
+        state: data.state,
+        zip: data.postalCode,
+      },
+      {
+        onSuccess: (res) => {
+          updateCustomer({
+            addresses: [
+              {
+                type: AddressType.Delivery,
+                country: data.country,
+                street: data.street,
+                street2: data.street2,
+                city: data.city,
+                state: data.state,
+                postalCode: data.postalCode,
+              },
+            ],
+          })
+
+          if (res.is_complete) {
+            if (data.country !== 'US') {
+              createCustomDeclaration(
+                items.map((item) => ({
+                  name: item.name || 'Dress',
+                  amount: (
+                    item.variants?.[0].priceVariants?.[0].price || 1
+                  ).toString(),
+                })),
+                {
+                  onSuccess: (result) => {
+                    if (result.object_state === 'VALID') {
+                      createShipment(
+                        {
+                          address_from: {
+                            name: addressFrom.name || '',
+                            company: addressFrom.company || '',
+                            phone: addressFrom.phone || '',
+                            country: addressFrom.country || '',
+                            street1: addressFrom.street1,
+                            street2: addressFrom.street2,
+                            city: addressFrom.city || '',
+                            state: addressFrom.state || '',
+                            zip: addressFrom.zip || '',
+                          },
+                          address_to: {
+                            name: `${customer?.firstName || ''}${
+                              customer?.middleName
+                                ? ` ${customer?.middleName}`
+                                : ''
+                            }${
+                              customer?.lastName ? ` ${customer?.lastName}` : ''
+                            }`,
+                            phone:
+                              customer?.addresses?.find(
+                                (a) => a.type === AddressType.Delivery,
+                              )?.phone || '',
+                            country: data.country,
+                            street1: data.street,
+                            street2: data.street2,
+                            city: data.city,
+                            state: data.state,
+                            zip: data.postalCode,
+                          },
+                          customs_declaration: result.object_id,
+                          parcels: [
+                            {
+                              length: '13',
+                              width: '11',
+                              height: '2',
+                              distance_unit: 'in',
+                              weight: '3',
+                              mass_unit: 'lb',
+                            },
+                          ],
+                          async: false,
+                        },
+                        {
+                          onSuccess: (res) => {
+                            console.log(res)
+                          },
+                        },
+                      )
+                    }
+                  },
+                },
+              )
+            } else {
+              createShipment(
+                {
+                  address_from: {
+                    name: addressFrom.name || '',
+                    company: addressFrom.company || '',
+                    phone: addressFrom.phone || '',
+                    country: addressFrom.country || '',
+                    street1: addressFrom.street1,
+                    street2: addressFrom.street2,
+                    city: addressFrom.city || '',
+                    state: addressFrom.state || '',
+                    zip: addressFrom.zip || '',
+                  },
+                  address_to: {
+                    name: `${customer?.firstName || ''}${
+                      customer?.middleName ? ` ${customer?.middleName}` : ''
+                    }${customer?.lastName ? ` ${customer?.lastName}` : ''}`,
+                    phone:
+                      customer?.addresses?.find(
+                        (a) => a.type === AddressType.Delivery,
+                      )?.phone || '',
+                    country: data.country,
+                    street1: data.street,
+                    street2: data.street2,
+                    city: data.city,
+                    state: data.state,
+                    zip: data.postalCode,
+                  },
+                  parcels: [
+                    {
+                      length: '13',
+                      width: '11',
+                      height: '2',
+                      distance_unit: 'in',
+                      weight: '3',
+                      mass_unit: 'lb',
+                    },
+                  ],
+                  async: false,
+                },
+                {
+                  onSuccess: (res) => {
+                    console.log(res)
+                  },
+                },
+              )
+            }
+          }
+        },
+      },
+    )
+  })
+
+  return (
+    <>
+      <div className="pb-1 text-xs font-semibold border-b border-color-500">
+        {'Address'}
+      </div>
+      <form onSubmit={onSubmit} className="space-y-4">
         <fieldset className="space-y-2">
           <label htmlFor={'country'} className="block text-xs">
             Country <small className="italic">required</small>
@@ -223,16 +366,17 @@ export default function Payment() {
             name="country1"
             placeholder="Country"
             autoComplete="country"
+            defaultValue={
+              allowedCountriesList.find(
+                (country) => selectedCountry === country.value,
+              )?.value
+            }
             multiple={false}
             onChange={(e) => selectCountry(e.target.value)}
             required
           >
             {allowedCountriesList.map((country) => (
-              <option
-                key={country.value}
-                value={country.value}
-                selected={selectedCountry === country.value}
-              >
+              <option key={country.value} value={country.value}>
                 {country.text}
               </option>
             ))}
@@ -336,11 +480,58 @@ export default function Payment() {
         <div className="pb-1 text-xs font-semibold border-b border-color-500">
           {'Card'}
         </div>
-        <IfElse predicate={errors.email}>
+        <IfElse predicate={errors.city}>
           {({ message }) => (
             <div className="text-xs text-red-600">{message}</div>
           )}
         </IfElse>
+        <button
+          type="submit"
+          className="uppercase cursor-pointer focus:outline-none"
+        >
+          [next]
+        </button>
+      </form>
+    </>
+  )
+}
+
+export default function Payment() {
+  const customer = useCart((state) => state.customer)
+  const items = useCart((state) => state.items)
+  const { mutate } = trpc.useMutation('stripe.create-checkout-session')
+  const stripe = useStripe()
+
+  console.log(customer)
+
+  const onSubmit = () => {
+    const email =
+      customer?.addresses?.find(
+        (address) => address.type === AddressType.Billing,
+      )?.email || ''
+
+    mutate(
+      {
+        email,
+        items: normalizeItems(items),
+        skus: getSKUs(items),
+        shipping: undefined,
+      },
+      {
+        onSuccess: (session) => {
+          if (stripe && session) {
+            stripe.redirectToCheckout({ sessionId: session.id })
+          }
+        },
+      },
+    )
+  }
+
+  return (
+    <div className="space-y-2">
+      <CustomerForm />
+      <AddressForm />
+      <form onSubmit={onSubmit} className="space-y-4">
         <button
           type="submit"
           className="uppercase cursor-pointer focus:outline-none"

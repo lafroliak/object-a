@@ -12,6 +12,27 @@ export async function validateAddress(address: Shippo.CreateAddressRequest) {
   return validatedAddress
 }
 
+export async function getAddress(objectID: string) {
+  const address = await client.address.retrieve(objectID)
+
+  return address
+}
+
+export async function createCustomDeclaration(
+  items: Shippo.CreateCustomsItemRequest[],
+) {
+  const createdShipment = await client.customsdeclaration.create({
+    contents_type: 'MERCHANDISE',
+    contents_explanation: 'Dress purchase',
+    non_delivery_option: 'RETURN',
+    certify: true,
+    certify_signer: 'Larisa Froliak',
+    items,
+  })
+
+  return createdShipment
+}
+
 export async function createShipment(shipment: Shippo.CreateShipmentRequest) {
   const createdShipment = await client.shipment.create(shipment)
 

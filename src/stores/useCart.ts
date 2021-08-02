@@ -1,10 +1,13 @@
+import { omit } from './../lib/omit'
 import { nanoid } from 'nanoid'
 import create from 'zustand'
 import { persist } from 'zustand/middleware'
+import produce from 'immer'
 
 import { Product } from '~lib/crystallize/types'
-import { Customer } from '~lib/crystallize/types-orders'
+import { AddressType, Customer } from '~lib/crystallize/types-orders'
 import { Option } from '~typings/utils'
+import merge from '~lib/merge'
 
 const dummyStorageApi = {
   getItem: () => null,
@@ -78,7 +81,41 @@ export default create<State>(
           { gross: 0, net: 0, quantity: 0, currency: 'usd' },
         ),
       customer: null,
-      updateCustomer: (customer: Customer) => set({ customer }),
+      updateCustomer: (customer: Customer) =>
+        set(
+          produce<State>((state: State) => {
+            if (!state.customer) {
+              state.customer = {}
+            }
+            state.customer = merge(state.customer, omit(customer, 'addresses'))
+            if (customer.addresses) {
+              state.customer.addresses = [
+                {
+                  type: AddressType.Billing,
+                  ...merge(
+                    state.customer.addresses?.find(
+                      (a) => a.type === AddressType.Billing,
+                    ) || {},
+                    customer.addresses.find(
+                      (a) => a.type === AddressType.Billing,
+                    ) || {},
+                  ),
+                },
+                {
+                  type: AddressType.Delivery,
+                  ...merge(
+                    state.customer.addresses?.find(
+                      (a) => a.type === AddressType.Delivery,
+                    ) || {},
+                    customer.addresses.find(
+                      (a) => a.type === AddressType.Delivery,
+                    ) || {},
+                  ),
+                },
+              ]
+            }
+          }),
+        ),
     }),
     {
       name: 'cart',

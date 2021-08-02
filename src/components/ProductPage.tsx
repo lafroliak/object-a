@@ -178,14 +178,14 @@ export default function ProductPage({ page }: Props) {
                           {images.map((image) => (
                             <picture
                               key={image.url}
-                              className="relative w-[95vw] h-[95vw] md:w-[75vmin] md:h-[75vmin]"
+                              className="relative w-[75vmin] h-[75vmin]"
                             >
                               <img
                                 className="absolute inset-0 object-contain w-full h-full overflow-hidden"
-                                src={prop.url}
-                                alt={`${item?.name || ''}`}
-                                width={prop.width}
-                                height={prop.height || prop.width}
+                                src={image.url}
+                                alt=""
+                                width={image.width}
+                                height={image.height || image.width}
                               />
                             </picture>
                           ))}

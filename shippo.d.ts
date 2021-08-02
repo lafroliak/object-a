@@ -16,6 +16,7 @@ declare namespace Shippo {
     street2?: string | undefined
     street3?: string | undefined
     zip?: string | undefined
+    is_complete?: boolean
     validation_results?:
       | {
           is_valid?: boolean | undefined
@@ -95,11 +96,36 @@ declare namespace Shippo {
   interface CreateCustomsItemRequest {
     description: string
     mass_unit: 'g' | 'oz' | 'lb' | 'kg'
-    net_weight: number
+    net_weight: string
     origin_country: string
     quantity: number
-    value_amount: number
+    value_amount: string
     value_currency: string
+  }
+
+  interface CreateCustomsDeclaration {
+    object_state: 'VALID' | 'INVALID'
+    object_id: string
+    certify: boolean
+    certify_signer: string
+    contents_explanation?: string | undefined
+    contents_type:
+      | 'DOCUMENTS'
+      | 'GIFT'
+      | 'SAMPLE'
+      | 'MERCHANDISE'
+      | 'HUMANITARIAN_DONATION'
+      | 'RETURN_MERCHANDISE'
+      | 'OTHER'
+    eel_pfc?:
+      | 'NOEEI_30_37_a'
+      | 'NOEEI_30_37_h'
+      | 'NOEEI_30_36'
+      | 'AES_ITN'
+      | undefined
+    incoterm?: 'DDP' | 'DDU' | undefined
+    items: CreateCustomsItemRequest[]
+    non_delivery_option: 'ABANDON' | 'RETURN'
   }
 
   interface CreateCustomsDeclarationRequest {
@@ -137,7 +163,7 @@ declare namespace Shippo {
     address_from: Address
     address_to: Address
     async?: boolean | undefined
-    customs_declaration?: CreateCustomsDeclarationRequest | undefined
+    customs_declaration?: CreateCustomsDeclarationRequest | string | undefined
     parcels: string | Parcel | Parcel[]
   }
 
@@ -168,7 +194,7 @@ declare namespace Shippo {
     customsdeclaration: {
       create: (
         request: CreateCustomDeclarationRequest,
-      ) => Promise<CreateCustomsDeclarationRequest>
+      ) => Promise<CreateCustomsDeclaration>
     }
     shipment: {
       create: (request: CreateShipmentRequest) => Promise<Shipment>
@@ -176,6 +202,7 @@ declare namespace Shippo {
     address: {
       create: (request: CreateAddressRequest) => Promise<Address>
       list: () => Promise<{ results: Address[]; messages?: string[] }>
+      retrieve: (request: string) => Promise<Address>
     }
     transaction: {
       create: (request: CreateTransactionRequest) => Promise<Transaction>

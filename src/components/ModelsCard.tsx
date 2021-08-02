@@ -20,14 +20,10 @@ function ModelsCard({ item }: Props) {
   const { name, type, components } = item
   if (type === 'folder' || type === 'document') return null
 
-  const models = components?.find((c) => c?.name === 'Models' && c?.content)
   const images = components?.find((c) => c?.name === 'Images' && c?.content)
-  const modelsContent =
-    models && isImage(models.type, models.content) ? models.content : null
   const imagesContent =
     images && isImage(images.type, images.content) ? images.content : null
-  const image = (modelsContent?.images ||
-    imagesContent?.images)?.[0]?.variants?.find(
+  const image = imagesContent?.images?.[0]?.variants?.find(
     (img) =>
       img.width === (isLG ? 768 : 500) &&
       img.url.includes(isWebpSupported() ? 'webp' : 'png'),

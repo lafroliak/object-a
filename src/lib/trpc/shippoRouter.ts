@@ -1,8 +1,10 @@
 import * as z from 'zod'
 
 import {
+  createCustomDeclaration,
   createShipment,
   createTransaction,
+  getAddress,
   getAddressList,
   validateAddress,
 } from '~lib/shippo/api'
@@ -10,6 +12,8 @@ import { createRouter } from '~pages/api/trpc/[trpc]'
 
 const address = z.object({
   name: z.string(),
+  company: z.string().optional(),
+  phone: z.string().optional(),
   street1: z.string(),
   street2: z.string().optional(),
   street3: z.string().optional(),
@@ -17,7 +21,6 @@ const address = z.object({
   zip: z.string(),
   state: z.string(),
   country: z.string(),
-  company: z.string().optional(),
   validation_results: z
     .object({
       is_valid: z.boolean().optional(),
@@ -34,40 +37,38 @@ const customsItemRequest = z.object({
     z.literal('lb'),
     z.literal('kg'),
   ]),
-  net_weight: z.number(),
+  net_weight: z.string(),
   origin_country: z.string(),
   quantity: z.number(),
-  value_amount: z.number(),
+  value_amount: z.string(),
   value_currency: z.string(),
 })
 
-const customsDeclarationRequest = z
-  .object({
-    certify: z.boolean(),
-    certify_signer: z.string(),
-    contents_explanation: z.string().optional(),
-    contents_type: z.union([
-      z.literal('DOCUMENTS'),
-      z.literal('GIFT'),
-      z.literal('SAMPLE'),
-      z.literal('MERCHANDISE'),
-      z.literal('HUMANITARIAN_DONATION'),
-      z.literal('RETURN_MERCHANDISE'),
-      z.literal('OTHER'),
-    ]),
-    eel_pfc: z
-      .union([
-        z.literal('NOEEI_30_37_a'),
-        z.literal('NOEEI_30_37_h'),
-        z.literal('NOEEI_30_36'),
-        z.literal('AES_ITN'),
-      ])
-      .optional(),
-    incoterm: z.union([z.literal('DDP'), z.literal('DDU')]).optional(),
-    items: z.array(customsItemRequest),
-    non_delivery_option: z.union([z.literal('ABANDON'), z.literal('RETURN')]),
-  })
-  .optional()
+const customsDeclarationRequest = z.object({
+  certify: z.boolean(),
+  certify_signer: z.string(),
+  contents_explanation: z.string().optional(),
+  contents_type: z.union([
+    z.literal('DOCUMENTS'),
+    z.literal('GIFT'),
+    z.literal('SAMPLE'),
+    z.literal('MERCHANDISE'),
+    z.literal('HUMANITARIAN_DONATION'),
+    z.literal('RETURN_MERCHANDISE'),
+    z.literal('OTHER'),
+  ]),
+  eel_pfc: z
+    .union([
+      z.literal('NOEEI_30_37_a'),
+      z.literal('NOEEI_30_37_h'),
+      z.literal('NOEEI_30_36'),
+      z.literal('AES_ITN'),
+    ])
+    .optional(),
+  incoterm: z.union([z.literal('DDP'), z.literal('DDU')]).optional(),
+  items: z.array(customsItemRequest),
+  non_delivery_option: z.union([z.literal('ABANDON'), z.literal('RETURN')]),
+})
 
 const parcel = z.object({
   distance_unit: z.union([
@@ -92,6 +93,8 @@ const parcel = z.object({
 
 const addressRequest = z.object({
   name: z.string(),
+  company: z.string().optional(),
+  phone: z.string().optional(),
   street1: z.string(),
   street2: z.string().optional(),
   street3: z.string().optional(),
@@ -104,8 +107,10 @@ const addressRequest = z.object({
 const shipmentRequest = z.object({
   address_from: address,
   address_to: address,
-  async: z.boolean().optional(),
-  customs_declaration: customsDeclarationRequest,
+  async: z.boolean().optional().default(false),
+  customs_declaration: z
+    .union([z.string(), customsDeclarationRequest])
+    .optional(),
   parcels: z.union([z.string(), parcel, z.array(parcel)]),
 })
 
@@ -127,6 +132,18 @@ export const shippoRouter = createRouter()
       const addressList = await getAddressList()
 
       return addressList
+    },
+  })
+  .query('getAddressFrom', {
+    async resolve({ ctx }) {
+      ctx.res?.setHeader(
+        'Cache-Control',
+        'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
+      )
+
+      const addressFrom = await getAddress(process.env.SHIPPO_ADDRESS_FROM!)
+
+      return addressFrom
     },
   })
   .mutation('validateAddress', {
@@ -151,6 +168,37 @@ export const shippoRouter = createRouter()
       })
 
       return validatedAddress
+    },
+  })
+  .mutation('createCustomDeclaration', {
+    input: z.array(
+      z.object({
+        name: z.string(),
+        amount: z.string(),
+      }),
+    ),
+    async resolve({ ctx, input }) {
+      ctx.res?.setHeader(
+        'Cache-Control',
+        'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
+      )
+
+      const createdShipment = await createCustomDeclaration(
+        input.map(
+          (item) =>
+            ({
+              description: item.name,
+              quantity: 1,
+              net_weight: '2',
+              mass_unit: 'lb',
+              value_amount: item.amount,
+              value_currency: 'USD',
+              origin_country: 'US',
+            } as Shippo.CreateCustomsItemRequest),
+        ),
+      )
+
+      return createdShipment
     },
   })
   .mutation('createShipment', {
