@@ -17,6 +17,7 @@ declare namespace Shippo {
     street3?: string | undefined
     zip?: string | undefined
     is_complete?: boolean
+    test?: boolean
     validation_results?:
       | {
           is_valid?: boolean | undefined
@@ -35,6 +36,12 @@ declare namespace Shippo {
     width: string
   }
 
+  type Message = {
+    text: string
+    source?: string
+    code?: number
+  }
+
   // https://goshippo.com/docs/reference#shipments
   interface Shipment {
     address_from: Address
@@ -42,6 +49,7 @@ declare namespace Shippo {
     address_return: Address
     parcels: Parcel[]
     rates: Rate[]
+    messages?: Message[]
   }
 
   // https://goshippo.com/docs/reference#shipments

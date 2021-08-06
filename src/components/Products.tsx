@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { memo } from 'react'
 
 import { GridColumn } from '~lib/crystallize/types'
+import IfElse from './IfElse'
 
 import ModelsCard from './ModelsCard'
 import ProductCard from './ProductCard'
@@ -14,27 +15,30 @@ function Products({ columns, isModelsList }: Props) {
   if (isModelsList) {
     return (
       <div className="mx-auto space-x-8 flex flex-row flex-nowrap max-w-[100%] overflow-scroll scrollzone">
-        {(columns || []).map((c) => (
-          <Link
-            key={c.itemId}
-            href={
-              c.item?.path
-                ? {
-                    pathname: '/catalogue/[...catalogue]',
-                    query: {
-                      catalogue: decodeURIComponent(c.item.path).replace(
-                        /^\//,
-                        '',
-                      ),
-                    },
-                  }
-                : '/'
-            }
-          >
-            <a className="flex flex-col flex-shrink-0 h-full space-y-2 w-96 lg:w-[32rem]">
-              <ModelsCard item={c.item} />
-            </a>
-          </Link>
+        {(columns || []).map((c, i) => (
+          <IfElse key={c.itemId || i} predicate={c.item}>
+            {(item) => (
+              <Link
+                href={
+                  item?.path
+                    ? {
+                        pathname: '/catalogue/[...catalogue]',
+                        query: {
+                          catalogue: decodeURIComponent(item.path).replace(
+                            /^\//,
+                            '',
+                          ),
+                        },
+                      }
+                    : '/'
+                }
+              >
+                <a className="flex flex-col flex-shrink-0 h-full space-y-2 w-96 lg:w-[32rem]">
+                  <ModelsCard item={item} />
+                </a>
+              </Link>
+            )}
+          </IfElse>
         ))}
       </div>
     )

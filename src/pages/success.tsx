@@ -32,8 +32,8 @@ function SuccessPage() {
   const { mutate: createOrder } = trpc.useMutation('crystallize.create-order')
   const [customer, setCustomer] = useState<Option<string>>(null)
   const [quantity, setQuantity] = useState<Option<number>>(null)
-  const [shipping, setShipping] = useState<Option<number>>(null)
   const [receipt, setReciept] = useState<Option<string>>(null)
+
   trpc.useQuery(
     [
       'stripe.checkout-session',
@@ -43,7 +43,6 @@ function SuccessPage() {
       enabled: !!router.query?.session_id,
       onSuccess: (stripeData) => {
         if (stripeData) {
-          setShipping(stripeData.total_details?.amount_shipping)
           getPaymentIntent(
             {
               paymentIntentId: String(stripeData.payment_intent),
@@ -117,7 +116,7 @@ function SuccessPage() {
             <div className="pb-1 text-xs font-semibold border-b border-color-500">
               {'Your purchase'}
             </div>
-            <div className="w-full space-y-4">
+            <div className="w-full space-y-4 text-center">
               {items.map((item) => (
                 <div key={item.sku}>
                   <ShowcaseCard
@@ -125,10 +124,28 @@ function SuccessPage() {
                       prod.variants?.find((v) => v.sku === item.sku),
                     )}
                   />
+                  <div className="font-semibold">
+                    ${item?.price?.gross ?? 0}
+                  </div>
                 </div>
               ))}
             </div>
           </Fragment>
+        )}
+      </IfElse>
+      <IfElse
+        predicate={
+          (quantity ?? 0) -
+          (order?.cart?.reduce((r, c) => r + (c?.price?.gross ?? 0), 0) ?? 0)
+        }
+      >
+        {(shp) => (
+          <div className="space-y-2">
+            <div className="pb-1 text-xs font-semibold border-b border-color-500">
+              {'Shipping'}
+            </div>
+            <div className="text-sm">{shp.toFixed(2)} USD</div>
+          </div>
         )}
       </IfElse>
       <IfElse predicate={quantity}>
@@ -138,16 +155,6 @@ function SuccessPage() {
               {'Total'}
             </div>
             <div className="text-sm">{qnt} USD</div>
-          </div>
-        )}
-      </IfElse>
-      <IfElse predicate={shipping}>
-        {(shp) => (
-          <div className="space-y-2">
-            <div className="pb-1 text-xs font-semibold border-b border-color-500">
-              {'Shipping'}
-            </div>
-            <div className="text-sm">{shp} USD</div>
           </div>
         )}
       </IfElse>

@@ -1,28 +1,30 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useStripe } from '@stripe/react-stripe-js'
-import { useEffect } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { allowedCountriesList } from '~lib/countryList'
-
 import getSKUs from '~lib/crystallize/getSKUs'
+import { VersionLabel } from '~lib/crystallize/types'
 import { AddressType } from '~lib/crystallize/types-orders'
 import normalizeItems from '~lib/stripe/normalizeItems'
 import { trpc } from '~lib/trpc'
 import useCart from '~stores/useCart'
-
 import IfElse from './IfElse'
 
-function CustomerForm() {
-  const customer = useCart((state) => state.customer)
-  const updateCustomer = useCart((state) => state.updateCustomer)
+type Props = {
+  state: State
+  next: () => void
+  rates?: Shippo.Rate[]
+}
+
+function CustomerForm({ state, next }: Props) {
+  const customer = useCart((st) => st.customer)
+  const updateCustomer = useCart((st) => st.updateCustomer)
 
   const schema = z.object({
     email: z.string().email(),
-    firstName: z.string(),
-    middleName: z.string().optional(),
-    lastName: z.string().optional(),
+    fullName: z.string(),
     phone: z.string().optional(),
   })
 
@@ -36,11 +38,12 @@ function CustomerForm() {
 
   const onSubmit = handleSubmit((data) => {
     if (Object.keys(errors).length !== 0) return
+    const name = data.fullName.split(' ')
 
     updateCustomer({
-      firstName: data.firstName,
-      middleName: data.middleName,
-      lastName: data.lastName,
+      firstName: name[0],
+      middleName: name.slice(1, name.length - 1).join(),
+      lastName: name[name.length - 1],
       addresses: [
         {
           type: AddressType.Billing,
@@ -49,13 +52,15 @@ function CustomerForm() {
         {
           type: AddressType.Delivery,
           email: data.email,
-          firstName: data.firstName,
-          middleName: data.middleName,
-          lastName: data.lastName,
+          firstName: name[0],
+          middleName: name.slice(1, name.length - 1).join(),
+          lastName: name[name.length - 1],
           phone: data.phone,
         },
       ],
     })
+
+    next()
   })
 
   return (
@@ -66,7 +71,15 @@ function CustomerForm() {
       <form onSubmit={onSubmit} className="space-y-4">
         <fieldset className="space-y-2">
           <label htmlFor={'email'} className="block text-xs">
-            Email <small className="italic">required</small>
+            Email{' '}
+            <IfElse
+              predicate={errors.email}
+              placeholder={<small className="italic">required</small>}
+            >
+              {({ message }) => (
+                <small className="text-xs text-red-600">{message}</small>
+              )}
+            </IfElse>
           </label>
           <input
             className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
@@ -83,46 +96,28 @@ function CustomerForm() {
           />
         </fieldset>
         <fieldset className="space-y-2">
-          <label htmlFor={'firstName'} className="block text-xs">
-            First Name <small className="italic">required</small>
+          <label htmlFor={'fullName'} className="block text-xs">
+            Full Name{' '}
+            <IfElse
+              predicate={errors.fullName}
+              placeholder={<small className="italic">required</small>}
+            >
+              {({ message }) => (
+                <small className="text-xs text-red-600">{message}</small>
+              )}
+            </IfElse>
           </label>
           <input
             className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
-            {...register('firstName')}
-            name="firstName"
+            {...register('fullName')}
+            name="fullName"
             type="text"
-            defaultValue={customer?.firstName ?? ''}
-            placeholder="Sam"
-            autoComplete="given-name"
+            defaultValue={`${customer?.firstName || ''}${
+              customer?.middleName ? ` ${customer?.middleName}` : ''
+            }${customer?.lastName ? ` ${customer?.lastName}` : ''}`}
+            placeholder="Sam Smith"
+            autoComplete="name"
             required
-          />
-        </fieldset>
-        <fieldset className="space-y-2">
-          <label htmlFor={'middleName'} className="block text-xs">
-            Middle Name <small className="italic">optional</small>
-          </label>
-          <input
-            className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
-            {...register('middleName')}
-            name="middleName"
-            type="text"
-            defaultValue={customer?.middleName ?? ''}
-            placeholder="Smith"
-            autoComplete="additional-name"
-          />
-        </fieldset>
-        <fieldset className="space-y-2">
-          <label htmlFor={'lastName'} className="block text-xs">
-            Last Name <small className="italic">optional</small>
-          </label>
-          <input
-            className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
-            {...register('lastName')}
-            name="lastName"
-            type="text"
-            defaultValue={customer?.lastName ?? ''}
-            placeholder="Smith"
-            autoComplete="family-name"
           />
         </fieldset>
         <fieldset className="space-y-2">
@@ -142,32 +137,44 @@ function CustomerForm() {
             autoComplete="tel"
           />
         </fieldset>
-        <button
-          type="submit"
-          className="uppercase cursor-pointer focus:outline-none"
-        >
-          [next]
-        </button>
+        <IfElse predicate={state === STATES[1]}>
+          {() => (
+            <button
+              type="submit"
+              className="uppercase cursor-pointer focus:outline-none"
+            >
+              [next]
+            </button>
+          )}
+        </IfElse>
       </form>
     </>
   )
 }
 
-function AddressForm() {
-  const customer = useCart((state) => state.customer)
-  const updateCustomer = useCart((state) => state.updateCustomer)
-  const items = useCart((state) => state.items)
-  const { mutate: validateAddress } = trpc.useMutation('shippo.validateAddress')
-  const { mutate: createCustomDeclaration } = trpc.useMutation(
-    'shippo.createCustomDeclaration',
-  )
-  const { mutate: createShipment } = trpc.useMutation('shippo.createShipment')
+function AddressForm({ state, next }: Props) {
+  const customer = useCart((st) => st.customer)
+  const updateCustomer = useCart((st) => st.updateCustomer)
+  const items = useCart((st) => st.items)
+  const { data: geoLocation } = trpc.useQuery(['geo.getLocation'])
   const { data: addressFrom } = trpc.useQuery(['shippo.getAddressFrom'])
-  const { data } = trpc.useQuery(['geo.getLocation'])
-
+  const { mutate: validateAddress, isLoading: validateAddressLoading } =
+    trpc.useMutation('shippo.validateAddress')
+  const {
+    mutate: createCustomDeclaration,
+    isLoading: createCustomDeclarationLoading,
+  } = trpc.useMutation('shippo.createCustomDeclaration')
+  const { mutate: createShipment, isLoading: createShipmentLoading } =
+    trpc.useMutation('shippo.createShipment')
+  const isLoading =
+    validateAddressLoading ||
+    createCustomDeclarationLoading ||
+    createShipmentLoading
   const [selectedCountry, selectCountry] = useState<
-    typeof allowedCountriesList[number]['value'] | null
-  >(null)
+    typeof allowedCountriesList[number]['value'] | undefined
+  >(undefined)
+  const [messages, setMessages] = useState<Shippo.Message[]>([])
+  const [rates, setRates] = useState<Shippo.Rate[]>([])
 
   useEffect(() => {
     selectCountry(
@@ -176,13 +183,12 @@ function AddressForm() {
           (a) => a.type === AddressType.Delivery && country.value === a.country,
         ),
       )?.value ||
-        data?.country_code ||
-        null,
+        geoLocation?.country_code ||
+        undefined,
     )
-  }, [customer?.addresses, data?.country_code])
+  }, [customer?.addresses, geoLocation?.country_code])
 
   const schema = z.object({
-    country: z.string(),
     street: z.string(),
     street2: z.string().optional(),
     city: z.string(),
@@ -200,13 +206,28 @@ function AddressForm() {
 
   const onSubmit = handleSubmit((data) => {
     if (Object.keys(errors).length !== 0 || !addressFrom) return
+    setMessages([])
+
+    updateCustomer({
+      addresses: [
+        {
+          type: AddressType.Delivery,
+          country: selectedCountry,
+          street: data.street,
+          street2: data.street2,
+          city: data.city,
+          state: data.state,
+          postalCode: data.postalCode,
+        },
+      ],
+    })
 
     validateAddress(
       {
         name: `${customer?.firstName || ''}${
           customer?.middleName ? ` ${customer?.middleName}` : ''
         }${customer?.lastName ? ` ${customer?.lastName}` : ''}`,
-        country: data.country,
+        country: selectedCountry || 'US',
         street1: data.street,
         street2: data.street2,
         city: data.city,
@@ -214,31 +235,38 @@ function AddressForm() {
         zip: data.postalCode,
       },
       {
+        onError: () => {
+          setMessages([{ text: 'HARD: Some error has occured. Please, retry' }])
+        },
         onSuccess: (res) => {
-          updateCustomer({
-            addresses: [
-              {
-                type: AddressType.Delivery,
-                country: data.country,
-                street: data.street,
-                street2: data.street2,
-                city: data.city,
-                state: data.state,
-                postalCode: data.postalCode,
-              },
-            ],
-          })
+          if (
+            !res.test &&
+            res.validation_results?.is_valid === false &&
+            res.validation_results?.messages
+          ) {
+            setMessages(res.validation_results.messages)
+            return
+          }
 
           if (res.is_complete) {
-            if (data.country !== 'US') {
+            if (selectedCountry !== 'US') {
               createCustomDeclaration(
-                items.map((item) => ({
-                  name: item.name || 'Dress',
-                  amount: (
-                    item.variants?.[0].priceVariants?.[0].price || 1
-                  ).toString(),
-                })),
+                items
+                  .filter(
+                    (item) => !item.name?.toLowerCase()?.includes('shipping'),
+                  )
+                  .map((item) => ({
+                    name: item.name || 'Dress',
+                    amount: (
+                      item.variants?.[0].priceVariants?.[0].price || 1
+                    ).toString(),
+                  })),
                 {
+                  onError: () => {
+                    setMessages([
+                      { text: 'HARD: Some error has occured. Please, retry' },
+                    ])
+                  },
                   onSuccess: (result) => {
                     if (result.object_state === 'VALID') {
                       createShipment(
@@ -266,7 +294,7 @@ function AddressForm() {
                               customer?.addresses?.find(
                                 (a) => a.type === AddressType.Delivery,
                               )?.phone || '',
-                            country: data.country,
+                            country: selectedCountry || 'US',
                             street1: data.street,
                             street2: data.street2,
                             city: data.city,
@@ -280,15 +308,36 @@ function AddressForm() {
                               width: '11',
                               height: '2',
                               distance_unit: 'in',
-                              weight: '3',
+                              weight: '2',
                               mass_unit: 'lb',
                             },
                           ],
                           async: false,
                         },
                         {
+                          onError: () => {
+                            setMessages([
+                              {
+                                text: 'HARD: Some error has occured. Please, retry',
+                              },
+                            ])
+                          },
                           onSuccess: (res) => {
-                            console.log(res)
+                            if (res.messages) {
+                              setMessages(
+                                res.messages.reduce<any[]>(
+                                  (r, c) =>
+                                    !r.some((x) => x.code === c.code)
+                                      ? [...r, c]
+                                      : r,
+                                  [],
+                                ),
+                              )
+                            }
+                            if (res.rates.length) {
+                              setRates(res.rates)
+                              next()
+                            }
                           },
                         },
                       )
@@ -318,7 +367,7 @@ function AddressForm() {
                       customer?.addresses?.find(
                         (a) => a.type === AddressType.Delivery,
                       )?.phone || '',
-                    country: data.country,
+                    country: selectedCountry || 'US',
                     street1: data.street,
                     street2: data.street2,
                     city: data.city,
@@ -331,15 +380,32 @@ function AddressForm() {
                       width: '11',
                       height: '2',
                       distance_unit: 'in',
-                      weight: '3',
+                      weight: '2',
                       mass_unit: 'lb',
                     },
                   ],
                   async: false,
                 },
                 {
+                  onError: () => {
+                    setMessages([
+                      { text: 'HARD: Some error has occured. Please, retry' },
+                    ])
+                  },
                   onSuccess: (res) => {
-                    console.log(res)
+                    if (res.messages) {
+                      setMessages(
+                        res.messages.reduce<any[]>(
+                          (r, c) =>
+                            !r.some((x) => x.code === c.code) ? [...r, c] : r,
+                          [],
+                        ),
+                      )
+                    }
+                    if (res.rates.length) {
+                      setRates(res.rates)
+                      next()
+                    }
                   },
                 },
               )
@@ -352,7 +418,7 @@ function AddressForm() {
 
   return (
     <>
-      <div className="pb-1 text-xs font-semibold border-b border-color-500">
+      <div className="pt-4 pb-1 text-xs font-semibold border-b border-color-500">
         {'Address'}
       </div>
       <form onSubmit={onSubmit} className="space-y-4">
@@ -362,15 +428,10 @@ function AddressForm() {
           </label>
           <select
             className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
-            {...register('country')}
-            name="country1"
+            name="country"
             placeholder="Country"
             autoComplete="country"
-            defaultValue={
-              allowedCountriesList.find(
-                (country) => selectedCountry === country.value,
-              )?.value
-            }
+            value={selectedCountry}
             multiple={false}
             onChange={(e) => selectCountry(e.target.value)}
             required
@@ -384,25 +445,33 @@ function AddressForm() {
         </fieldset>
         <fieldset className="space-y-2">
           <label htmlFor={'street'} className="block text-xs">
-            Street 1 <small className="italic">required</small>
+            Address{' '}
+            <IfElse
+              predicate={errors.street}
+              placeholder={<small className="italic">required</small>}
+            >
+              {({ message }) => (
+                <small className="text-xs text-red-600">{message}</small>
+              )}
+            </IfElse>
           </label>
           <input
             className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
             {...register('street')}
+            placeholder="Address"
             name="street"
             type="text"
             defaultValue={
               customer?.addresses?.find((a) => a.type === AddressType.Delivery)
-                ?.street ?? ''
+                ?.street || ''
             }
-            placeholder="Street 1"
             autoComplete="address-line1"
             required
           />
         </fieldset>
         <fieldset className="space-y-2">
           <label htmlFor={'street2'} className="block text-xs">
-            Street 2 <small className="italic">optional</small>
+            Address line 2 <small className="italic">optional</small>
           </label>
           <input
             className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
@@ -413,13 +482,21 @@ function AddressForm() {
               customer?.addresses?.find((a) => a.type === AddressType.Delivery)
                 ?.street2 ?? ''
             }
-            placeholder="Street 2"
+            placeholder="Address line 2"
             autoComplete="address-line2"
           />
         </fieldset>
         <fieldset className="space-y-2">
           <label htmlFor={'city'} className="block text-xs">
-            City <small className="italic">required</small>
+            City{' '}
+            <IfElse
+              predicate={errors.city}
+              placeholder={<small className="italic">required</small>}
+            >
+              {({ message }) => (
+                <small className="text-xs text-red-600">{message}</small>
+              )}
+            </IfElse>
           </label>
           <input
             className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
@@ -428,9 +505,7 @@ function AddressForm() {
             type="text"
             defaultValue={
               customer?.addresses?.find((a) => a.type === AddressType.Delivery)
-                ?.city ||
-              data?.city ||
-              ''
+                ?.city || ''
             }
             placeholder="City"
             autoComplete="address-level2"
@@ -439,7 +514,15 @@ function AddressForm() {
         </fieldset>
         <fieldset className="space-y-2">
           <label htmlFor={'state'} className="block text-xs">
-            State <small className="italic">required</small>
+            State{' '}
+            <IfElse
+              predicate={errors.state}
+              placeholder={<small className="italic">required</small>}
+            >
+              {({ message }) => (
+                <small className="text-xs text-red-600">{message}</small>
+              )}
+            </IfElse>
           </label>
           <input
             className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
@@ -448,9 +531,7 @@ function AddressForm() {
             type="text"
             defaultValue={
               customer?.addresses?.find((a) => a.type === AddressType.Delivery)
-                ?.state ||
-              data?.state ||
-              ''
+                ?.state || ''
             }
             placeholder="State"
             autoComplete="address-level1"
@@ -459,7 +540,15 @@ function AddressForm() {
         </fieldset>
         <fieldset className="space-y-2">
           <label htmlFor={'postalCode'} className="block text-xs">
-            Postal Code (ZIP) <small className="italic">required</small>
+            Postal Code (ZIP){' '}
+            <IfElse
+              predicate={errors.postalCode}
+              placeholder={<small className="italic">required</small>}
+            >
+              {({ message }) => (
+                <small className="text-xs text-red-600">{message}</small>
+              )}
+            </IfElse>
           </label>
           <input
             className="block w-full form-input !ring-0 bg-color-100 dark:bg-color-800 placeholder-color-500 dark:text-color-50"
@@ -469,7 +558,7 @@ function AddressForm() {
             defaultValue={
               customer?.addresses?.find((a) => a.type === AddressType.Delivery)
                 ?.postalCode ||
-              data?.postal ||
+              geoLocation?.postal ||
               ''
             }
             placeholder="PostalCode"
@@ -477,32 +566,159 @@ function AddressForm() {
             required
           />
         </fieldset>
-        <div className="pb-1 text-xs font-semibold border-b border-color-500">
-          {'Card'}
-        </div>
-        <IfElse predicate={errors.city}>
-          {({ message }) => (
-            <div className="text-xs text-red-600">{message}</div>
+        <IfElse predicate={messages.length > 0 ? messages : null}>
+          {(msgs) => (
+            <div className="space-y-2">
+              {msgs.map((msg) => (
+                <div
+                  key={msg.text}
+                  className={`text-xs ${
+                    msg.text.toLowerCase().includes('hard')
+                      ? 'text-red-600'
+                      : 'text-orange-600'
+                  }`}
+                >
+                  {msg.source ? <strong>{msg.source || ''} </strong> : null}
+                  {msg.text}
+                </div>
+              ))}
+            </div>
           )}
         </IfElse>
-        <button
-          type="submit"
-          className="uppercase cursor-pointer focus:outline-none"
-        >
-          [next]
-        </button>
+        <IfElse predicate={state === STATES[2]}>
+          {() => (
+            <button
+              type="submit"
+              className="uppercase cursor-pointer focus:outline-none"
+              disabled={isLoading}
+            >
+              [{isLoading ? 'loading...' : 'next'}]
+            </button>
+          )}
+        </IfElse>
       </form>
+      <IfElse predicate={STATES.slice(-2).includes(state) && rates.length}>
+        {() => <Shipping state={state} next={next} rates={rates} />}
+      </IfElse>
     </>
   )
 }
 
+function Shipping({ state, next, rates }: Props) {
+  const [selected, setRate] = useState<Shippo.Rate | null>(null)
+  const shipping = useCart((st) =>
+    st.items.find((item) => item.name?.toLowerCase()?.includes('shipping')),
+  )
+  const addItem = useCart((st) => st.addItem)
+  const deleteItem = useCart((st) => st.deleteItem)
+
+  const onSubmit = () => {
+    if (!selected) return
+
+    if (shipping) {
+      deleteItem(shipping.id)
+    }
+
+    addItem({
+      id: selected.object_id,
+      name: `SHIPPING by ${selected.provider} ${selected.servicelevel.name}`,
+      shape: {
+        id: selected.object_id,
+      },
+      version: {
+        id: selected.object_id,
+        label: VersionLabel.Draft,
+      },
+      subtree: {
+        pageInfo: {
+          hasPreviousPage: false,
+          hasNextPage: false,
+          startCursor: 'nope',
+          endCursor: 'nope',
+          totalNodes: 1,
+        },
+      },
+      variants: [
+        {
+          id: selected.object_id,
+          sku: selected.shipment,
+          name: `${selected.provider} ${selected.servicelevel.name}`,
+          priceVariants: [
+            { price: Number(selected.amount), identifier: selected.object_id },
+          ],
+        },
+      ],
+    })
+    next()
+  }
+
+  return (
+    <>
+      <div className="pt-6 pb-1 text-xs font-semibold border-b border-color-500">
+        {'Shipping'}
+      </div>
+      <ul className="space-y-2">
+        {rates?.map((rate) => (
+          <li key={rate.object_id}>
+            <input
+              type="radio"
+              className="mr-2"
+              checked={selected?.object_id === rate.object_id}
+              onChange={() => setRate(rate)}
+            />
+            <button
+              type="button"
+              className={`cursor-pointer text-left focus:outline-none${
+                selected?.object_id === rate.object_id ? ' underline' : ''
+              }`}
+              onClick={() => setRate(rate)}
+            >
+              <strong>{rate.provider}</strong> {rate.servicelevel.name} — $
+              {rate.amount}
+            </button>{' '}
+            <small className="opacity-75">{rate.duration_terms}</small>
+          </li>
+        ))}
+      </ul>
+      <div className="pt-2">
+        <IfElse predicate={state === STATES[3]}>
+          {() => (
+            <button
+              type="button"
+              className="uppercase cursor-pointer focus:outline-none"
+              disabled={!selected}
+              onClick={onSubmit}
+            >
+              [next]
+            </button>
+          )}
+        </IfElse>
+      </div>
+    </>
+  )
+}
+
+const STATES = ['idle', 'customer', 'address', 'shipping', 'checkout'] as const
+
+type State = typeof STATES[number]
+
 export default function Payment() {
   const customer = useCart((state) => state.customer)
   const items = useCart((state) => state.items)
+  const totals = useCart((state) => state.totals())
+  const shipping = useCart((st) =>
+    st.items.find((item) => item.name?.toLowerCase()?.includes('shipping')),
+  )
+  const address = customer?.addresses?.find(
+    (a) => a.type === AddressType.Delivery,
+  )
   const { mutate } = trpc.useMutation('stripe.create-checkout-session')
   const stripe = useStripe()
-
-  console.log(customer)
+  const [state, setState] = useState<number>(0)
+  const currentState = STATES[state]
+  const next = () => {
+    setState((prev) => Math.min(prev + 1, STATES.length - 1))
+  }
 
   const onSubmit = () => {
     const email =
@@ -515,7 +731,24 @@ export default function Payment() {
         email,
         items: normalizeItems(items),
         skus: getSKUs(items),
-        shipping: undefined,
+        shipping:
+          shipping && address
+            ? {
+                name: `${customer?.firstName || ''}${
+                  customer?.middleName ? ` ${customer?.middleName}` : ''
+                }${customer?.lastName ? ` ${customer?.lastName}` : ''}`,
+                carrier: 'UPS',
+                phone: address.phone || '',
+                address: {
+                  line1: address.street || '',
+                  line2: address.street2 || '',
+                  city: address.city || '',
+                  postal_code: address.postalCode || '',
+                  state: address.state || '',
+                  country: address.country || '',
+                },
+              }
+            : undefined,
       },
       {
         onSuccess: (session) => {
@@ -529,16 +762,52 @@ export default function Payment() {
 
   return (
     <div className="space-y-2">
-      <CustomerForm />
-      <AddressForm />
-      <form onSubmit={onSubmit} className="space-y-4">
-        <button
-          type="submit"
-          className="uppercase cursor-pointer focus:outline-none"
-        >
-          [checkout]
-        </button>
-      </form>
+      <IfElse predicate={currentState === STATES[0]}>
+        {() => (
+          <button
+            type="button"
+            className="uppercase cursor-pointer focus:outline-none"
+            onClick={next}
+          >
+            [buy]
+          </button>
+        )}
+      </IfElse>
+      <IfElse predicate={state >= 1}>
+        {() => <CustomerForm state={currentState} next={next} />}
+      </IfElse>
+      <IfElse predicate={state >= 2}>
+        {() => <AddressForm state={currentState} next={next} />}
+      </IfElse>
+      <IfElse predicate={currentState === STATES[4]}>
+        {() => (
+          <>
+            <div className="pt-6 pb-1 text-xs font-semibold border-b border-color-500">
+              {'Totals'}
+            </div>
+            <ul className="space-y-2">
+              {items.map((item) => (
+                <li key={item.id}>
+                  [{item.name}] — $
+                  {item.variants?.[0]?.priceVariants?.[0]?.price ?? 0}
+                </li>
+              ))}
+            </ul>
+            <div>
+              Total: <strong>${totals.net}</strong>
+            </div>
+            <div className="pt-6 space-y-4">
+              <button
+                type="button"
+                className="uppercase cursor-pointer focus:outline-none"
+                onClick={onSubmit}
+              >
+                [checkout]
+              </button>
+            </div>
+          </>
+        )}
+      </IfElse>
     </div>
   )
 }

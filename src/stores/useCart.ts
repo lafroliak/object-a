@@ -64,12 +64,9 @@ export default create<State>(
         get().items.reduce(
           (acc, curr) => {
             const quantity = 1
-            const variant = curr.variants
-              ? curr.variants.find((v) => v.isDefault)
-              : curr.defaultVariant
+            const variant = curr.variants?.[0]
             const priceVariants = variant?.priceVariants
-            const { price, currency } =
-              priceVariants?.find((pv) => pv.identifier === 'default') || {}
+            const { price, currency } = priceVariants?.[0] || {}
             if (price) {
               acc.gross += price * 1
               acc.net += price * quantity

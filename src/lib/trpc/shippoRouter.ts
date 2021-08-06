@@ -189,7 +189,7 @@ export const shippoRouter = createRouter()
             ({
               description: item.name,
               quantity: 1,
-              net_weight: '2',
+              net_weight: '1',
               mass_unit: 'lb',
               value_amount: item.amount,
               value_currency: 'USD',

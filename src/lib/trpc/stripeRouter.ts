@@ -75,11 +75,7 @@ export const stripeRouter = createRouter()
     async resolve({ input }) {
       const options: Stripe.Checkout.SessionCreateParams = {
         payment_method_types: ['card'],
-        // shipping_rates: [process.env.SHIPPING_RATE!], // NOPE!
         billing_address_collection: 'auto',
-        shipping_address_collection: {
-          allowed_countries: allowedCountries,
-        },
         customer_email: input.email,
         mode: 'payment',
         metadata: {
