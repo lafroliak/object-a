@@ -16,7 +16,7 @@ function Products({ columns, isModelsList }: Props) {
     return (
       <div className="mx-auto space-x-8 flex flex-row flex-nowrap max-w-[100%] overflow-scroll scrollzone">
         {(columns || []).map((c, i) => (
-          <IfElse key={c.itemId || i} predicate={c.item}>
+          <IfElse key={`models-${c.itemId}-${i}`} predicate={c.item}>
             {(item) => (
               <Link
                 href={
@@ -47,7 +47,7 @@ function Products({ columns, isModelsList }: Props) {
     <div className="max-w-5xl mx-auto space-y-8 md:-space-y-8">
       {(columns || []).map((c, i) => (
         <Link
-          key={c.itemId}
+          key={`products-${c.itemId}-${i}`}
           href={
             c.item?.path
               ? {

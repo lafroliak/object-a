@@ -127,11 +127,22 @@ export const crystallizeRouter = createRouter()
     input: z.object({
       cart: z.unknown(),
       charge: z.unknown(),
+      additionalInformation: z.string().optional(),
+      meta: z
+        .array(
+          z.object({
+            key: z.string(),
+            value: z.string(),
+          }),
+        )
+        .optional(),
     }),
     async resolve({ input }): Promise<{ id: string }> {
       const normalizedInput = normaliseOrderModel({
         cart: input.cart as Product[],
         charge: input.charge as Stripe.Charge,
+        additionalInformation: input.additionalInformation,
+        meta: input.meta,
       })
 
       const { data } = await createCrystallizeOrder(normalizedInput)

@@ -18,7 +18,6 @@ export default function normaliseOrderModel({
   const email = charge.receipt_email || charge.billing_details.email
 
   return {
-    ...rest,
     additionalInformation: '',
     payment: [
       {
@@ -92,5 +91,6 @@ export default function normaliseOrderModel({
           ],
         }),
     },
+    ...rest,
   }
 }

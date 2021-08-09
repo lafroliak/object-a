@@ -50,6 +50,10 @@ declare namespace Shippo {
     parcels: Parcel[]
     rates: Rate[]
     messages?: Message[]
+    object_id: string
+    customs_declaration?: CreateCustomsDeclaration & {
+      items: string[]
+    }
   }
 
   // https://goshippo.com/docs/reference#shipments
@@ -70,6 +74,7 @@ declare namespace Shippo {
     commercial_invoice_url: string
     metadata: string
     parcel: string
+    messages?: Message[]
   }
 
   // https://goshippo.com/docs/reference#rates
@@ -192,13 +197,15 @@ declare namespace Shippo {
     shipment: CreateShipmentRequest
     servicelevel_token: string
     carrier_account: string
+    // rate: string
     label_file_type: 'png' | 'pdf'
+    async?: boolean | undefined
   }
 
   interface Shippo {
-    // carrieraccount: {
-    //   create: (request: CreateCarrierAccountRequest) => Promise<CarrierAccount>
-    // }
+    carrieraccount: {
+      create: (request: CreateCarrierAccountRequest) => Promise<CarrierAccount>
+    }
     customsdeclaration: {
       create: (
         request: CreateCustomDeclarationRequest,
@@ -206,6 +213,13 @@ declare namespace Shippo {
     }
     shipment: {
       create: (request: CreateShipmentRequest) => Promise<Shipment>
+      retrieve: (request: string) => Promise<Shipment>
+    }
+    rates: {
+      retrieve: (request: string) => Promise<Rate>
+    }
+    customsitem: {
+      retrieve: (request: string) => Promise<CreateCustomsItemRequest>
     }
     address: {
       create: (request: CreateAddressRequest) => Promise<Address>
@@ -214,6 +228,7 @@ declare namespace Shippo {
     }
     transaction: {
       create: (request: CreateTransactionRequest) => Promise<Transaction>
+      retrieve: (request: string) => Promise<Transaction>
       list: ({
         rate: string,
       }) => Promise<{ results: Transaction[]; messages?: string[] }>

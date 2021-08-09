@@ -16,6 +16,7 @@ type Props = {
   state: State
   next: () => void
   rates?: Shippo.Rate[]
+  shipmentID?: string
 }
 
 function CustomerForm({ state, next }: Props) {
@@ -175,6 +176,7 @@ function AddressForm({ state, next }: Props) {
   >(undefined)
   const [messages, setMessages] = useState<Shippo.Message[]>([])
   const [rates, setRates] = useState<Shippo.Rate[]>([])
+  const [shipmentID, setShipmentID] = useState<string>('')
 
   useEffect(() => {
     selectCountry(
@@ -251,16 +253,19 @@ function AddressForm({ state, next }: Props) {
           if (res.is_complete) {
             if (selectedCountry !== 'US') {
               createCustomDeclaration(
-                items
-                  .filter(
-                    (item) => !item.name?.toLowerCase()?.includes('shipping'),
-                  )
-                  .map((item) => ({
-                    name: item.name || 'Dress',
-                    amount: (
-                      item.variants?.[0].priceVariants?.[0].price || 1
-                    ).toString(),
-                  })),
+                {
+                  items: items
+                    .filter(
+                      (item) => !item.name?.toLowerCase()?.includes('shipping'),
+                    )
+                    .map((item) => ({
+                      name: item.name || 'Dress',
+                      amount: (
+                        item.variants?.[0].priceVariants?.[0].price || 1
+                      ).toString(),
+                    })),
+                  country: (selectedCountry || 'US').toLowerCase(),
+                },
                 {
                   onError: () => {
                     setMessages([
@@ -336,6 +341,7 @@ function AddressForm({ state, next }: Props) {
                             }
                             if (res.rates.length) {
                               setRates(res.rates)
+                              setShipmentID(res.object_id)
                               next()
                             }
                           },
@@ -404,6 +410,7 @@ function AddressForm({ state, next }: Props) {
                     }
                     if (res.rates.length) {
                       setRates(res.rates)
+                      setShipmentID(res.object_id)
                       next()
                     }
                   },
@@ -419,7 +426,7 @@ function AddressForm({ state, next }: Props) {
   return (
     <>
       <div className="pt-4 pb-1 text-xs font-semibold border-b border-color-500">
-        {'Address'}
+        {'Shipping'}
       </div>
       <form onSubmit={onSubmit} className="space-y-4">
         <fieldset className="space-y-2">
@@ -598,13 +605,20 @@ function AddressForm({ state, next }: Props) {
         </IfElse>
       </form>
       <IfElse predicate={STATES.slice(-2).includes(state) && rates.length}>
-        {() => <Shipping state={state} next={next} rates={rates} />}
+        {() => (
+          <Shipping
+            state={state}
+            next={next}
+            rates={rates}
+            shipmentID={shipmentID}
+          />
+        )}
       </IfElse>
     </>
   )
 }
 
-function Shipping({ state, next, rates }: Props) {
+function Shipping({ state, next, rates, shipmentID }: Props) {
   const [selected, setRate] = useState<Shippo.Rate | null>(null)
   const shipping = useCart((st) =>
     st.items.find((item) => item.name?.toLowerCase()?.includes('shipping')),
@@ -719,6 +733,9 @@ export default function Payment() {
   const next = () => {
     setState((prev) => Math.min(prev + 1, STATES.length - 1))
   }
+  const prev = () => {
+    setState((prev) => Math.max(prev - 1, 0))
+  }
 
   const onSubmit = () => {
     const email =
@@ -738,6 +755,7 @@ export default function Payment() {
                   customer?.middleName ? ` ${customer?.middleName}` : ''
                 }${customer?.lastName ? ` ${customer?.lastName}` : ''}`,
                 carrier: 'UPS',
+                tracking_number: shipping.id,
                 phone: address.phone || '',
                 address: {
                   line1: address.street || '',
@@ -796,7 +814,7 @@ export default function Payment() {
             <div>
               Total: <strong>${totals.net}</strong>
             </div>
-            <div className="pt-6 space-y-4">
+            <div className="pt-6 space-x-4">
               <button
                 type="button"
                 className="uppercase cursor-pointer focus:outline-none"
@@ -804,10 +822,21 @@ export default function Payment() {
               >
                 [checkout]
               </button>
+              <button
+                type="button"
+                className="uppercase cursor-pointer focus:outline-none"
+                onClick={prev}
+              >
+                [back]
+              </button>
             </div>
           </>
         )}
       </IfElse>
+      <div className="pt-6">
+        If you have any questions, please email{' '}
+        <a href="mailto:info@objekt-a.shop">info@objekt-a.shop</a>
+      </div>
     </div>
   )
 }

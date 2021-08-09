@@ -1,4 +1,5 @@
-import { client } from './client'
+import merge from '~lib/merge'
+import { client, rates } from './client'
 
 export async function getAddressList() {
   const addressList = await client.address.list()
@@ -39,6 +40,40 @@ export async function createShipment(shipment: Shippo.CreateShipmentRequest) {
   return createdShipment
 }
 
+export async function getRate(objectID: string) {
+  const rate = await rates(objectID)
+
+  return rate
+}
+
+export async function getShipment(objectID: string) {
+  const rate = await rates(objectID)
+  const shipment = await client.shipment.retrieve(rate.shipment)
+  const promises = shipment.customs_declaration?.items?.map((item: string) =>
+    client.customsitem.retrieve(item),
+  )
+  const items = promises ? await Promise.all(promises) : []
+
+  return {
+    rate,
+    shipment: {
+      ...shipment,
+      customs_declaration:
+        typeof shipment.customs_declaration === 'object'
+          ? ({
+              ...shipment.customs_declaration,
+              items,
+              eel_pfc:
+                shipment.address_to.country === 'ca'
+                  ? 'NOEEI_30_36'
+                  : 'NOEEI_30_37_a',
+              incoterm: 'DDU',
+            } as Shippo.CreateCustomsDeclarationRequest)
+          : shipment.customs_declaration,
+    },
+  }
+}
+
 export async function createTransaction(
   transaction: Shippo.CreateTransactionRequest,
 ) {
@@ -47,92 +82,8 @@ export async function createTransaction(
   return createdTransaction
 }
 
-/* 
-const addressFrom = {
-  name: 'Ms Hippo',
-  company: 'client',
-  street1: '215 Clayton St.',
-  city: 'San Francisco',
-  state: 'CA',
-  zip: '94117',
-  country: 'US', //iso2 country code
-  phone: '+1 555 341 9393',
-  email: 'support@goshippo.com',
+export async function getTransaction(objectID: string) {
+  const transaction = await client.transaction.retrieve(objectID)
+
+  return transaction
 }
-
-// example address_to object dict
-const addressTo = {
-  name: 'Ms Hippo',
-  company: 'Shippo',
-  street1: '803 Clayton St.',
-  city: 'San Francisco',
-  state: 'CA',
-  zip: '94117',
-  country: 'US', //iso2 country code
-  phone: '+1 555 341 9393',
-  email: 'support@goshippo.com',
-}
-
-// parcel object dict
-const parcelOne = {
-  length: '5',
-  width: '5',
-  height: '5',
-  distance_unit: 'in',
-  weight: '2',
-  mass_unit: 'lb',
-} as Shippo.Parcel
-
-const parcelTwo = {
-  length: '5',
-  width: '5',
-  height: '5',
-  distance_unit: 'in',
-  weight: '2',
-  mass_unit: 'lb',
-} as Shippo.Parcel
-
-const shipment = {
-  address_from: addressFrom,
-  address_to: addressTo,
-  parcels: [parcelOne, parcelTwo],
-}
-
-client.shipment.create({
-  address_from: addressFrom,
-  address_to: addressTo,
-  parcels: [parcelOne, parcelTwo],
-  async: false,
-})
-
-client.transaction
-  .create({
-    shipment: shipment,
-    servicelevel_token: 'ups_ground',
-    carrier_account: '558c84bbc25a4f609f9ba02da9791fe4',
-    label_file_type: 'png',
-  })
-  .then(
-    function (transaction) {
-      client.transaction
-        .list({
-          rate: transaction.rate,
-        })
-        .then(function (mpsTransactions) {
-          mpsTransactions.results.forEach(function (mpsTransaction) {
-            if (mpsTransaction.status == 'SUCCESS') {
-              console.log('Label URL: %s', mpsTransaction.label_url)
-              console.log('Tracking Number: %s', mpsTransaction.tracking_number)
-            } else {
-              // hanlde error transactions
-              console.log('Message: %s', mpsTransactions.messages)
-            }
-          })
-        })
-    },
-    function (err) {
-      // Deal with an error
-      console.log('There was an error creating transaction : %s', err.detail)
-    },
-  )
-*/

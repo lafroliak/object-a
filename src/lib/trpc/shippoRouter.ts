@@ -1,26 +1,29 @@
 import * as z from 'zod'
-
+import merge from '~lib/merge'
 import {
   createCustomDeclaration,
   createShipment,
   createTransaction,
   getAddress,
   getAddressList,
+  getRate,
+  getShipment,
+  getTransaction,
   validateAddress,
 } from '~lib/shippo/api'
 import { createRouter } from '~pages/api/trpc/[trpc]'
 
 const address = z.object({
-  name: z.string(),
+  name: z.string().optional(),
   company: z.string().optional(),
   phone: z.string().optional(),
   street1: z.string(),
   street2: z.string().optional(),
   street3: z.string().optional(),
-  city: z.string(),
-  zip: z.string(),
-  state: z.string(),
-  country: z.string(),
+  city: z.string().optional(),
+  zip: z.string().optional(),
+  state: z.string().optional(),
+  country: z.string().optional(),
   validation_results: z
     .object({
       is_valid: z.boolean().optional(),
@@ -92,7 +95,7 @@ const parcel = z.object({
 })
 
 const addressRequest = z.object({
-  name: z.string(),
+  name: z.string().optional(),
   company: z.string().optional(),
   phone: z.string().optional(),
   street1: z.string(),
@@ -148,14 +151,9 @@ export const shippoRouter = createRouter()
   })
   .mutation('validateAddress', {
     input: addressRequest,
-    async resolve({ ctx, input }) {
-      ctx.res?.setHeader(
-        'Cache-Control',
-        'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
-      )
-
+    async resolve({ input }) {
       const validatedAddress = await validateAddress({
-        name: input.name,
+        name: input.name || '',
         street1: input.street1,
         street2: input.street2,
         street3: input.street3,
@@ -171,20 +169,18 @@ export const shippoRouter = createRouter()
     },
   })
   .mutation('createCustomDeclaration', {
-    input: z.array(
-      z.object({
-        name: z.string(),
-        amount: z.string(),
-      }),
-    ),
-    async resolve({ ctx, input }) {
-      ctx.res?.setHeader(
-        'Cache-Control',
-        'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
-      )
-
+    input: z.object({
+      items: z.array(
+        z.object({
+          name: z.string(),
+          amount: z.string(),
+        }),
+      ),
+      country: z.string(),
+    }),
+    async resolve({ input }) {
       const createdShipment = await createCustomDeclaration(
-        input.map(
+        input.items.map(
           (item) =>
             ({
               description: item.name,
@@ -194,6 +190,8 @@ export const shippoRouter = createRouter()
               value_amount: item.amount,
               value_currency: 'USD',
               origin_country: 'US',
+              eel_pfc: input.country === 'ca' ? 'NOEEI_30_36' : 'NOEEI_30_37_a',
+              incoterm: 'DDU',
             } as Shippo.CreateCustomsItemRequest),
         ),
       )
@@ -203,17 +201,50 @@ export const shippoRouter = createRouter()
   })
   .mutation('createShipment', {
     input: shipmentRequest,
+    async resolve({ input }) {
+      const createdShipment = await createShipment(input)
+
+      return createdShipment
+    },
+  })
+  .query('getRate', {
+    input: z.string(),
     async resolve({ ctx, input }) {
       ctx.res?.setHeader(
         'Cache-Control',
         'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
       )
 
-      const createdShipment = await createShipment(input)
+      const shipment = await getRate(input)
 
-      return createdShipment
+      return shipment
     },
   })
+  .query('getShipment', {
+    input: z.string(),
+    async resolve({ ctx, input }) {
+      ctx.res?.setHeader(
+        'Cache-Control',
+        'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
+      )
+
+      const shipment = await getShipment(input)
+
+      return shipment
+    },
+  })
+  // .mutation('createTransactionByRate', {
+  //   input: z.string(),
+  //   async resolve({ input }) {
+  //     const createdTransaction = await createTransaction({
+  //       rate: input,
+  //       label_file_type: 'pdf',
+  //       async: false,
+  //     })
+
+  //     return createdTransaction
+  //   },
+  // })
   .mutation('createTransaction', {
     input: transactionRequest,
     async resolve({ ctx, input }) {
@@ -222,8 +253,35 @@ export const shippoRouter = createRouter()
         'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
       )
 
-      const createdTransaction = await createTransaction(input)
+      const createdTransaction = await createTransaction(
+        merge(input, {
+          shipment: {
+            custom_declaration:
+              typeof input.shipment.customs_declaration === 'object' &&
+              merge(input.shipment.customs_declaration, {
+                eel_pfc:
+                  input.shipment.address_to.country === 'ca'
+                    ? 'NOEEI_30_36'
+                    : 'NOEEI_30_37_a',
+                incoterm: 'DDU',
+              }),
+          },
+        }),
+      )
 
       return createdTransaction
+    },
+  })
+  .query('getTransaction', {
+    input: z.string(),
+    async resolve({ ctx, input }) {
+      ctx.res?.setHeader(
+        'Cache-Control',
+        'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
+      )
+
+      const transaction = await getTransaction(input)
+
+      return transaction
     },
   })

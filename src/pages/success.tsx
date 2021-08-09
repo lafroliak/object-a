@@ -1,6 +1,6 @@
 import { useRouter } from 'next/dist/client/router'
 import { Fragment, useEffect, useState } from 'react'
-
+import Stripe from 'stripe'
 import IfElse from '~components/IfElse'
 import PageContent from '~components/PageContent'
 import ShowcaseCard from '~components/ShowcaseCard'
@@ -22,17 +22,32 @@ function SuccessPage() {
     refetch,
     isFetched,
   } = trpc.useQuery(['crystallize.get-order', { id: orderID ?? '' }], {
-    enabled: !!orderID,
+    enabled: Boolean(orderID),
   })
   const { data: productsData } = trpc.useQuery(['crystallize.get-all-products'])
   const products = productsData?.products
   const { mutate: getPaymentIntent } = trpc.useMutation(
     'stripe.payment-intents',
   )
+  const { mutate: createTransaction } = trpc.useMutation(
+    'shippo.createTransaction',
+  )
   const { mutate: createOrder } = trpc.useMutation('crystallize.create-order')
-  const [customer, setCustomer] = useState<Option<string>>(null)
-  const [quantity, setQuantity] = useState<Option<number>>(null)
-  const [receipt, setReciept] = useState<Option<string>>(null)
+  const [charge, setCharge] = useState<Option<Stripe.Charge>>(null)
+  const { data } = trpc.useQuery(
+    ['shippo.getShipment', charge?.shipping?.tracking_number || ''],
+    {
+      enabled: Boolean(charge?.shipping?.tracking_number),
+    },
+  )
+  const { data: transaction } = trpc.useQuery(
+    ['shippo.getTransaction', order?.additionalInformation || ''],
+    {
+      enabled: Boolean(order?.additionalInformation),
+    },
+  )
+  const quantity = (charge?.amount ?? 0) / 100
+  const receipt = charge?.receipt_url
 
   trpc.useQuery(
     [
@@ -40,7 +55,7 @@ function SuccessPage() {
       { sessionId: router.query?.session_id as string | undefined },
     ],
     {
-      enabled: !!router.query?.session_id,
+      enabled: Boolean(router.query?.session_id),
       onSuccess: (stripeData) => {
         if (stripeData) {
           getPaymentIntent(
@@ -51,9 +66,7 @@ function SuccessPage() {
               onSuccess: (paymentIntent) => {
                 const charge = paymentIntent?.data?.[0]
                 if (charge) {
-                  setCustomer(charge.shipping?.name)
-                  setQuantity((charge.amount ?? 100) / 100)
-                  setReciept(charge.receipt_url)
+                  setCharge(charge)
                   orderByPaymentID(
                     {
                       paymentIntentId: String(stripeData.payment_intent),
@@ -62,22 +75,8 @@ function SuccessPage() {
                       onSuccess: (ordr) => {
                         if (ordr?.node.id) {
                           setOrderID(ordr.node.id)
-                        } else {
-                          createOrder(
-                            {
-                              cart,
-                              charge,
-                            },
-                            {
-                              onSuccess: (order) => {
-                                if (order) {
-                                  setOrderID(order.id)
-                                }
-                              },
-                            },
-                          )
+                          clearItems()
                         }
-                        clearItems()
                       },
                       onError: console.error,
                     },
@@ -94,6 +93,57 @@ function SuccessPage() {
   )
 
   useEffect(() => {
+    if (!orderID && charge && data?.shipment) {
+      createTransaction(
+        {
+          shipment: {
+            ...data.shipment,
+            async: false,
+          },
+          carrier_account: data.shipment.rates[0]?.carrier_account || '',
+          servicelevel_token: data.shipment.rates[0]?.servicelevel.token || '',
+          label_file_type: 'pdf',
+        },
+        {
+          onSuccess: (trnscn) => {
+            createOrder(
+              {
+                cart,
+                charge,
+                additionalInformation: trnscn?.object_id,
+                meta: [
+                  {
+                    key: 'transaction_id',
+                    value: trnscn?.object_id || '',
+                  },
+                ],
+              },
+              {
+                onSuccess: (order) => {
+                  if (order) {
+                    setOrderID(order.id)
+                    clearItems()
+                  }
+                },
+                onError: console.error,
+              },
+            )
+          },
+          onError: console.error,
+        },
+      )
+    }
+  }, [
+    charge,
+    orderID,
+    data?.shipment,
+    cart,
+    clearItems,
+    createOrder,
+    createTransaction,
+  ])
+
+  useEffect(() => {
     if (orderID && isFetched && !order) {
       const timeout = setTimeout(refetch, 5000)
       return () => {
@@ -105,7 +155,9 @@ function SuccessPage() {
   return (
     <section className="w-full min-h-full p-8 mx-auto space-y-6 text-sm bg-color-100 dark:bg-color-800 max-w-prose">
       <h2 className="font-bold">
-        <IfElse predicate={customer}>{(cst) => <>{`${cst}! `}</>}</IfElse>
+        <IfElse predicate={charge?.shipping}>
+          {(cst) => <>{`${cst.name}! `}</>}
+        </IfElse>
       </h2>
       <PageContent path="/success" />
       <IfElse
@@ -133,18 +185,46 @@ function SuccessPage() {
           </Fragment>
         )}
       </IfElse>
-      <IfElse
-        predicate={
-          (quantity ?? 0) -
-          (order?.cart?.reduce((r, c) => r + (c?.price?.gross ?? 0), 0) ?? 0)
-        }
-      >
-        {(shp) => (
-          <div className="space-y-2">
+      <IfElse predicate={charge?.shipping}>
+        {(shipping) => (
+          <div className="space-y-2 text-sm">
             <div className="pb-1 text-xs font-semibold border-b border-color-500">
               {'Shipping'}
             </div>
-            <div className="text-sm">{shp.toFixed(2)} USD</div>
+            <div>
+              Will be delivered to{' '}
+              <strong>
+                {shipping.address?.line1}, {shipping.address?.city},{' '}
+                {shipping.address?.state}, {shipping.address?.country},{' '}
+                {shipping.address?.postal_code}
+              </strong>
+            </div>
+            <div>${data?.rate.amount ?? 0}</div>
+            <IfElse
+              predicate={
+                transaction?.messages && transaction.messages.length > 0
+                  ? transaction.messages
+                  : null
+              }
+            >
+              {(msgs) => (
+                <div className="space-y-2">
+                  {msgs.map((msg) => (
+                    <div
+                      key={msg.text}
+                      className={`text-xs ${
+                        msg.text.toLowerCase().includes('hard')
+                          ? 'text-red-600'
+                          : 'text-orange-600'
+                      }`}
+                    >
+                      {msg.source ? <strong>{msg.source || ''} </strong> : null}
+                      {msg.text}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </IfElse>
           </div>
         )}
       </IfElse>

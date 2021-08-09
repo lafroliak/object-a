@@ -107,27 +107,44 @@ export default function ProductPage({ page }: Props) {
                   >
                     {(images) => (
                       <div className="relative w-[95vw] h-[95vw] md:w-[75vmin] md:h-[75vmin]">
-                        <div className="absolute inset-0" ref={ref}>
-                          <Sequencer
-                            placeholder={content?.images?.reduce<
-                              string | undefined
-                            >(
-                              (res, i) =>
-                                res
-                                  ? res
-                                  : i.variants?.find(
-                                      (v) =>
-                                        v.url.includes(
-                                          isWebpSupported() ? 'webp' : 'png',
-                                        ) && v.width === 500,
-                                    )?.url,
-                              undefined,
-                            )}
-                            pageID={page.id}
-                            list={images.map((x) => x.url)}
-                            width={width}
-                          />
-                        </div>
+                        <IfElse
+                          predicate={images.length > 1 ? images : null}
+                          placeholder={
+                            <img
+                              className="absolute inset-0 object-contain w-full h-full overflow-hidden"
+                              src={images[0].url}
+                              alt={page.name || ''}
+                              width={images[0].width}
+                              height={images[0].height || images[0].width}
+                            />
+                          }
+                        >
+                          {() => (
+                            <div className="absolute inset-0" ref={ref}>
+                              <Sequencer
+                                placeholder={content?.images?.reduce<
+                                  string | undefined
+                                >(
+                                  (res, i) =>
+                                    res
+                                      ? res
+                                      : i.variants?.find(
+                                          (v) =>
+                                            v.url.includes(
+                                              isWebpSupported()
+                                                ? 'webp'
+                                                : 'png',
+                                            ) && v.width === 500,
+                                        )?.url,
+                                  undefined,
+                                )}
+                                pageID={page.id}
+                                list={images.map((x) => x.url)}
+                                width={width}
+                              />
+                            </div>
+                          )}
+                        </IfElse>
                       </div>
                     )}
                   </IfElse>

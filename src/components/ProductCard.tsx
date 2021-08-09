@@ -42,7 +42,7 @@ function ProductCard({ item, index = 0 }: Props) {
   const placeholder = (images?.[0] || variant?.image)?.variants?.[0]
   const image = (images?.[0] || variant?.image)?.variants?.find(
     (img) =>
-      img.width === (isLG ? 768 : 500) &&
+      img.width === (isLG ? 1024 : 500) &&
       img.url.includes(isWebpSupported() ? 'webp' : 'png'),
   )
 

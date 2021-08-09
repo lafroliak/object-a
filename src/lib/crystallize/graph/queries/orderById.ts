@@ -1,4 +1,4 @@
-export default /* GraphQL */ `
+const orderById = /* GraphQL */ `
   query getOrder($id: ID!) {
     orders {
       get(id: $id) {
@@ -43,7 +43,14 @@ export default /* GraphQL */ `
             email
           }
         }
+        additionalInformation
+        meta {
+          key
+          value
+        }
       }
     }
   }
 `
+
+export default orderById

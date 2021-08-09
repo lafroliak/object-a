@@ -1,10 +1,11 @@
-export default /* GraphQL */ `
+const createOrder = /* GraphQL */ `
   mutation createOrder(
     $customer: CustomerInput!
     $cart: [OrderItemInput!]!
     $payment: [PaymentInput!]
     $total: PriceInput
     $additionalInformation: String
+    $meta: [OrderMetadataInput!]
   ) {
     orders {
       create(
@@ -14,6 +15,7 @@ export default /* GraphQL */ `
           payment: $payment
           total: $total
           additionalInformation: $additionalInformation
+          meta: $meta
         }
       ) {
         id
@@ -21,3 +23,5 @@ export default /* GraphQL */ `
     }
   }
 `
+
+export default createOrder

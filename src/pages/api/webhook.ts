@@ -1,13 +1,14 @@
 import { buffer } from 'micro'
 import Cors from 'micro-cors'
 import type { NextApiRequest, NextApiResponse } from 'next'
+import Shippo from 'shippo'
 import Stripe from 'stripe'
-
 import { simplyFetchFromGraph } from '~lib/crystallize/graph'
 import normaliseOrderModel from '~lib/crystallize/normaliseOrderModel'
 import { createCrystallizeOrder } from '~lib/crystallize/order'
 import { Product } from '~lib/crystallize/types'
 import { Mutation } from '~lib/crystallize/types-orders'
+import { createTransaction, getShipment } from '~lib/shippo/api'
 import { stripe } from '~lib/stripe/createClient'
 
 const endpointSecret = process.env.WEBHOOK_SECRET!
@@ -110,6 +111,24 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
           // Get payment intent object
           if (typeof session.payment_intent === 'string') {
+            let transaction: Shippo.Transaction = {} as Shippo.Transaction
+
+            try {
+              if (session.shipping?.tracking_number) {
+                const res = await getShipment(session.shipping.tracking_number)
+
+                transaction = await createTransaction({
+                  shipment: res.shipment,
+                  carrier_account: res.shipment.rates[0]?.carrier_account || '',
+                  servicelevel_token:
+                    res.shipment.rates[0]?.servicelevel.token || '',
+                  label_file_type: 'pdf',
+                })
+              }
+            } catch (err) {
+              console.error(err)
+            }
+
             const { charges } = await stripe.paymentIntents.retrieve(
               session.payment_intent,
             )
@@ -117,6 +136,13 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
             const normalizedInput = normaliseOrderModel({
               cart,
               charge,
+              additionalInformation: transaction?.object_id || '',
+              meta: [
+                {
+                  key: 'transaction_id',
+                  value: transaction?.object_id || '',
+                },
+              ],
             })
 
             const { data: orders } = await createCrystallizeOrder(
