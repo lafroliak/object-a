@@ -28,7 +28,7 @@ export default function DocumentPage({ page }: Props) {
         }
         openGraph={{
           type: 'website',
-          url: `${publicRuntimeConfig.SITE_URL}/${asPath}`,
+          url: `${publicRuntimeConfig.SITE_URL}${asPath}`,
           title:
             (
               page.components?.find((c) => c?.name === 'Title')
