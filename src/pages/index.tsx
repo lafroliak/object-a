@@ -1,9 +1,9 @@
 import clsx from 'clsx'
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 import { NextSeo } from 'next-seo'
+import getConfig from 'next/config'
 import React, { useEffect, useRef } from 'react'
 import { match, select } from 'ts-pattern'
-
 import CrystallizeContent from '~components/CrystallizeContent'
 import Products from '~components/Products'
 import { getLayout } from '~layouts/HomeLayout'
@@ -16,6 +16,8 @@ import {
   RichTextContent,
 } from '~lib/crystallize/types'
 import { getBlocks, WithType } from '~lib/getBlocks'
+
+const { publicRuntimeConfig } = getConfig()
 
 export async function getStaticProps(context: GetStaticPropsContext) {
   const { preview } = context
@@ -109,7 +111,7 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
         description={page.intro?.plainText?.join('. ') || undefined}
         openGraph={{
           type: 'website',
-          url: process.env.VERCEL_URL,
+          url: publicRuntimeConfig.SITE_URL,
           title: page.title?.text || undefined,
           description: page.intro?.plainText?.join('. ') || undefined,
           site_name: page.title?.text || undefined,

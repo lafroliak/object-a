@@ -1,4 +1,5 @@
 import { NextSeo } from 'next-seo'
+import getConfig from 'next/config'
 import { useRouter } from 'next/dist/client/router'
 import {
   Item,
@@ -7,14 +8,13 @@ import {
   RichTextContent,
   SingleLineContent,
 } from '~lib/crystallize/types'
-
 import CrystallizeContent from './CrystallizeContent'
 import IfElse from './IfElse'
 
 type Props = {
   page: Item
 }
-
+const { publicRuntimeConfig } = getConfig()
 export default function DocumentPage({ page }: Props) {
   const { asPath } = useRouter()
   return (
@@ -28,7 +28,7 @@ export default function DocumentPage({ page }: Props) {
         }
         openGraph={{
           type: 'website',
-          url: `${process.env.VERCEL_URL}/${asPath}`,
+          url: `${publicRuntimeConfig.SITE_URL}/${asPath}`,
           title:
             (
               page.components?.find((c) => c?.name === 'Title')

@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { NextSeo } from 'next-seo'
+import getConfig from 'next/config'
 import { useRouter } from 'next/dist/client/router'
 import dynamic from 'next/dynamic'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
@@ -23,6 +24,7 @@ import IconModel from './IconModel'
 import IconThreeD from './IconThreeD'
 import IfElse from './IfElse'
 import Popup from './Popup'
+const { publicRuntimeConfig } = getConfig()
 
 const PageContent = dynamic(import('./PageContent'), {
   loading: function Placeholder() {
@@ -99,7 +101,7 @@ export default function ProductPage({ page }: Props) {
         }
         openGraph={{
           type: 'website',
-          url: `${process.env.VERCEL_URL}/${asPath}`,
+          url: `${publicRuntimeConfig.SITE_URL}/${asPath}`,
           title:
             (
               page.components?.find((c) => c?.name === 'Title')
