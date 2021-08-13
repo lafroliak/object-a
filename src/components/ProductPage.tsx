@@ -80,9 +80,7 @@ export default function ProductPage({ page }: Props) {
         : null
     const image = content?.images?.reduce<ImageVariant | null>((res, img) => {
       const variant = img.variants?.find(
-        (v) =>
-          v.url.includes(isWebpSupported() ? 'webp' : 'png') &&
-          v.width === 1024,
+        (v) => v.url.includes('png') && v.width === 1024,
       )
       if (variant) return variant
       return res
