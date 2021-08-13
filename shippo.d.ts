@@ -194,10 +194,10 @@ declare namespace Shippo {
   }
 
   interface CreateTransactionRequest {
-    shipment: CreateShipmentRequest
-    servicelevel_token: string
-    carrier_account: string
-    // rate: string
+    // shipment: CreateShipmentRequest
+    // servicelevel_token: string
+    // carrier_account: string
+    rate: string
     label_file_type: 'png' | 'pdf'
     async?: boolean | undefined
   }

@@ -2,7 +2,7 @@
   @screen sm {
     &,
     &.reversed {
-      grid-template-rows: minmax(30rem, max-content) minmax(0, max-content);
+      grid-template-rows: auto minmax(0, max-content);
       grid-template-areas:
         'image'
         'name';

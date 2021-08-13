@@ -117,12 +117,12 @@ const shipmentRequest = z.object({
   parcels: z.union([z.string(), parcel, z.array(parcel)]),
 })
 
-const transactionRequest = z.object({
-  shipment: shipmentRequest,
-  servicelevel_token: z.string(),
-  carrier_account: z.string(),
-  label_file_type: z.union([z.literal('png'), z.literal('pdf')]),
-})
+// const transactionRequest = z.object({
+//   shipment: shipmentRequest,
+//   servicelevel_token: z.string(),
+//   carrier_account: z.string(),
+//   label_file_type: z.union([z.literal('png'), z.literal('pdf')]),
+// })
 
 export const shippoRouter = createRouter()
   .query('getAddressList', {
@@ -233,45 +233,45 @@ export const shippoRouter = createRouter()
       return shipment
     },
   })
-  // .mutation('createTransactionByRate', {
-  //   input: z.string(),
-  //   async resolve({ input }) {
-  //     const createdTransaction = await createTransaction({
-  //       rate: input,
-  //       label_file_type: 'pdf',
-  //       async: false,
-  //     })
-
-  //     return createdTransaction
-  //   },
-  // })
-  .mutation('createTransaction', {
-    input: transactionRequest,
-    async resolve({ ctx, input }) {
-      ctx.res?.setHeader(
-        'Cache-Control',
-        'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
-      )
-
-      const createdTransaction = await createTransaction(
-        merge(input, {
-          shipment: {
-            custom_declaration:
-              typeof input.shipment.customs_declaration === 'object' &&
-              merge(input.shipment.customs_declaration, {
-                eel_pfc:
-                  input.shipment.address_to.country === 'ca'
-                    ? 'NOEEI_30_36'
-                    : 'NOEEI_30_37_a',
-                incoterm: 'DDU',
-              }),
-          },
-        }),
-      )
+  .mutation('createTransactionByRate', {
+    input: z.string(),
+    async resolve({ input }) {
+      const createdTransaction = await createTransaction({
+        rate: input,
+        label_file_type: 'pdf',
+        async: false,
+      })
 
       return createdTransaction
     },
   })
+  // .mutation('createTransaction', {
+  //   input: transactionRequest,
+  //   async resolve({ ctx, input }) {
+  //     ctx.res?.setHeader(
+  //       'Cache-Control',
+  //       'public, max-age=300, s-maxage=1800, stale-while-revalidate=1800',
+  //     )
+
+  //     const createdTransaction = await createTransaction(
+  //       merge(input, {
+  //         shipment: {
+  //           custom_declaration:
+  //             typeof input.shipment.customs_declaration === 'object' &&
+  //             merge(input.shipment.customs_declaration, {
+  //               eel_pfc:
+  //                 input.shipment.address_to.country === 'ca'
+  //                   ? 'NOEEI_30_36'
+  //                   : 'NOEEI_30_37_a',
+  //               incoterm: 'DDU',
+  //             }),
+  //         },
+  //       }),
+  //     )
+
+  //     return createdTransaction
+  //   },
+  // })
   .query('getTransaction', {
     input: z.string(),
     async resolve({ ctx, input }) {

@@ -10,6 +10,7 @@ import { Option } from '~typings/utils'
 
 import IfElse from './IfElse'
 import * as styles from './ProductCard.module.css'
+import ShowcaseCard from './ShowcaseCard'
 
 const CollapsableImage = dynamic(import('./CollapsableImage'), {
   loading: function Placeholder() {
@@ -29,6 +30,7 @@ function ProductCard({ item, index = 0 }: Props) {
   const [isHovered, setHovered] = useState(false)
   const [isTap, setTap] = useState(false)
   const isLG = useMediaQuery('isLG')
+  const isSM = useMediaQuery('isSM')
   // const x = useMotionValue(0)
 
   if (!item) return null
@@ -83,7 +85,7 @@ function ProductCard({ item, index = 0 }: Props) {
           <div
             className={clsx(
               styles.image,
-              'relative grid w-full aspect-h-1 aspect-w-1',
+              'relative w-full aspect-h-1 aspect-w-1',
             )}
           >
             <CollapsableImage
@@ -100,11 +102,12 @@ function ProductCard({ item, index = 0 }: Props) {
         {(prop) => (
           <motion.div
             className={clsx('relative grid items-center', styles.name, {
-              'justify-end': index % 2 === 0,
-              'justify-start': index % 2 !== 0,
+              'justify-end': !isSM && index % 2 === 0,
+              'justify-start': !isSM && index % 2 !== 0,
+              'justify-center': isSM,
             })}
             initial={false}
-            animate={{ opacity: isHovered ? 1 : 0 }}
+            animate={{ opacity: isHovered || isSM ? 1 : 0 }}
             transition={{ delay: 0.25 }}
           >
             <h3

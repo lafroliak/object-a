@@ -30,12 +30,12 @@ function SuccessPage() {
     'stripe.payment-intents',
   )
   const { mutate: createTransaction } = trpc.useMutation(
-    'shippo.createTransaction',
+    'shippo.createTransactionByRate',
   )
   const { mutate: createOrder } = trpc.useMutation('crystallize.create-order')
   const [charge, setCharge] = useState<Option<Stripe.Charge>>(null)
-  const { data } = trpc.useQuery(
-    ['shippo.getShipment', charge?.shipping?.tracking_number || ''],
+  const { data: rate } = trpc.useQuery(
+    ['shippo.getRate', charge?.shipping?.tracking_number || ''],
     {
       enabled: Boolean(charge?.shipping?.tracking_number),
     },
@@ -93,55 +93,36 @@ function SuccessPage() {
   )
 
   useEffect(() => {
-    if (!orderID && charge && data?.shipment) {
-      createTransaction(
-        {
-          shipment: {
-            ...data.shipment,
-            async: false,
-          },
-          carrier_account: data.shipment.rates[0]?.carrier_account || '',
-          servicelevel_token: data.shipment.rates[0]?.servicelevel.token || '',
-          label_file_type: 'pdf',
-        },
-        {
-          onSuccess: (trnscn) => {
-            createOrder(
-              {
-                cart,
-                charge,
-                additionalInformation: trnscn?.object_id,
-                meta: [
-                  {
-                    key: 'transaction_id',
-                    value: trnscn?.object_id || '',
-                  },
-                ],
-              },
-              {
-                onSuccess: (order) => {
-                  if (order) {
-                    setOrderID(order.id)
-                    clearItems()
-                  }
+    if (!orderID && charge && charge.shipping?.tracking_number) {
+      createTransaction(charge.shipping.tracking_number, {
+        onSuccess: (trnscn) => {
+          createOrder(
+            {
+              cart,
+              charge,
+              additionalInformation: trnscn?.object_id,
+              meta: [
+                {
+                  key: 'transaction_id',
+                  value: trnscn?.object_id || '',
                 },
-                onError: console.error,
+              ],
+            },
+            {
+              onSuccess: (order) => {
+                if (order) {
+                  setOrderID(order.id)
+                  clearItems()
+                }
               },
-            )
-          },
-          onError: console.error,
+              onError: console.error,
+            },
+          )
         },
-      )
+        onError: console.error,
+      })
     }
-  }, [
-    charge,
-    orderID,
-    data?.shipment,
-    cart,
-    clearItems,
-    createOrder,
-    createTransaction,
-  ])
+  }, [charge, orderID, cart, clearItems, createOrder, createTransaction])
 
   useEffect(() => {
     if (orderID && isFetched && !order) {
@@ -199,7 +180,7 @@ function SuccessPage() {
                 {shipping.address?.postal_code}
               </strong>
             </div>
-            <div>${data?.rate.amount ?? 0}</div>
+            <div>Amount: ${rate?.amount ?? 0}</div>
             <IfElse
               predicate={
                 transaction?.messages && transaction.messages.length > 0
@@ -208,7 +189,7 @@ function SuccessPage() {
               }
             >
               {(msgs) => (
-                <div className="space-y-2">
+                <>
                   {msgs.map((msg) => (
                     <div
                       key={msg.text}
@@ -222,6 +203,41 @@ function SuccessPage() {
                       {msg.text}
                     </div>
                   ))}
+                </>
+              )}
+            </IfElse>
+            <IfElse predicate={transaction?.tracking_number}>
+              {(trn) => (
+                <div>
+                  Tracking number <strong>{trn}</strong>
+                </div>
+              )}
+            </IfElse>
+            <IfElse predicate={transaction?.tracking_url_provider}>
+              {(url) => (
+                <div>
+                  <a
+                    className="block text-sm"
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    [TRACKING PAGE]
+                  </a>
+                </div>
+              )}
+            </IfElse>
+            <IfElse predicate={transaction?.label_url}>
+              {(url) => (
+                <div>
+                  <a
+                    className="block text-sm"
+                    href={url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    [GET LABEL]
+                  </a>
                 </div>
               )}
             </IfElse>

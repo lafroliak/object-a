@@ -618,7 +618,7 @@ function AddressForm({ state, next }: Props) {
   )
 }
 
-function Shipping({ state, next, rates, shipmentID }: Props) {
+function Shipping({ state, next, rates }: Props) {
   const [selected, setRate] = useState<Shippo.Rate | null>(null)
   const shipping = useCart((st) =>
     st.items.find((item) => item.name?.toLowerCase()?.includes('shipping')),
@@ -626,21 +626,23 @@ function Shipping({ state, next, rates, shipmentID }: Props) {
   const addItem = useCart((st) => st.addItem)
   const deleteItem = useCart((st) => st.deleteItem)
 
-  const onSubmit = () => {
-    if (!selected) return
+  const handleClick = (rate: Shippo.Rate) => {
+    if (!rate) return
+
+    setRate(rate)
 
     if (shipping) {
       deleteItem(shipping.id)
     }
 
     addItem({
-      id: selected.object_id,
-      name: `SHIPPING by ${selected.provider} ${selected.servicelevel.name}`,
+      id: rate.object_id,
+      name: `SHIPPING by ${rate.provider} ${rate.servicelevel.name}`,
       shape: {
-        id: selected.object_id,
+        id: rate.object_id,
       },
       version: {
-        id: selected.object_id,
+        id: rate.object_id,
         label: VersionLabel.Draft,
       },
       subtree: {
@@ -654,16 +656,17 @@ function Shipping({ state, next, rates, shipmentID }: Props) {
       },
       variants: [
         {
-          id: selected.object_id,
-          sku: selected.shipment,
-          name: `${selected.provider} ${selected.servicelevel.name}`,
+          id: rate.object_id,
+          sku: rate.shipment,
+          name: `${rate.provider} ${rate.servicelevel.name}`,
           priceVariants: [
-            { price: Number(selected.amount), identifier: selected.object_id },
+            { price: Number(rate.amount), identifier: rate.object_id },
           ],
         },
       ],
     })
-    next()
+
+    if (state === STATES[3]) next()
   }
 
   return (
@@ -685,7 +688,7 @@ function Shipping({ state, next, rates, shipmentID }: Props) {
               className={`cursor-pointer text-left focus:outline-none${
                 selected?.object_id === rate.object_id ? ' underline' : ''
               }`}
-              onClick={() => setRate(rate)}
+              onClick={() => handleClick(rate)}
             >
               <strong>{rate.provider}</strong> {rate.servicelevel.name} — $
               {rate.amount}
@@ -694,20 +697,6 @@ function Shipping({ state, next, rates, shipmentID }: Props) {
           </li>
         ))}
       </ul>
-      <div className="pt-2">
-        <IfElse predicate={state === STATES[3]}>
-          {() => (
-            <button
-              type="button"
-              className="uppercase cursor-pointer focus:outline-none"
-              disabled={!selected}
-              onClick={onSubmit}
-            >
-              [next]
-            </button>
-          )}
-        </IfElse>
-      </div>
     </>
   )
 }
@@ -732,9 +721,6 @@ export default function Payment() {
   const currentState = STATES[state]
   const next = () => {
     setState((prev) => Math.min(prev + 1, STATES.length - 1))
-  }
-  const prev = () => {
-    setState((prev) => Math.max(prev - 1, 0))
   }
 
   const onSubmit = () => {
@@ -821,13 +807,6 @@ export default function Payment() {
                 onClick={onSubmit}
               >
                 [checkout]
-              </button>
-              <button
-                type="button"
-                className="uppercase cursor-pointer focus:outline-none"
-                onClick={prev}
-              >
-                [back]
               </button>
             </div>
           </>

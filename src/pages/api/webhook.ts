@@ -115,14 +115,14 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
             try {
               if (session.shipping?.tracking_number) {
-                const res = await getShipment(session.shipping.tracking_number)
-
                 transaction = await createTransaction({
-                  shipment: res.shipment,
-                  carrier_account: res.shipment.rates[0]?.carrier_account || '',
-                  servicelevel_token:
-                    res.shipment.rates[0]?.servicelevel.token || '',
+                  rate: session.shipping.tracking_number,
+                  // shipment: res.shipment,
+                  // carrier_account: res.shipment.rates[0]?.carrier_account || '',
+                  // servicelevel_token:
+                  //   res.shipment.rates[0]?.servicelevel.token || '',
                   label_file_type: 'pdf',
+                  async: true,
                 })
               }
             } catch (err) {

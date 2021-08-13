@@ -33,7 +33,7 @@ function Products({ columns, isModelsList }: Props) {
                     : '/'
                 }
               >
-                <a className="flex flex-col flex-shrink-0 h-full space-y-2 w-96 lg:w-[32rem]">
+                <a className="flex flex-col flex-shrink-0 h-full space-y-2 w-[75vmin] lg:w-[32rem]">
                   <ModelsCard item={item} />
                 </a>
               </Link>
@@ -44,7 +44,7 @@ function Products({ columns, isModelsList }: Props) {
     )
   }
   return (
-    <div className="max-w-5xl mx-auto space-y-8 md:-space-y-8">
+    <div className="max-w-5xl mx-auto space-y-2 md:-space-y-8">
       {(columns || []).map((c, i) => (
         <Link
           key={`products-${c.itemId}-${i}`}
