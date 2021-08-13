@@ -85,7 +85,7 @@ const renderBlock = (
 function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
   const images = useRef([
     {
-      url: `${process.env.VERCEL_URL}/og-image.png`,
+      url: `${publicRuntimeConfig.SITE_URL}/og-image.png`,
       width: 1200,
       height: 630,
       alt: page.title?.text || undefined,
@@ -98,7 +98,7 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
       images.current.push({
         url: image.url,
         width: image.width,
-        height: image.height || image.width * 0.68,
+        height: image.height || image.width,
         alt: page.title?.text || undefined,
       })
     }
