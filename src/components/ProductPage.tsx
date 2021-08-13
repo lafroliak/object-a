@@ -1,8 +1,9 @@
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
+import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/dist/client/router'
 import dynamic from 'next/dynamic'
-import { Fragment, useEffect, useRef, useState } from 'react'
-
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import * as styles from '~layouts/CatalogueLayout.module.css'
 import { isImage } from '~lib/crystallize/isType'
 import {
@@ -15,7 +16,6 @@ import {
 import { isWebpSupported } from '~lib/isWebpSupported'
 import useDrawer from '~stores/useDrawer'
 import { Option } from '~typings/utils'
-
 import AddToCart from './AddToCart'
 import CrystallizeContent from './CrystallizeContent'
 import { SIDES } from './Drawers'
@@ -44,6 +44,7 @@ export default function ProductPage({ page }: Props) {
   const [sku, setSKU] = useState<Option<string>>(null)
   const [state, setState] = useState<Option<'Images' | 'Models'>>(null)
   const openedDrawer = useDrawer((state) => state.opened)
+  const { asPath } = useRouter()
 
   useEffect(() => {
     const defaultVariant = page.variants?.find((v) => (v?.stock ?? 0) > 0)
@@ -69,8 +70,55 @@ export default function ProductPage({ page }: Props) {
     if (openedDrawer) setPopupOpened(false)
   }, [openedDrawer])
 
+  const image = useMemo(() => {
+    const component = page.components?.find(
+      (c) => c?.name === 'Images' && c?.content,
+    )
+    const content =
+      component && isImage(component.type, component.content)
+        ? component.content
+        : null
+    const image = content?.images?.reduce<ImageVariant | null>((res, img) => {
+      const variant = img.variants?.find(
+        (v) =>
+          v.url.includes(isWebpSupported() ? 'webp' : 'png') &&
+          v.width === 1024,
+      )
+      if (variant) return variant
+      return res
+    }, null)
+    return image
+  }, [page.components])
+
   return (
     <>
+      <NextSeo
+        title={
+          (
+            page.components?.find((c) => c?.name === 'Title')
+              ?.content as SingleLineContent
+          )?.text || undefined
+        }
+        openGraph={{
+          type: 'website',
+          url: `${process.env.VERCEL_URL}/${asPath}`,
+          title:
+            (
+              page.components?.find((c) => c?.name === 'Title')
+                ?.content as SingleLineContent
+            )?.text || undefined,
+          images: image
+            ? [
+                {
+                  url: image.url,
+                  width: image.width,
+                  height: image.height || image.width,
+                  alt: '',
+                },
+              ]
+            : undefined,
+        }}
+      />
       <div className={clsx('grid w-full min-h-full', styles.container)}>
         <div
           className={clsx(

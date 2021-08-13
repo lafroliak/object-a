@@ -1,3 +1,5 @@
+import { NextSeo } from 'next-seo'
+import { useRouter } from 'next/dist/client/router'
 import {
   Item,
   ParagraphCollectionContent,
@@ -14,8 +16,26 @@ type Props = {
 }
 
 export default function DocumentPage({ page }: Props) {
+  const { asPath } = useRouter()
   return (
     <>
+      <NextSeo
+        title={
+          (
+            page.components?.find((c) => c?.name === 'Title')
+              ?.content as SingleLineContent
+          )?.text || undefined
+        }
+        openGraph={{
+          type: 'website',
+          url: `${process.env.VERCEL_URL}/${asPath}`,
+          title:
+            (
+              page.components?.find((c) => c?.name === 'Title')
+                ?.content as SingleLineContent
+            )?.text || undefined,
+        }}
+      />
       <IfElse
         predicate={
           (
