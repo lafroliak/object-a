@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
-import { NextSeo } from 'next-seo'
+import { NextSeo, ProductJsonLd } from 'next-seo'
 import getConfig from 'next/config'
 import { useRouter } from 'next/dist/client/router'
 import dynamic from 'next/dynamic'
@@ -118,6 +118,31 @@ export default function ProductPage({ page }: Props) {
               ]
             : undefined,
         }}
+      />
+      <ProductJsonLd
+        productName={
+          (
+            page.components?.find((c) => c?.name === 'Title')
+              ?.content as SingleLineContent
+          )?.text || ''
+        }
+        {...(image && {
+          images: [image.url],
+        })}
+        manufacturerName="[object a]"
+        offers={[
+          {
+            price: String(page.variants?.[0]?.priceVariants?.[0]?.price ?? 0),
+            priceCurrency: 'USD',
+            itemCondition: `${publicRuntimeConfig.SITE_URL}${asPath}`,
+            availability: `${publicRuntimeConfig.SITE_URL}${asPath}`,
+            url: `${publicRuntimeConfig.SITE_URL}${asPath}`,
+            seller: {
+              name: '[object a]',
+            },
+          },
+        ]}
+        mpn={sku || ''}
       />
       <div className={clsx('grid w-full min-h-full', styles.container)}>
         <div
