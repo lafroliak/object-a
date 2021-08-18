@@ -78,7 +78,7 @@ function Cart() {
               </div>
             ))}
             <div className="space-y-2">
-              <div className="pb-1 text-xs font-semibold border-b border-color-500">
+              <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
                 {'Total'}
               </div>
               <div className="text-sm">

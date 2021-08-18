@@ -187,22 +187,24 @@ function Drawer({
         <div
           onPointerDown={startDrag}
           className={clsx(
-            'w-full h-full grid place-items-center border-opacity-0 border-color-500 border-solid transition duration-200 ease-in-out delay-200',
+            'w-full h-full grid place-items-center border-opacity-0 border-color-500 border-solid transition duration-100 ease-in-out delay-100',
             styles.handler,
             {
               'opacity-0': disabled,
-              'opacity-30 cursor-grab active:cursor-grabbing md:hover:opacity-100 md:hover:border-opacity-100':
+              'opacity-30 md:hover:opacity-100 md:hover:border-blue-500 md:hover:border-opacity-100':
                 !disabled,
               'border-b-2': side === SIDES.Top,
               'border-l-2': side === SIDES.Right,
               'border-t-2': side === SIDES.Bottom || side === SIDES.LeftHandler,
               'border-r-2': side === SIDES.Left,
               'border-opacity-100': opened === side,
+              'cursor-[col-resize]': isSidebar,
+              'cursor-[row-resize]': !isSidebar,
             },
           )}
         >
           <div
-            className={clsx('bg-color-500 rounded-sm', {
+            className={clsx('bg-color-500 hover:bg-blue-500 rounded-sm', {
               'w-1 h-4': isSidebar,
               'w-4 h-1': !isSidebar,
             })}

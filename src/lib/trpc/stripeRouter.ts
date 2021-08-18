@@ -43,6 +43,7 @@ export const stripeRouter = createRouter()
   .mutation('create-checkout-session', {
     input: z.object({
       email: z.string().email(),
+      country: z.any(),
       items: z.array(
         z.object({
           price_data: z
@@ -62,28 +63,23 @@ export const stripeRouter = createRouter()
         }),
       ),
       skus: z.string(),
-      shipping: z
-        .object({
-          name: z.string(),
-          carrier: z.string().optional(),
-          phone: z.string().optional(),
-          tracking_number: z.string().optional(),
-          address,
-        })
-        .optional(),
     }),
     async resolve({ input }) {
       const options: Stripe.Checkout.SessionCreateParams = {
         payment_method_types: ['card'],
+        shipping_rates: [
+          input.country === 'US'
+            ? process.env.SHIPPING_US_RATE!
+            : process.env.SHIPPING_WW_RATE!,
+        ],
         billing_address_collection: 'auto',
+        shipping_address_collection: {
+          allowed_countries: [input.country],
+        },
         customer_email: input.email,
         mode: 'payment',
         metadata: {
           skus: input.skus,
-        },
-        payment_intent_data: {
-          receipt_email: input.email,
-          shipping: input.shipping,
         },
         success_url: `${process.env.SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${process.env.SITE_URL}/cancel`,
@@ -97,3 +93,62 @@ export const stripeRouter = createRouter()
       return session
     },
   })
+
+/* WITH SHIPPO */
+// .mutation('create-checkout-session', {
+//   input: z.object({
+//     email: z.string().email(),
+//     items: z.array(
+//       z.object({
+//         price_data: z
+//           .object({
+//             currency: z.string(),
+//             product_data: z
+//               .object({
+//                 name: z.string(),
+//                 metadata: z.any(),
+//                 images: z.array(z.string()).optional(),
+//               })
+//               .optional(),
+//             unit_amount: z.number().optional(),
+//           })
+//           .optional(),
+//         quantity: z.number().optional(),
+//       }),
+//     ),
+//     skus: z.string(),
+//     shipping: z
+//       .object({
+//         name: z.string(),
+//         carrier: z.string().optional(),
+//         phone: z.string().optional(),
+//         tracking_number: z.string().optional(),
+//         address,
+//       })
+//       .optional(),
+//   }),
+//   async resolve({ input }) {
+//     const options: Stripe.Checkout.SessionCreateParams = {
+//       payment_method_types: ['card'],
+//       billing_address_collection: 'auto',
+//       customer_email: input.email,
+//       mode: 'payment',
+//       metadata: {
+//         skus: input.skus,
+//       },
+//       payment_intent_data: {
+//         receipt_email: input.email,
+//         shipping: input.shipping,
+//       },
+//       success_url: `${process.env.SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+//       cancel_url: `${process.env.SITE_URL}/cancel`,
+//     }
+//     if (input.items.length > 0) {
+//       options.line_items = input.items
+//     }
+
+//     const session = await stripe.checkout.sessions.create(options)
+
+//     return session
+//   },
+// })

@@ -111,23 +111,23 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
 
           // Get payment intent object
           if (typeof session.payment_intent === 'string') {
-            let transaction: Shippo.Transaction = {} as Shippo.Transaction
+            // let transaction: Shippo.Transaction = {} as Shippo.Transaction
 
-            try {
-              if (session.shipping?.tracking_number) {
-                transaction = await createTransaction({
-                  rate: session.shipping.tracking_number,
-                  // shipment: res.shipment,
-                  // carrier_account: res.shipment.rates[0]?.carrier_account || '',
-                  // servicelevel_token:
-                  //   res.shipment.rates[0]?.servicelevel.token || '',
-                  label_file_type: 'pdf',
-                  async: true,
-                })
-              }
-            } catch (err) {
-              console.error(err)
-            }
+            // try {
+            //   if (session.shipping?.tracking_number) {
+            //     transaction = await createTransaction({
+            //       rate: session.shipping.tracking_number,
+            //       // shipment: res.shipment,
+            //       // carrier_account: res.shipment.rates[0]?.carrier_account || '',
+            //       // servicelevel_token:
+            //       //   res.shipment.rates[0]?.servicelevel.token || '',
+            //       label_file_type: 'pdf',
+            //       async: true,
+            //     })
+            //   }
+            // } catch (err) {
+            //   console.error(err)
+            // }
 
             const { charges } = await stripe.paymentIntents.retrieve(
               session.payment_intent,
@@ -136,13 +136,13 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
             const normalizedInput = normaliseOrderModel({
               cart,
               charge,
-              additionalInformation: transaction?.object_id || '',
-              meta: [
-                {
-                  key: 'transaction_id',
-                  value: transaction?.object_id || '',
-                },
-              ],
+              // additionalInformation: transaction?.object_id || '',
+              // meta: [
+              //   {
+              //     key: 'transaction_id',
+              //     value: transaction?.object_id || '',
+              //   },
+              // ],
             })
 
             const { data: orders } = await createCrystallizeOrder(

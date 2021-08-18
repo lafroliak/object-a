@@ -42,7 +42,7 @@ function ShowcaseCard({ item, isLink }: Props) {
       </IfElse>
       <IfElse predicate={name}>
         {(prop) => (
-          <h3 className="text-sm text-center whitespace-nowrap">
+          <h3 className="text-sm text-center uppercase whitespace-nowrap">
             <span className="relative">
               {isLink ? '[' : null}
               {prop.trim()}

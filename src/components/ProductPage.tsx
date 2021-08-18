@@ -93,20 +93,11 @@ export default function ProductPage({ page }: Props) {
   return (
     <>
       <NextSeo
-        title={
-          (
-            page.components?.find((c) => c?.name === 'Title')
-              ?.content as SingleLineContent
-          )?.text || undefined
-        }
+        title={page.name?.trim().toUpperCase() || undefined}
         openGraph={{
           type: 'website',
           url: `${publicRuntimeConfig.SITE_URL}${asPath}`,
-          title:
-            (
-              page.components?.find((c) => c?.name === 'Title')
-                ?.content as SingleLineContent
-            )?.text || undefined,
+          title: page.name?.trim().toUpperCase() || undefined,
           images: image
             ? [
                 {
@@ -263,12 +254,12 @@ export default function ProductPage({ page }: Props) {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className="absolute inset-0 grid grid-flow-col md:grid-flow-row grid-col-[minmax(min-content,max-content)] md:grid-row-[minmax(min-content,max-content)] gap-4 overflow-x-auto place-items-center md:overflow-y-auto md:overflow-x-hidden scrollzone bg-color-200 dark:bg-color-900"
+                          className="absolute inset-0 grid grid-flow-row grid-row-[minmax(min-content,max-content)] gap-4 place-items-center overflow-y-auto scrollzone bg-color-200 dark:bg-color-900"
                         >
                           {images.map((image) => (
                             <picture
                               key={image.url}
-                              className="relative w-[75vmin] h-[75vmin]"
+                              className="relative w-[95vmin] h-[95vmin]"
                             >
                               <img
                                 className="absolute inset-0 object-contain w-full h-full overflow-hidden"
@@ -336,7 +327,7 @@ export default function ProductPage({ page }: Props) {
         >
           <div className="w-full px-4 py-8 space-y-8 md:pl-1 max-w-prose">
             <IfElse predicate={page.name}>
-              {(name) => <h1 className="text-base">{name}</h1>}
+              {(name) => <h1 className="text-xl font-extrabold">{name}</h1>}
             </IfElse>
             <IfElse
               predicate={page.components?.find((c) => c?.name === 'Details')}
@@ -370,7 +361,7 @@ export default function ProductPage({ page }: Props) {
                 >
                   {(content) => (
                     <div className="space-y-2">
-                      <div className="pb-1 text-xs font-semibold border-b border-color-500">
+                      <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
                         {'Material'}
                       </div>
                       <div className="text-sm">{content.text}</div>
@@ -382,7 +373,7 @@ export default function ProductPage({ page }: Props) {
             <IfElse predicate={page.variants}>
               {(variants) => (
                 <div className="space-y-4">
-                  <div className="flex flex-row justify-between w-full pb-1 text-xs font-semibold border-b border-color-500">
+                  <div className="flex flex-row justify-between w-full pb-1 text-xs font-semibold border-b border-red-500/50">
                     <span>{'Size '}</span>
                     <button
                       type="button"
@@ -439,7 +430,7 @@ export default function ProductPage({ page }: Props) {
             <IfElse predicate={page.variants?.[0]?.priceVariants?.[0]?.price}>
               {(price) => (
                 <div className="space-y-2">
-                  <div className="pb-1 text-xs font-semibold border-b border-color-500">
+                  <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
                     {'Price'}
                   </div>
                   <div className="text-sm">
@@ -474,7 +465,7 @@ export default function ProductPage({ page }: Props) {
         as="aside"
         side={SIDES.Right}
         content={
-          <div className="p-8 space-y-6">
+          <div className="p-8 space-y-6 text-sm">
             <PageContent path="/size-guide" />
           </div>
         }

@@ -42,7 +42,7 @@ function AddToCart({ item, sku }: Props) {
       <button
         type="button"
         onClick={handleClick}
-        className="inline-block uppercase"
+        className="inline-block uppercase transition-colors ease-in-out delay-100 text-color-900/0 bg-clip-text bg-gradient-to-r from-color-900 black:from-color-100 hover:from-rose-500 to-color-900 black:to-color-100 hover:to-cyan-500"
       >
         [{isItemInCart ? 'remove from cart' : 'add to cart'}]
       </button>

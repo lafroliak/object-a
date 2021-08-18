@@ -29,12 +29,7 @@ module.exports = {
         grabbing: 'grabbing',
       },
       fontFamily: {
-        'jet-brain-mono': [
-          'JetBrains Mono Variables',
-          'JetBrains Mono',
-          ...fontFamily.mono,
-        ],
-        'jet-brain-static': ['JetBrains Mono', ...fontFamily.mono],
+        'jet-brain-mono': ['JetBrains Mono', ...fontFamily.mono],
       },
       fontWeight: {
         base: 499,
