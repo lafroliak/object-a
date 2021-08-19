@@ -28,7 +28,7 @@ type State = {
   items: Array<Product>
   clearItems: () => void
   addItem: (item: Product) => void
-  deleteItem: (itemID: string) => void
+  deleteItem: (itemID?: string) => void
   totals: () => {
     gross: number
     net: number
@@ -52,14 +52,16 @@ export default create<State>(
         set({
           items: get().items.find(
             (itm) =>
-              itm?.variants?.[0].id === item.variants?.[0].id ||
-              itm?.id === item?.id,
+              itm?.id === item?.id &&
+              itm?.variants?.[0].sku === item.variants?.[0].sku,
           )
             ? get().items
             : [...get().items, item],
         }),
-      deleteItem: (itemID) =>
-        set({ items: get().items.filter((item) => item.id !== itemID) }),
+      deleteItem: (sku) =>
+        set({
+          items: get().items.filter((item) => item?.variants?.[0].sku !== sku),
+        }),
       totals: () =>
         get().items.reduce(
           (acc, curr) => {

@@ -37,7 +37,7 @@ export default function Payment() {
     )
   }, [customer?.addresses, geoLocation?.country_code])
 
-  const handleSelectCountry = (e) => {
+  const handleSelectCountry = (e: any) => {
     selectCountry(e.target.value)
   }
 
@@ -147,10 +147,11 @@ export default function Payment() {
           {'Totals'}
         </div>
         <ul className="space-y-2">
-          {items.map((item) => (
-            <li key={item.id}>
-              [{item.name}] — $
-              {item.variants?.[0]?.priceVariants?.[0]?.price ?? 0}
+          {items.map((item, idx) => (
+            <li key={`payment-${item.id}-${idx}`}>
+              [{item.name?.trim()}]{' '}
+              {item.variants?.[0].attributes?.[0]?.value?.toUpperCase() || ''} —
+              ${item.variants?.[0]?.priceVariants?.[0]?.price ?? 0}
             </li>
           ))}
           <li>
@@ -164,7 +165,7 @@ export default function Payment() {
         <div className="pt-6 space-x-4">
           <button
             type="submit"
-            className="text-lg uppercase transition-colors ease-in-out delay-100 cursor-pointer focus:outline-none text-color-900/0 bg-clip-text bg-gradient-to-r from-color-900 black:from-color-100 hover:from-rose-500 to-color-900 black:to-color-100 hover:to-cyan-500"
+            className="text-lg uppercase transition-colors ease-in-out delay-100 text-color-900/0 dark:text-color-100/0 bg-clip-text bg-gradient-to-r from-color-900 dark:from-color-100 hover:from-rose-500 to-color-900 dark:to-color-100 hover:to-cyan-500"
           >
             [checkout]
           </button>

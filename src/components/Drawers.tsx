@@ -133,7 +133,7 @@ function Drawers() {
           </button>
         }
         content={
-          <div className="p-8">
+          <div className="p-8 space-y-8">
             <PageContent path="/about" />
           </div>
         }

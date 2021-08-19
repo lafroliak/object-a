@@ -111,12 +111,7 @@ export default function ProductPage({ page }: Props) {
         }}
       />
       <ProductJsonLd
-        productName={
-          (
-            page.components?.find((c) => c?.name === 'Title')
-              ?.content as SingleLineContent
-          )?.text || ''
-        }
+        productName={page.name?.trim().toUpperCase() || ''}
         {...(image && {
           images: [image.url],
         })}
@@ -254,7 +249,7 @@ export default function ProductPage({ page }: Props) {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className="absolute inset-0 grid grid-flow-row grid-row-[minmax(min-content,max-content)] gap-4 place-items-center overflow-y-auto scrollzone bg-color-200 dark:bg-color-900"
+                          className="fixed top-10 bottom-10 left-0 right-0 md:absolute md:inset-0 grid grid-flow-row grid-row-[minmax(min-content,max-content)] gap-4 place-items-center overflow-y-auto scrollzone bg-color-200 dark:bg-color-900"
                         >
                           {images.map((image) => (
                             <picture

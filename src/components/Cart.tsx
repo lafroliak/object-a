@@ -40,11 +40,10 @@ function Cart() {
           <>
             {itms.map((item, idx) => (
               <div
-                key={item.id}
+                key={`showcase-${item.id}-${idx}`}
                 className="flex flex-col items-center w-full space-y-2"
               >
                 <Link
-                  key={`showcase-${item.id}-${idx}`}
                   href={
                     item?.path
                       ? {
@@ -60,7 +59,7 @@ function Cart() {
                   }
                 >
                   <a className="block w-96">
-                    <ShowcaseCard item={item} isLink />
+                    <ShowcaseCard item={item} isLink withProducts withSize />
                   </a>
                 </Link>
                 <div className="text-xs">
@@ -70,7 +69,7 @@ function Cart() {
                   <button
                     type="button"
                     className="uppercase cursor-pointer focus:outline-none"
-                    onClick={() => deleteItem(item.id)}
+                    onClick={() => deleteItem(item.variants?.[0]?.sku)}
                   >
                     [remove from cart]
                   </button>

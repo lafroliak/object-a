@@ -15,27 +15,30 @@ type Props = {
   page: Item
 }
 const { publicRuntimeConfig } = getConfig()
+
 export default function DocumentPage({ page }: Props) {
   const { asPath } = useRouter()
   return (
     <>
-      <NextSeo
-        title={
-          (
-            page.components?.find((c) => c?.name === 'Title')
-              ?.content as SingleLineContent
-          )?.text || undefined
-        }
-        openGraph={{
-          type: 'website',
-          url: `${publicRuntimeConfig.SITE_URL}${asPath}`,
-          title:
+      {page && !page.path?.includes('about') && !page.path?.includes('size') ? (
+        <NextSeo
+          title={
             (
               page.components?.find((c) => c?.name === 'Title')
                 ?.content as SingleLineContent
-            )?.text || undefined,
-        }}
-      />
+            )?.text || undefined
+          }
+          openGraph={{
+            type: 'website',
+            url: `${publicRuntimeConfig.SITE_URL}${asPath}`,
+            title:
+              (
+                page.components?.find((c) => c?.name === 'Title')
+                  ?.content as SingleLineContent
+              )?.text || undefined,
+          }}
+        />
+      ) : null}
       <IfElse
         predicate={
           (
@@ -92,8 +95,8 @@ export default function DocumentPage({ page }: Props) {
               content?.sections?.find((s) =>
                 s?.properties?.find((p) => p?.value),
               ) ? (
-                <div className="w-full max-w-full overflow-x-auto scrollzone">
-                  <table className="table text-xs text-center table-fixed">
+                <div className="w-full max-w-full pt-6 overflow-x-auto scrollzone">
+                  <table className="table text-xs text-center table-fixed md:w-full md:table-auto">
                     <thead className="table-header-group border-b border-color-500">
                       <td className="px-2 pb-1">EU SIZE</td>
                       {content.sections?.[0]?.properties?.map((prop) => (
@@ -108,7 +111,7 @@ export default function DocumentPage({ page }: Props) {
                           <th>{sec.title}</th>
                           {sec.properties?.map((prop) => (
                             <td
-                              className="pt-1"
+                              className="px-2 pt-1 whitespace-nowrap"
                               key={`${sec.title}-${prop.key}`}
                             >
                               {prop.value}

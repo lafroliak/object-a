@@ -1,6 +1,7 @@
+import { NextSeo } from 'next-seo'
+import getConfig from 'next/config'
 import { useRouter } from 'next/dist/client/router'
 import { Fragment, useEffect, useState } from 'react'
-
 import IfElse from '~components/IfElse'
 import PageContent from '~components/PageContent'
 import ShowcaseCard from '~components/ShowcaseCard'
@@ -8,6 +9,8 @@ import { getLayout } from '~layouts/CatalogueLayout'
 import { trpc } from '~lib/trpc'
 import useCart from '~stores/useCart'
 import { Option } from '~typings/utils'
+
+const { publicRuntimeConfig } = getConfig()
 
 function SuccessPage() {
   const router = useRouter()
@@ -103,79 +106,89 @@ function SuccessPage() {
   }, [orderID, order, isFetched, refetch])
 
   return (
-    <section className="w-full min-h-full p-8 mx-auto space-y-6 text-sm bg-color-100 dark:bg-color-800 max-w-prose">
-      <h2 className="font-bold">
-        <IfElse predicate={customer}>{(cst) => <>{`${cst}! `}</>}</IfElse>
-      </h2>
-      <PageContent path="/success" />
-      <IfElse
-        predicate={order?.cart.length && products?.length ? order.cart : null}
-      >
-        {(items) => (
-          <Fragment>
-            <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
-              {'Your purchase'}
-            </div>
-            <div className="w-full space-y-4 text-center">
-              {items.map((item) => (
-                <div key={item.sku}>
-                  <ShowcaseCard
-                    item={products?.find((prod) =>
-                      prod.variants?.find((v) => v.sku === item.sku),
-                    )}
-                  />
-                  <div className="font-semibold">
-                    ${item?.price?.gross ?? 0}
+    <>
+      <NextSeo
+        title="Success"
+        openGraph={{
+          type: 'website',
+          url: `${publicRuntimeConfig.SITE_URL}/success`,
+          title: 'Success',
+        }}
+      />
+      <section className="w-full min-h-full p-8 mx-auto space-y-6 text-sm bg-color-100 dark:bg-color-800 max-w-prose">
+        <h2 className="font-bold">
+          <IfElse predicate={customer}>{(cst) => <>{`${cst}! `}</>}</IfElse>
+        </h2>
+        <PageContent path="/success" />
+        <IfElse
+          predicate={order?.cart.length && products?.length ? order.cart : null}
+        >
+          {(items) => (
+            <Fragment>
+              <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
+                {'Your purchase'}
+              </div>
+              <div className="w-full space-y-4 text-center">
+                {items.map((item) => (
+                  <div key={item.sku}>
+                    <ShowcaseCard
+                      item={products?.find((prod) =>
+                        prod.variants?.find((v) => v.sku === item.sku),
+                      )}
+                    />
+                    <div className="font-semibold">
+                      ${item?.price?.gross ?? 0}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            </Fragment>
+          )}
+        </IfElse>
+        <IfElse
+          predicate={
+            (quantity ?? 0) -
+            (order?.cart?.reduce((r, c) => r + (c?.price?.gross ?? 0), 0) ?? 0)
+          }
+        >
+          {(shp) => (
+            <div className="space-y-2">
+              <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
+                {'Shipping'}
+              </div>
+              <div className="text-sm">{shp.toFixed(2)} USD</div>
             </div>
-          </Fragment>
-        )}
-      </IfElse>
-      <IfElse
-        predicate={
-          (quantity ?? 0) -
-          (order?.cart?.reduce((r, c) => r + (c?.price?.gross ?? 0), 0) ?? 0)
-        }
-      >
-        {(shp) => (
-          <div className="space-y-2">
-            <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
-              {'Shipping'}
+          )}
+        </IfElse>
+        <IfElse predicate={quantity}>
+          {(qnt) => (
+            <div className="space-y-2">
+              <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
+                {'Total'}
+              </div>
+              <div className="text-sm">{qnt}.00 USD</div>
             </div>
-            <div className="text-sm">{shp.toFixed(2)} USD</div>
-          </div>
-        )}
-      </IfElse>
-      <IfElse predicate={quantity}>
-        {(qnt) => (
-          <div className="space-y-2">
-            <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
-              {'Total'}
+          )}
+        </IfElse>
+        <IfElse predicate={receipt} placeholder={<>loading...</>}>
+          {(rsp) => (
+            <div className="space-y-2">
+              <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
+                {'Receipt'}
+              </div>
+              <a
+                className="block text-sm"
+                href={rsp}
+                target="_blank"
+                rel="noreferrer"
+              >
+                [GET RECEIPT]
+              </a>
             </div>
-            <div className="text-sm">{qnt}.00 USD</div>
-          </div>
-        )}
-      </IfElse>
-      <IfElse predicate={receipt} placeholder={<>loading...</>}>
-        {(rsp) => (
-          <div className="space-y-2">
-            <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
-              {'Receipt'}
-            </div>
-            <a
-              className="block text-sm"
-              href={rsp}
-              target="_blank"
-              rel="noreferrer"
-            >
-              [GET RECEIPT]
-            </a>
-          </div>
-        )}
-      </IfElse>
-    </section>
+          )}
+        </IfElse>
+      </section>
+    </>
   )
 }
 

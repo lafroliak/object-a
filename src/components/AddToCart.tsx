@@ -13,13 +13,13 @@ function AddToCart({ item, sku }: Props) {
   const addItem = useCart((state) => state.addItem)
   const deleteItem = useCart((state) => state.deleteItem)
   // const open = useDrawer((state) => state.open)
-  const isItemInCart = items.find((i) => i.id === item?.id)
+  const isItemInCart = items.some((i) => i.variants?.some((v) => v?.sku == sku))
 
   const handleClick = useCallback(() => {
-    if (!item) return
+    if (!item || !sku) return
 
     if (isItemInCart) {
-      deleteItem(item.id)
+      deleteItem(sku)
     } else {
       if (!item || typeof addItem !== 'function') return
 
@@ -37,12 +37,14 @@ function AddToCart({ item, sku }: Props) {
   //   open(SIDES.Right)
   // }, [item, addItem, open, sku])
 
+  // TODO size!!
+
   return (
     <div className="space-x-8">
       <button
         type="button"
         onClick={handleClick}
-        className="inline-block uppercase transition-colors ease-in-out delay-100 text-color-900/0 bg-clip-text bg-gradient-to-r from-color-900 black:from-color-100 hover:from-rose-500 to-color-900 black:to-color-100 hover:to-cyan-500"
+        className="inline-block uppercase transition-colors ease-in-out delay-100 text-color-900/0 dark:text-color-100/0 bg-clip-text bg-gradient-to-r from-color-900 dark:from-color-100 hover:from-rose-500 to-color-900 dark:to-color-100 hover:to-cyan-500"
       >
         [{isItemInCart ? 'remove from cart' : 'add to cart'}]
       </button>
