@@ -20,7 +20,7 @@ class MyDocument extends Document {
         <Head>
           <link rel="shortcut icon" href="/favicon.png" type="image/png" />
           <link
-            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap"
+            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,450;0,700;1,400&display=swap"
             rel="stylesheet"
           />
           <script key="stripe-js" src="https://js.stripe.com/v3/" async />

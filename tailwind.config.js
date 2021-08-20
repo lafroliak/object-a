@@ -32,9 +32,9 @@ module.exports = {
         'jet-brain-mono': ['JetBrains Mono', ...fontFamily.mono],
       },
       fontWeight: {
-        base: 499,
-        dark: 472,
-        hover: 521,
+        base: 400,
+        dark: 450,
+        hover: 500,
       },
       height: {
         '1px': '1px',
