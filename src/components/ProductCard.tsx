@@ -92,11 +92,14 @@ function ProductCard({ item, index = 0 }: Props) {
       <IfElse predicate={name}>
         {(prop) => (
           <motion.div
-            className={clsx('relative grid items-center', styles.name, {
-              'justify-end': !isSM && index % 2 === 0,
-              'justify-start': !isSM && index % 2 !== 0,
-              'justify-center': isSM,
-            })}
+            className={clsx(
+              'relative justify-center grid items-center',
+              styles.name,
+              {
+                'md:justify-end': index % 2 === 0,
+                'md:justify-start': index % 2 !== 0,
+              },
+            )}
             initial={false}
             animate={{ opacity: isHovered || isSM ? 1 : 0 }}
             transition={{ delay: 0.05 }}
