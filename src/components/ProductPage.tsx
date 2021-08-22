@@ -254,7 +254,7 @@ export default function ProductPage({ page }: Props) {
                           {images.map((image) => (
                             <picture
                               key={image.url}
-                              className="relative w-[95vmin] h-[95vmin]"
+                              className="relative w-[95vmin] h-[95vmin] md:w-[80vmin] md:h-[80vmin]"
                             >
                               <img
                                 className="absolute inset-0 object-contain w-full h-full overflow-hidden"
