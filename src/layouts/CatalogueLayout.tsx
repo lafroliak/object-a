@@ -6,7 +6,7 @@ import * as styles from './MainLayout.module.css'
 const CatalogueLayout = ({ children }: PropsWithChildren<unknown>) => (
   <main
     className={clsx(
-      'relative max-h-[calc(100vh-5rem)] md:max-h-[calc(100vh-6rem)] bg-color-200 overflow-y-auto md:overflow-y-visible scrollzone dark:bg-color-900',
+      'relative max-h-[calc(100vh-5rem)] md:max-h-[calc(100vh-6rem)] bg-color-200 overflow-y-auto scrollzone dark:bg-color-900',
       styles.main,
     )}
   >
