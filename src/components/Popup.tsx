@@ -63,20 +63,20 @@ function Popup({ opened, onClose, side, content, as, layoutId }: Props) {
               exit="closed"
               variants={variants[side]}
               className={clsx('fixed flex flex-row', {
-                'items-start left-10 right-10 md:right-12 md:left-12 top-10 md:top-12':
+                'items-start left-0 right-0 md:right-12 md:left-12 top-10 md:top-12':
                   side === SIDES.Top,
-                'justify-end top-10 bottom-10 md:right-12 md:top-12 md:bottom-12':
+                'justify-end top-10 right-0 bottom-10 md:right-12 md:top-12 md:bottom-12':
                   side === SIDES.Right,
-                'items-end left-10 right-10 md:right-12 md:left-12 bottom-10 md:bottom-12':
+                'items-end left-0 right-0 md:right-12 md:left-12 bottom-10 md:bottom-12':
                   side === SIDES.Bottom,
-                'justify-start top-10 bottom-10 md:left-12 md:top-12 md:bottom-12':
+                'justify-start top-10 left-0 bottom-10 md:left-12 md:top-12 md:bottom-12':
                   side === SIDES.Left,
               })}
             >
               <motion.div
                 layoutId="popup_closer"
                 key={'popup_closer'}
-                className="fixed cursor-pointer inset-10 md:inset-12 -z-1 bg-color-500 bg-opacity-40"
+                className="fixed inset-0 cursor-pointer md:inset-12 -z-1 bg-color-500 bg-opacity-40"
                 onClick={onClose}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -87,7 +87,7 @@ function Popup({ opened, onClose, side, content, as, layoutId }: Props) {
                 className={clsx(
                   'flex-shrink-0 min-h-0 bg-color-100 dark:bg-color-800 overflow-y-auto scrollzone',
                   {
-                    'max-w-[calc(100vw-2.5rem)] min-w-[33vw]':
+                    'w-[calc(100vw-2.5rem)] md:max-w-[calc(50vw-2.5rem)] md:min-w-[33vw]':
                       side === SIDES.Left || side === SIDES.Right,
                     'max-h-[66vh]': side === SIDES.Top || side === SIDES.Bottom,
                   },

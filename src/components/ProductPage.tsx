@@ -320,7 +320,7 @@ export default function ProductPage({ page }: Props) {
             styles.details,
           )}
         >
-          <div className="w-full px-4 py-8 space-y-8 md:pl-1 max-w-prose">
+          <div className="w-full px-4 py-8 space-y-8 md:pl-1 md:max-w-prose">
             <IfElse predicate={page.name}>
               {(name) => <h1 className="text-xl font-extrabold">{name}</h1>}
             </IfElse>

@@ -66,7 +66,7 @@ function ProductCard({ item, inverted, index = 0 }: Props) {
           show: { opacity: 1 },
         }}
         initial="hidden"
-        animate={isHovered ? 'show' : 'hidden'}
+        animate={!isSM && isHovered ? 'show' : 'hidden'}
         className={clsx('absolute top-1/2 h-1px from-rose-500 to-cyan-500', {
           'right-12 left-1/4 bg-gradient-to-r': index % 2 === 0,
           'right-1/4 left-12 bg-gradient-to-l': index % 2 !== 0,
