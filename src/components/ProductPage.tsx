@@ -19,7 +19,7 @@ import useDrawer from '~stores/useDrawer'
 import { Option } from '~typings/utils'
 import AddToCart from './AddToCart'
 import CrystallizeContent from './CrystallizeContent'
-import { SIDES } from './Drawers'
+import { SIDES } from './Popup'
 import IconModel from './IconModel'
 import IconThreeD from './IconThreeD'
 import IfElse from './IfElse'
@@ -42,7 +42,7 @@ type Props = {
 export default function ProductPage({ page }: Props) {
   const ref = useRef<HTMLDivElement>(null)
   const [width, setSize] = useState<number>(0)
-  const [popupOpened, setPopupOpened] = useState<boolean>(false)
+  const [popupOpened, setPopupOpened] = useState<string>('')
   const [sku, setSKU] = useState<Option<string>>(null)
   const [state, setState] = useState<Option<'Images' | 'Models'>>(null)
   const openedDrawer = useDrawer((state) => state.opened)
@@ -69,7 +69,7 @@ export default function ProductPage({ page }: Props) {
   }, [ref])
 
   useEffect(() => {
-    if (openedDrawer) setPopupOpened(false)
+    if (openedDrawer) setPopupOpened('')
   }, [openedDrawer])
 
   const image = useMemo(() => {
@@ -361,9 +361,9 @@ export default function ProductPage({ page }: Props) {
                         <button
                           type="button"
                           className="uppercase cursor-pointer focus:outline-none"
-                          onClick={() => void setPopupOpened(true)}
+                          onClick={() => void setPopupOpened('/pre-order')}
                         >
-                          [size guide]
+                          [pre-order]
                         </button>
                       </div>
                       <div className="text-sm">{content.text}</div>
@@ -380,7 +380,7 @@ export default function ProductPage({ page }: Props) {
                     <button
                       type="button"
                       className="uppercase cursor-pointer focus:outline-none"
-                      onClick={() => void setPopupOpened(true)}
+                      onClick={() => void setPopupOpened('/size-guide')}
                     >
                       [size guide]
                     </button>
@@ -462,13 +462,13 @@ export default function ProductPage({ page }: Props) {
         </div>
       </div>
       <Popup
-        opened={popupOpened}
-        onClose={() => void setPopupOpened(false)}
+        opened={Boolean(popupOpened)}
+        onClose={() => void setPopupOpened('')}
         as="aside"
         side={SIDES.Right}
         content={
           <div className="p-8 space-y-6 text-sm">
-            <PageContent path="/size-guide" />
+            <PageContent path={popupOpened} />
           </div>
         }
       />

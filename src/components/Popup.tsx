@@ -1,7 +1,8 @@
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { HTMLMotionComponents } from 'framer-motion/types/render/html/types'
-import { memo, ReactNode } from 'react'
+import { memo, ReactNode, useEffect } from 'react'
+import useDrawer from '~stores/useDrawer'
 
 import IfElse from './IfElse'
 
@@ -24,6 +25,12 @@ type Props = {
 }
 
 function Popup({ opened, onClose, side, content, as, layoutId }: Props) {
+  const close = useDrawer((state) => state.close)
+
+  useEffect(() => {
+    if (opened) close()
+  }, [opened, close])
+
   const Element = motion[as || 'div']
   const variants = {
     [SIDES.Top]: {
@@ -55,19 +62,21 @@ function Popup({ opened, onClose, side, content, as, layoutId }: Props) {
               animate="opened"
               exit="closed"
               variants={variants[side]}
-              className={clsx('fixed inset-0 flex flex-row', {
-                'items-start': side === SIDES.Top,
+              className={clsx('fixed flex flex-row', {
+                'items-start left-10 right-10 md:right-12 md:left-12 top-10 md:top-12':
+                  side === SIDES.Top,
                 'justify-end top-10 bottom-10 md:right-12 md:top-12 md:bottom-12':
                   side === SIDES.Right,
-                'items-end': side === SIDES.Bottom,
-                'justify-start top-10 bottom-10 md:top-12 md:bottom-12':
+                'items-end left-10 right-10 md:right-12 md:left-12 bottom-10 md:bottom-12':
+                  side === SIDES.Bottom,
+                'justify-start top-10 bottom-10 md:left-12 md:top-12 md:bottom-12':
                   side === SIDES.Left,
               })}
             >
               <motion.div
                 layoutId="popup_closer"
                 key={'popup_closer'}
-                className="flex-1 cursor-pointer bg-color-500 bg-opacity-40"
+                className="fixed cursor-pointer inset-10 md:inset-12 -z-1 bg-color-500 bg-opacity-40"
                 onClick={onClose}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

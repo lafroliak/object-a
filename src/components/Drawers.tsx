@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/dist/client/router'
 import dynamic from 'next/dynamic'
-import { memo, useEffect } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { usePrevious } from 'react-use'
 
 import useDrawer from '~stores/useDrawer'
@@ -10,6 +10,8 @@ import useDrawer from '~stores/useDrawer'
 import Cart from './Cart'
 import Drawer from './Drawer'
 import IfElse from './IfElse'
+import Popup, { SIDES as POPUP_SIDES } from './Popup'
+import Subscribe from './Subscribe'
 
 const PageContent = dynamic(import('./PageContent'), {
   loading: function Placeholder() {
@@ -52,6 +54,12 @@ function Drawers() {
   const toggle = useDrawer((state) => state.toggle)
   const router = useRouter()
   const prevPathname = usePrevious(router.asPath)
+
+  const [popupOpened, setPopupOpened] = useState<string>('')
+
+  useEffect(() => {
+    if (opened) setPopupOpened('')
+  }, [opened])
 
   useEffect(() => {
     if (prevPathname !== router.asPath) {
@@ -135,6 +143,13 @@ function Drawers() {
         content={
           <div className="p-8 space-y-8">
             <PageContent path="/about" />
+            <button
+              type="button"
+              onClick={() => void setPopupOpened('subscribe')}
+              className="inline-block text-lg uppercase md:transition-colors md:ease-in-out md:delay-100 md:text-color-900/0 md:dark:text-color-100/0 md:bg-clip-text md:bg-gradient-to-r md:from-color-900 md:dark:from-color-100 md:hover:from-rose-500 md:to-color-900 md:dark:to-color-100 md:hover:to-cyan-500"
+            >
+              [subscribe]
+            </button>
           </div>
         }
       />
@@ -151,6 +166,17 @@ function Drawers() {
           </button>
         }
         content={<Showcase />}
+      />
+      <Popup
+        opened={Boolean(popupOpened)}
+        onClose={() => void setPopupOpened('')}
+        as="aside"
+        side={POPUP_SIDES.Left}
+        content={
+          <div className="relative h-full p-8 space-y-6 text-sm">
+            <Subscribe onClose={() => void setPopupOpened('')} />
+          </div>
+        }
       />
     </>
   )

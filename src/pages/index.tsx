@@ -2,10 +2,12 @@ import clsx from 'clsx'
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 import { NextSeo } from 'next-seo'
 import getConfig from 'next/config'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { match, select } from 'ts-pattern'
 import CrystallizeContent from '~components/CrystallizeContent'
+import Popup, { SIDES } from '~components/Popup'
 import Products from '~components/Products'
+import Subscribe from '~components/Subscribe'
 import { getLayout } from '~layouts/HomeLayout'
 import { simplyFetchFromGraph } from '~lib/crystallize/graph'
 import fragments from '~lib/crystallize/graph/fragments'
@@ -16,6 +18,7 @@ import {
   RichTextContent,
 } from '~lib/crystallize/types'
 import { getBlocks, WithType } from '~lib/getBlocks'
+import useDrawer from '~stores/useDrawer'
 
 const { publicRuntimeConfig } = getConfig()
 
@@ -23,11 +26,19 @@ export async function getStaticProps(context: GetStaticPropsContext) {
   const { preview } = context
 
   const { data } = await simplyFetchFromGraph({
-    query: `
-      query HOME_PAGE($language: String!, $path: String!,  $version: VersionLabel!) {
+    query: /* GraphQL */ `
+      query HOME_PAGE(
+        $language: String!
+        $path: String!
+        $version: VersionLabel!
+      ) {
         catalogue(path: $path, language: $language, version: $version) {
           ...item
           ...product
+          topics {
+            path
+            name
+          }
         }
       }
 
@@ -46,43 +57,18 @@ export async function getStaticProps(context: GetStaticPropsContext) {
     props: {
       page,
     },
-    revalidate: 30,
+    revalidate: 15,
   }
 }
 
-const renderBlock = (
-  block:
-    | WithType<GridRow, ComponentType.GridRelations>
-    | WithType<RichTextContent, ComponentType.ParagraphCollection>,
-  idx: number,
-): JSX.Element =>
-  match(block)
-    .with(
-      { type: ComponentType.ParagraphCollection, json: select('json') },
-      ({ json }) => (
-        <div
-          key={`${ComponentType.ParagraphCollection}-${idx}`}
-          className={clsx('max-w-3xl mx-auto px-4 md:px-8', {
-            italic: idx === 0,
-          })}
-        >
-          <CrystallizeContent content={json as RichTextContent['json']} />
-        </div>
-      ),
-    )
-    .with(
-      { type: ComponentType.GridRelations, columns: select('columns') },
-      ({ columns }) => (
-        <Products
-          key={`${ComponentType.GridRelations}-${idx}`}
-          columns={columns as GridRow['columns']}
-          isModelsList={idx === 3}
-        />
-      ),
-    )
-    .otherwise(() => <></>)
-
 function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const opened = useDrawer((state) => state.opened)
+  const [popupOpened, setPopupOpened] = useState<string>('')
+
+  useEffect(() => {
+    if (opened) setPopupOpened('')
+  }, [opened])
+
   const images = useRef([
     {
       url: `${publicRuntimeConfig.SITE_URL}/og-image.png`,
@@ -104,6 +90,39 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
     }
   }, [page])
 
+  const renderBlock = (
+    block:
+      | WithType<GridRow, ComponentType.GridRelations>
+      | WithType<RichTextContent, ComponentType.ParagraphCollection>,
+    idx: number,
+  ): JSX.Element =>
+    match(block)
+      .with(
+        { type: ComponentType.ParagraphCollection, json: select('json') },
+        ({ json }) => (
+          <div
+            key={`${ComponentType.ParagraphCollection}-${idx}`}
+            className={clsx('max-w-3xl mx-auto px-4 md:px-8', {
+              italic: idx === 0,
+            })}
+          >
+            <CrystallizeContent content={json as RichTextContent['json']} />
+          </div>
+        ),
+      )
+      .with(
+        { type: ComponentType.GridRelations, columns: select('columns') },
+        ({ columns }) => (
+          <Products
+            key={`${ComponentType.GridRelations}-${idx}`}
+            columns={columns as GridRow['columns']}
+            isModelsList={idx === 3}
+            topics={page.topics}
+          />
+        ),
+      )
+      .otherwise(() => <></>)
+
   return (
     <>
       <NextSeo
@@ -118,7 +137,29 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
           images: images.current,
         }}
       />
-      {page.blocks.map(renderBlock)}
+      <div className="py-12 space-y-12 md:py-24 md:space-y-24">
+        {page.blocks.map(renderBlock)}
+        <aside className="grid w-full place-items-center">
+          <button
+            type="button"
+            onClick={() => void setPopupOpened('subscribe')}
+            className="inline-block text-lg uppercase md:transition-colors md:ease-in-out md:delay-100 md:text-color-900/0 md:dark:text-color-100/0 md:bg-clip-text md:bg-gradient-to-r md:from-color-900 md:dark:from-color-100 md:hover:from-rose-500 md:to-color-900 md:dark:to-color-100 md:hover:to-cyan-500"
+          >
+            [subscribe]
+          </button>
+        </aside>
+      </div>
+      <Popup
+        opened={Boolean(popupOpened)}
+        onClose={() => void setPopupOpened('')}
+        as="aside"
+        side={SIDES.Left}
+        content={
+          <div className="relative h-full p-8 space-y-6 text-sm">
+            <Subscribe onClose={() => void setPopupOpened('')} />
+          </div>
+        }
+      />
     </>
   )
 }

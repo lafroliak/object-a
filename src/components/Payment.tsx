@@ -18,6 +18,7 @@ export default function Payment() {
   const items = useCart((state) => state.items)
   const totals = useCart((state) => state.totals())
   const { mutate } = trpc.useMutation('stripe.create-checkout-session')
+  const { mutate: subscribe } = trpc.useMutation('mailchimp.subscribe')
   const { data: geoLocation } = trpc.useQuery(['geo.getLocation'])
   const stripe = useStripe()
 
@@ -69,6 +70,8 @@ export default function Payment() {
         },
       ],
     })
+
+    subscribe(data.email)
 
     mutate(
       {
@@ -144,7 +147,7 @@ export default function Payment() {
           </select>
         </fieldset>
         <div className="pt-6 pb-1 text-xs font-semibold border-b border-red-500/50">
-          {'Totals'}
+          {'Total'}
         </div>
         <ul className="space-y-2">
           {items.map((item, idx) => (

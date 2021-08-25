@@ -13,14 +13,15 @@ import IfElse from './IfElse'
 
 type Props = {
   page: Item
+  asPage?: boolean
 }
 const { publicRuntimeConfig } = getConfig()
 
-export default function DocumentPage({ page }: Props) {
+export default function DocumentPage({ page, asPage }: Props) {
   const { asPath } = useRouter()
   return (
     <>
-      {page && !page.path?.includes('about') && !page.path?.includes('size') ? (
+      {page && asPage ? (
         <NextSeo
           title={
             (
@@ -47,7 +48,7 @@ export default function DocumentPage({ page }: Props) {
           )?.text
         }
       >
-        {(title) => <h1 className="text-base">{title}</h1>}
+        {(title) => <h1 className="text-lg font-extrabold">{title}</h1>}
       </IfElse>
       <IfElse predicate={page.components?.find((c) => c?.name === 'Intro')}>
         {(component) => (
@@ -98,20 +99,20 @@ export default function DocumentPage({ page }: Props) {
                 <div className="w-full max-w-full pt-6 overflow-x-auto scrollzone">
                   <table className="table text-xs text-center table-fixed md:w-full md:table-auto">
                     <thead className="table-header-group border-b border-color-500">
-                      <td className="px-2 pb-1">EU SIZE</td>
+                      <td className="px-2 pb-1">SIZE</td>
                       {content.sections?.[0]?.properties?.map((prop) => (
                         <td key={prop.key} className="px-2 pb-1">
                           {prop.key}
                         </td>
                       ))}
                     </thead>
-                    <tbody className="table-row-group">
+                    <tbody className="table-row-group divide-y divide-color-300 dark:divide-color-700">
                       {content.sections?.map((sec) => (
-                        <tr className="table-row pt-1" key={sec.title}>
+                        <tr className="table-row py-1" key={sec.title}>
                           <th>{sec.title}</th>
                           {sec.properties?.map((prop) => (
                             <td
-                              className="px-2 pt-1 whitespace-nowrap"
+                              className="px-3 py-1 whitespace-nowrap"
                               key={`${sec.title}-${prop.key}`}
                             >
                               {prop.value}

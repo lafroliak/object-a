@@ -10,7 +10,7 @@ const HomeLayout = ({ children }: PropsWithChildren<unknown>) => (
       styles.main,
     )}
   >
-    <div className="py-12 space-y-12 md:py-24 md:space-y-24">{children}</div>
+    {children}
   </main>
 )
 

@@ -89,7 +89,7 @@ function CataloguePage({
       >
         {(page) => (
           <section className="w-full max-h-full min-h-full px-8 py-12 mx-auto space-y-6 overflow-y-auto text-sm scrollzone bg-color-100 dark:bg-color-800 max-w-prose">
-            <DocumentPage page={page} />
+            <DocumentPage page={page} asPage />
           </section>
         )}
       </IfElse>
@@ -104,8 +104,7 @@ function CataloguePage({
             catalogue.type === 'product' ? (catalogue as Product) : null
           }
         >
-          {(page) => 
-          <ProductPage page={page} />}
+          {(page) => <ProductPage page={page} />}
         </IfElse>
       </>
     )

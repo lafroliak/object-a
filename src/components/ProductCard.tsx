@@ -21,9 +21,10 @@ const CollapsableImage = dynamic(import('./CollapsableImage'), {
 type Props = {
   item: Option<Product>
   index?: number
+  inverted?: boolean
 }
 
-function ProductCard({ item, index = 0 }: Props) {
+function ProductCard({ item, inverted, index = 0 }: Props) {
   const [isHovered, setHovered] = useState(false)
   const [isTap, setTap] = useState(false)
   const isSM = useMediaQuery('isSM')
@@ -84,7 +85,7 @@ function ProductCard({ item, index = 0 }: Props) {
               placeholder={placeholder?.url}
               isHovered={isHovered}
               isTap={isTap}
-              inverted
+              inverted={inverted}
             />
           </div>
         )}
@@ -105,13 +106,10 @@ function ProductCard({ item, index = 0 }: Props) {
             transition={{ delay: 0.05 }}
           >
             <h3
-              className={clsx(
-                'whitespace-nowrap uppercase bg-color-200 dark:bg-color-900',
-                {
-                  'pl-1': index % 2 === 0,
-                  'pr-1': index % 2 !== 0,
-                },
-              )}
+              className={clsx('uppercase bg-color-200 dark:bg-color-900', {
+                'pl-1': index % 2 === 0,
+                'pr-1': index % 2 !== 0,
+              })}
             >
               [{prop.trim()}]
             </h3>

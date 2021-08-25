@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { memo } from 'react'
 
-import { GridColumn } from '~lib/crystallize/types'
+import { GridColumn, Topic } from '~lib/crystallize/types'
 import IfElse from './IfElse'
 
 import ModelsCard from './ModelsCard'
@@ -10,8 +10,9 @@ import ProductCard from './ProductCard'
 type Props = {
   columns: GridColumn[]
   isModelsList: boolean
+  topics?: Topic[] | null | undefined
 }
-function Products({ columns, isModelsList }: Props) {
+function Products({ columns, isModelsList, topics }: Props) {
   if (isModelsList) {
     return (
       <div className="mx-auto space-x-8 flex flex-row flex-nowrap max-w-[100%] overflow-scroll scrollzone">
@@ -63,7 +64,11 @@ function Products({ columns, isModelsList }: Props) {
           }
         >
           <a className="block w-full">
-            <ProductCard item={c.item} index={i} />
+            <ProductCard
+              item={c.item}
+              index={i}
+              inverted={topics?.some((topic) => topic.name === 'inverted')}
+            />
           </a>
         </Link>
       ))}

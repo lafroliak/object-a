@@ -9,6 +9,7 @@ type Props = {
   sp?: number
   start?: number
   onLoad?: () => void
+  hiDPI?: boolean
 }
 
 type State = {
@@ -34,17 +35,20 @@ export default function useCollapseImage({
   sp = 16,
   start,
   onLoad,
+  hiDPI = true,
 }: Props) {
   const clearRenderRef = useRef(false)
   const state = useRef<State>({} as State)
+  const r = hiDPI ? window.devicePixelRatio : 1
+  const spr = sp
 
   const spx = useCallback(
     function spx(
       array: [number, number, number, number],
     ): [number, number, number, number] {
-      return array.map((v) => v * sp) as [number, number, number, number]
+      return array.map((v) => v * spr) as [number, number, number, number]
     },
-    [sp],
+    [spr],
   )
 
   const render = useCallback(
@@ -195,7 +199,7 @@ export default function useCollapseImage({
         const aspect = img.width / img.height
         const parrentWidth = c.parentElement?.offsetWidth || window.innerWidth
         const parentHeight = c.parentElement?.offsetHeight || window.innerHeight
-        const parentAspect = (parrentWidth - sp) / (parentHeight - sp * 8)
+        const parentAspect = (parrentWidth - spr) / (parentHeight - spr * 8)
 
         let snapw
         let snaph
@@ -203,30 +207,30 @@ export default function useCollapseImage({
           // worry about height
           const adjHeight = Math.min(
             img.height,
-            Math.floor(parentHeight - sp * 8),
+            Math.floor(parentHeight - spr * 8),
           )
-          snaph = Math.round(adjHeight / sp) * sp
+          snaph = Math.round(adjHeight / spr) * spr
           const snapr = snaph / img.height
-          snapw = Math.round((img.width * snapr) / sp) * sp
+          snapw = Math.round((img.width * snapr) / spr) * spr
         } else {
           // worry about width
           const adjWidth = Math.min(
             img.width,
-            Math.floor(parrentWidth - sp) - sp / 2,
+            Math.floor(parrentWidth - spr) - spr / 2,
           )
-          snapw = Math.round(adjWidth / sp) * sp
+          snapw = Math.round(adjWidth / spr) * spr
           const snapr = snapw / img.width
-          snaph = Math.round((img.height * snapr) / sp) * sp
+          snaph = Math.round((img.height * snapr) / spr) * spr
         }
 
-        img.width = snapw
-        img.height = snaph
+        img.width = snapw * r
+        img.height = snaph * r
 
         c.width = img.width
         c.height = img.height
 
-        const cols = img.width / sp
-        const rows = img.height / sp
+        const cols = img.width / spr
+        const rows = img.height / spr
         const cells = cols * rows
 
         // preserve dimensions
@@ -256,16 +260,16 @@ export default function useCollapseImage({
         let tiles = []
         for (let i = 0; i < cells; i += 1) {
           const t = document.createElement('canvas')
-          t.width = sp
-          t.height = sp
+          t.width = spr
+          t.height = spr
           const tx = t.getContext('2d')
 
           const x = i % cols
           const y = Math.floor(i / cols)
 
-          tx?.drawImage(imc, x * sp, y * sp, sp, sp, 0, 0, sp, sp)
+          tx?.drawImage(imc, x * spr, y * spr, spr, spr, 0, 0, spr, spr)
 
-          const complexity = t?.toDataURL().length / (sp * sp)
+          const complexity = t?.toDataURL().length / (spr * spr)
 
           tiles.push({ t, c: complexity, x, y, i })
         }
@@ -320,7 +324,7 @@ export default function useCollapseImage({
         img.setAttribute('crossOrigin', '*')
       }
     },
-    [cref, render, sp, start, onLoad],
+    [cref, render, spr, start, onLoad, r],
   )
 
   useEffect(() => {

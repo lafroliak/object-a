@@ -9,6 +9,7 @@ import {
   ParagraphCollectionContent,
   RichTextContent,
   SingleLineContent,
+  Topic,
 } from './crystallize/types'
 import zip from './zip'
 
@@ -25,6 +26,7 @@ export const getBlocks = (page: Item | undefined) => {
     bodyBlocks: Array<
       WithType<RichTextContent, ComponentType.ParagraphCollection>
     > | null
+    topics: Topic[] | null | undefined
   }>(
     (res, item) => {
       const result = res
@@ -59,6 +61,7 @@ export const getBlocks = (page: Item | undefined) => {
           result.productsGrid = (
             (itm.content as GridRelationsContent).grids?.[0].rows || []
           ).map((x) => ({ ...x, type: ComponentType.GridRelations }))
+          result.topics = page.topics
         })
         .with({ name: 'Body' }, (itm) => {
           result.bodyBlocks = [
@@ -89,6 +92,7 @@ export const getBlocks = (page: Item | undefined) => {
       intro: null,
       productsGrid: null,
       bodyBlocks: null,
+      topics: null,
     },
   )
 
@@ -97,5 +101,6 @@ export const getBlocks = (page: Item | undefined) => {
     image: pageBlocks?.image,
     intro: pageBlocks?.intro,
     blocks: zip(pageBlocks?.bodyBlocks, pageBlocks?.productsGrid),
+    topics: pageBlocks?.topics,
   }
 }

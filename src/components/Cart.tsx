@@ -76,16 +76,6 @@ function Cart() {
                 </div>
               </div>
             ))}
-            <div className="space-y-2">
-              <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
-                {'Total'}
-              </div>
-              <div className="text-sm">
-                {totals().quantity}
-                {' item / Total '}
-                {totals().net} {totals().currency?.toUpperCase()}
-              </div>
-            </div>
             <StripeWrapper>
               <Payment />
             </StripeWrapper>

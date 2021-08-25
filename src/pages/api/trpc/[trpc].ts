@@ -4,6 +4,7 @@ import * as trpcNext from '@trpc/server/adapters/next'
 import superjson from 'superjson'
 import { crystallizeRouter } from '~lib/trpc/crystallizeRouter'
 import { geoRouter } from '~lib/trpc/geoRouter'
+import { mailchimpRouter } from '~lib/trpc/mailchimpRouter'
 // import { shippoRouter } from '~lib/trpc/shippoRouter'
 import { stripeRouter } from '~lib/trpc/stripeRouter'
 
@@ -26,6 +27,7 @@ const router = createRouter()
   .merge('crystallize.', crystallizeRouter)
   .merge('stripe.', stripeRouter)
   .merge('geo.', geoRouter)
+  .merge('mailchimp.', mailchimpRouter)
 // .merge('shippo.', shippoRouter)
 
 export const appRouter = router
