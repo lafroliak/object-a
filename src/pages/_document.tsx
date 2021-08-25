@@ -25,6 +25,20 @@ class MyDocument extends Document {
           />
           <script key="stripe-js" src="https://js.stripe.com/v3/" async />
         </Head>
+        <script
+          id="mcjs"
+          dangerouslySetInnerHTML={{
+            __html: `!function(c,h,i,m,p)
+          {
+            ((m = c.createElement(h)),
+            (p = c.getElementsByTagName(h)[0]),
+            (m.async = 1),
+            (m.src = i),
+            p.parentNode.insertBefore(m, p))
+          }
+          (document,"script","https://chimpstatic.com/mcjs-connected/js/users/c1cb740de97d9956070b0d805/cb848ded267f75a60366fe93d.js");`,
+          }}
+        />
         <body>
           <Main />
           <NextScript />

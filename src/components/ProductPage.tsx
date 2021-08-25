@@ -356,8 +356,15 @@ export default function ProductPage({ page }: Props) {
                 >
                   {(content) => (
                     <div className="space-y-2">
-                      <div className="pb-1 text-xs font-semibold border-b border-red-500/50">
+                      <div className="flex flex-row justify-between w-full pb-1 text-xs font-semibold border-b border-red-500/50">
                         {'Material'}
+                        <button
+                          type="button"
+                          className="uppercase cursor-pointer focus:outline-none"
+                          onClick={() => void setPopupOpened(true)}
+                        >
+                          [size guide]
+                        </button>
                       </div>
                       <div className="text-sm">{content.text}</div>
                     </div>

@@ -155,17 +155,17 @@ export default function Payment() {
             </li>
           ))}
           <li>
-            Shipping: <strong>${selectedCountry === 'US' ? 6 : 18}</strong>
+            Shipping: <strong>${selectedCountry === 'US' ? 6 : 12}</strong>
           </li>
         </ul>
         <div>
           Total:{' '}
-          <strong>${totals.net + (selectedCountry === 'US' ? 6 : 18)}</strong>
+          <strong>${totals.net + (selectedCountry === 'US' ? 6 : 12)}</strong>
         </div>
         <div className="pt-6 space-x-4">
           <button
             type="submit"
-            className="text-lg uppercase transition-colors ease-in-out delay-100 text-color-900/0 dark:text-color-100/0 bg-clip-text bg-gradient-to-r from-color-900 dark:from-color-100 hover:from-rose-500 to-color-900 dark:to-color-100 hover:to-cyan-500"
+            className="text-lg uppercase md:transition-colors md:ease-in-out md:delay-100 md:text-color-900/0 md:dark:text-color-100/0 md:bg-clip-text md:bg-gradient-to-r md:from-color-900 md:dark:from-color-100 md:hover:from-rose-500 md:to-color-900 md:dark:to-color-100 md:hover:to-cyan-500"
           >
             [checkout]
           </button>
@@ -173,7 +173,7 @@ export default function Payment() {
       </form>
       <div className="pt-6">
         If you have any questions, please email{' '}
-        <a href="mailto:info@objekt-a.shop">info@objekt-a.shop</a>
+        <a href="mailto:lafroliak@gmail.com">lafroliak@gmail.com</a>
       </div>
     </>
   )
