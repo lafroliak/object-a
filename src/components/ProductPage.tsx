@@ -49,6 +49,8 @@ export default function ProductPage({ page }: Props) {
   const { asPath } = useRouter()
 
   useEffect(() => {
+    setSKU(null)
+
     const defaultVariant = page.variants?.find((v) => (v?.stock ?? 0) > 0)
     if (defaultVariant?.sku) {
       setSKU(defaultVariant.sku)
