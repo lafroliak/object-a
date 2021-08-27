@@ -58,7 +58,7 @@ function Cart() {
                       : '/'
                   }
                 >
-                  <a className="block w-96">
+                  <a className="block w-64">
                     <ShowcaseCard item={item} isLink withProducts withSize />
                   </a>
                 </Link>

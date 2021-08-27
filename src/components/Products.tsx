@@ -13,7 +13,7 @@ type Props = {
   topics?: Topic[] | null | undefined
 }
 function Products({ columns, isModelsList, topics }: Props) {
-  if (isModelsList) {
+  if (isModelsList && topics?.some((topic) => topic.name === 'with slider')) {
     return (
       <div className="mx-auto space-x-8 flex flex-row flex-nowrap max-w-[100%] overflow-scroll scrollzone">
         {(columns || []).map((c, i) => (

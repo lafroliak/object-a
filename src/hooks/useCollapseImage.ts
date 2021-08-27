@@ -40,7 +40,7 @@ export default function useCollapseImage({
   const clearRenderRef = useRef(false)
   const state = useRef<State>({} as State)
   const r = hiDPI ? window.devicePixelRatio : 1
-  const spr = sp
+  const spr = sp * r
 
   const spx = useCallback(
     function spx(
@@ -139,11 +139,11 @@ export default function useCollapseImage({
         }
 
         if (leastActive && c && cx) {
-          cx.clearRect(0, 0, c.width, c.height)
+          cx.clearRect(0, 0, c.width * r, c.height * r)
         }
 
         if (!moved && cx && c) {
-          cx.clearRect(0, 0, c.width, c.height)
+          cx.clearRect(0, 0, c.width * r, c.height * r)
 
           // only draw when done
           for (let i = 0; i < cells; i += 1) {
@@ -163,7 +163,7 @@ export default function useCollapseImage({
             }
           }
         } else if (moved && !clearRenderRef.current && cx && c) {
-          cx.clearRect(0, 0, c.width, c.height)
+          cx.clearRect(0, 0, c.width * r, c.height * r)
 
           // for (let i = 0; i < cells; i++) {
           //   let x = i % cols
@@ -184,7 +184,7 @@ export default function useCollapseImage({
 
       renderM()
     },
-    [cref, spx],
+    [cref, spx, r],
   )
 
   const loadImage = useCallback(
@@ -206,20 +206,20 @@ export default function useCollapseImage({
         if (aspect > parentAspect) {
           // worry about height
           const adjHeight = Math.min(
-            img.height,
-            Math.floor(parentHeight - spr * 8),
+            img.height * r,
+            Math.floor(parentHeight * r - spr * 8),
           )
           snaph = Math.round(adjHeight / spr) * spr
-          const snapr = snaph / img.height
+          const snapr = (snaph / img.height) * r
           snapw = Math.round((img.width * snapr) / spr) * spr
         } else {
           // worry about width
           const adjWidth = Math.min(
-            img.width,
-            Math.floor(parrentWidth - spr) - spr / 2,
+            img.width * r,
+            Math.floor(parrentWidth * r - spr) - spr / 2,
           )
           snapw = Math.round(adjWidth / spr) * spr
-          const snapr = snapw / img.width
+          const snapr = (snapw / img.width) * r
           snaph = Math.round((img.height * snapr) / spr) * spr
         }
 
@@ -299,7 +299,9 @@ export default function useCollapseImage({
 
         const threshold =
           cells -
-          Math.round(cells * (start || Math.random() * (0.3 - 0.01) + 0.01))
+          Math.round(
+            cells * (start || Math.random() * (0.2 / r - 0.01 / r) + 0.01 / r),
+          )
         state.current.threshold = threshold
         state.current.cells = cells
         state.current.ordered = ordered

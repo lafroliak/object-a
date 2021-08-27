@@ -107,26 +107,6 @@ function Drawers() {
         }
         content={<Cart />}
       />
-      {/* <AnimatePresence>
-        <IfElse predicate={isSM && opened !== SIDES.Left}>
-          {() => (
-            <Drawer
-              layoutId={SIDES.LeftHandler}
-              as="aside"
-              side={SIDES.LeftHandler}
-              name={
-                <button
-                  type="button"
-                  className="cursor-pointer focus:outline-none md:inline-block"
-                  onClick={() => toggle(SIDES.Left)}
-                >
-                  [about]
-                </button>
-              }
-            />
-          )}
-        </IfElse>
-      </AnimatePresence> */}
       <Drawer
         layoutId={SIDES.Left}
         as="aside"
@@ -143,13 +123,26 @@ function Drawers() {
         content={
           <div className="p-8 space-y-8">
             <PageContent path="/about" />
-            <button
-              type="button"
-              onClick={() => void setPopupOpened('subscribe')}
-              className="inline-block text-lg uppercase md:transition-colors md:ease-in-out md:delay-100 md:text-color-900/0 md:dark:text-color-100/0 md:bg-clip-text md:bg-gradient-to-r md:from-color-900 md:dark:from-color-100 md:hover:from-rose-500 md:to-color-900 md:dark:to-color-100 md:hover:to-cyan-500"
-            >
-              [subscribe]
-            </button>
+            <div className="pt-8">
+              <button
+                type="button"
+                onClick={() => void setPopupOpened('subscribe')}
+                className="inline-block text-lg uppercase md:transition-colors md:ease-in-out md:delay-100 md:text-color-900/0 md:dark:text-color-100/0 md:bg-clip-text md:bg-gradient-to-r md:from-color-900 md:dark:from-color-100 md:hover:from-rose-500 md:to-color-900 md:dark:to-color-100 md:hover:to-cyan-500"
+              >
+                [subscribe]
+              </button>
+            </div>
+            <div className="absolute bottom-0 left-0 m-8 text-xs">
+              Made with ❤︎ by{' '}
+              <a
+                className="font-extrabold md:transition-colors md:ease-in-out md:delay-100 md:text-color-900/0 md:dark:text-color-100/0 md:bg-clip-text md:bg-gradient-to-r md:from-color-900 md:dark:from-color-100 md:hover:from-pink-600 md:to-color-900 md:dark:to-color-100 md:hover:to-emerald-600"
+                href="https://beta.accio.pro"
+                target="_blank"
+                rel="noreferrer"
+              >
+                ACCIO
+              </a>
+            </div>
           </div>
         }
       />

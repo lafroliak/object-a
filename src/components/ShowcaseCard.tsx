@@ -47,13 +47,15 @@ function ShowcaseCard({ item, isLink, withProducts, withSize }: Props) {
       <IfElse predicate={image}>
         {(prop) => (
           <picture className="relative flex-1 block w-full h-full aspect-w-1 aspect-h-1">
-            <img
-              className="absolute inset-0 object-contain w-full h-full overflow-hidden"
-              src={prop.url}
-              alt={`${item?.name || ''}`}
-              width={prop.width}
-              height={prop.height || prop.width}
-            />
+            <div className="absolute inset-0 object-contain w-full h-full overflow-hidden">
+              <img
+                className="w-full h-full"
+                src={prop.url}
+                alt={`${item?.name || ''}`}
+                width={prop.width}
+                height={prop.height || prop.width}
+              />
+            </div>
           </picture>
         )}
       </IfElse>

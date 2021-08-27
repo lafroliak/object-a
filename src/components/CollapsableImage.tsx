@@ -104,8 +104,15 @@ function CollapsableImage(props: Props) {
       <IfElse predicate={!!placeholder && !loaded}>
         {() => (
           <div
-            className="absolute inset-0 bg-no-repeat bg-contain filter blur"
-            style={{ backgroundImage: `url(${placeholder})` }}
+            className={`absolute bg-no-repeat bg-center filter blur ${
+              props.inverted
+                ? 'inset-0'
+                : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 h-1/3'
+            }`}
+            style={{
+              backgroundImage: `url(${placeholder})`,
+              backgroundSize: props.inverted ? 'contain' : '300%',
+            }}
           />
         )}
       </IfElse>
