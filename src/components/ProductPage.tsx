@@ -117,16 +117,16 @@ export default function ProductPage({ page }: Props) {
         {...(image && {
           images: [image.url],
         })}
-        manufacturerName="[object a]"
+        manufacturerName="[objekt a]"
+        brand="[objekt a]"
         offers={[
           {
             price: String(page.variants?.[0]?.priceVariants?.[0]?.price ?? 0),
             priceCurrency: 'USD',
             itemCondition: `${publicRuntimeConfig.SITE_URL}${asPath}`,
-            availability: `${publicRuntimeConfig.SITE_URL}${asPath}`,
             url: `${publicRuntimeConfig.SITE_URL}${asPath}`,
             seller: {
-              name: '[object a]',
+              name: '[objekt a]',
             },
           },
         ]}
