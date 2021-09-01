@@ -121,7 +121,7 @@ function Drawers() {
           </button>
         }
         content={
-          <div className="p-8 pb-20 space-y-8 overflow-y-auto scrollzone">
+          <div className="p-8 pb-20 space-y-8 max-h-full overflow-y-auto scrollzone">
             <PageContent path="/about" />
             <div className="py-16">
               <button

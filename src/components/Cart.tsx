@@ -23,7 +23,7 @@ function Cart() {
   return (
     <motion.div
       className={clsx(
-        'p-4 pb-28 space-y-10 max-h-screen text-sm overflow-y-auto overflow-x-hidden',
+        'p-4 pb-28 space-y-10 max-h-full text-sm overflow-y-auto overflow-x-hidden',
         styles.showcase,
       )}
       animate={{ opacity: !!opened ? 1 : 0 }}
