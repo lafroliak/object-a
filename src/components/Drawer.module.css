@@ -14,6 +14,7 @@
     width: var(--drawer-size);
     grid-template-areas: 'handler name content';
     max-height: calc(100vh - (var(--side-size) * 2));
+    height: -webkit-fill-available;
   }
   &.bottom {
     bottom: calc(var(--drawer-size) * -1);
@@ -38,6 +39,7 @@
     width: var(--drawer-size);
     grid-template-areas: 'content name handler';
     max-height: calc(100vh - (var(--side-size) * 2));
+    height: -webkit-fill-available;
   }
 
   @screen sm {
@@ -136,5 +138,6 @@
   &.left > .content,
   &.right > .content {
     max-height: calc(100vh - (var(--side-size) * 2));
+    height: -webkit-fill-available;
   }
 }

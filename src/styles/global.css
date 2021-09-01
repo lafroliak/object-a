@@ -4,8 +4,7 @@ html {
 }
 
 body {
-  @apply bg-color-100 select-none font-jet-brain-mono font-base text-color-900 dark:text-color-100 dark:bg-color-800 dark:font-dark;
-  min-height: 100vh;
+  @apply h-screen bg-color-100 select-none font-jet-brain-mono font-base text-color-900 dark:text-color-100 dark:bg-color-800 dark:font-dark;
 
   scrollbar-width: none;
   scrollbar-height: none;
