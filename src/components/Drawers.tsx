@@ -121,9 +121,9 @@ function Drawers() {
           </button>
         }
         content={
-          <div className="p-8 pb-20 space-y-8 max-h-full overflow-y-auto scrollzone">
+          <div className="max-h-full p-8 pb-20 space-y-8 overflow-y-auto scrollzone">
             <PageContent path="/about" />
-            <div className="py-16">
+            <div className="py-32">
               <button
                 type="button"
                 onClick={() => void setPopupOpened('subscribe')}

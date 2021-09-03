@@ -138,6 +138,13 @@
   &.left > .content,
   &.right > .content {
     max-height: calc(100vh - (var(--side-size) * 2));
-    height: -webkit-fill-available;
+  }
+
+  /* Avoid Chrome to see Safari hack */
+  @supports (-webkit-touch-callout: none) {
+    &.left > .content,
+    &.right > .content {
+      height: -webkit-fill-available;
+    }
   }
 }
