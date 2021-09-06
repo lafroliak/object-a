@@ -121,9 +121,9 @@ function Drawers() {
           </button>
         }
         content={
-          <div className="max-h-full p-8 pb-20 space-y-8 overflow-y-auto scrollzone">
+          <div className="max-h-full px-4 py-8 pb-20 space-y-8 overflow-y-auto md:px-8 scrollzone">
             <PageContent path="/about" />
-            <div className="py-32">
+            <div className="py-24 md:py-48">
               <button
                 type="button"
                 onClick={() => void setPopupOpened('subscribe')}
@@ -132,7 +132,7 @@ function Drawers() {
                 [subscribe]
               </button>
             </div>
-            <div className="text-xs">
+            <div className="absolute bottom-0 left-0 w-full px-4 py-1 text-xs md:px-8 bg-color-100 dark:bg-color-800">
               Made with ❤︎ by{' '}
               <a
                 className="font-extrabold md:transition-colors md:ease-in-out md:delay-100 md:text-color-900/0 md:dark:text-color-100/0 md:bg-clip-text md:bg-gradient-to-r md:from-color-900 md:dark:from-color-100 md:hover:from-pink-600 md:to-color-900 md:dark:to-color-100 md:hover:to-emerald-600"

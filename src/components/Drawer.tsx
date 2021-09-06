@@ -230,7 +230,7 @@ function Drawer({
           )}
         </IfElse>
         <motion.div
-          className={clsx('grid', styles.content, {
+          className={clsx('grid relative', styles.content, {
             'place-items-center pt-10 md:pt-12': side === SIDES.Top,
           })}
           initial="closed"
