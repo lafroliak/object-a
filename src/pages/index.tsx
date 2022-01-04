@@ -1,3 +1,4 @@
+import { NodeProps } from '@crystallize/react-content-transformer'
 import clsx from 'clsx'
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 import { NextSeo } from 'next-seo'
@@ -122,12 +123,15 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
     <>
       <NextSeo
         title={page.title?.text || undefined}
-        description={page.intro?.plainText?.join('. ') || undefined}
+        description={
+          (page.intro?.json as NodeProps[])?.[0]?.children?.[0]?.textContent
+        }
         openGraph={{
           type: 'website',
           url: publicRuntimeConfig.SITE_URL,
           title: page.title?.text || undefined,
-          description: page.intro?.plainText?.join('. ') || undefined,
+          description: (page.intro?.json as NodeProps[])?.[0]?.children?.[0]
+            ?.textContent,
           site_name: page.title?.text || undefined,
           images,
         }}
