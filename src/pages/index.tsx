@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 import { NextSeo } from 'next-seo'
 import getConfig from 'next/config'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { match, select } from 'ts-pattern'
 import CrystallizeContent from '~components/CrystallizeContent'
 import Popup, { SIDES } from '~components/Popup'
@@ -69,25 +69,20 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
     if (opened) setPopupOpened('')
   }, [opened])
 
-  const images = useRef([
-    {
-      url: `${publicRuntimeConfig.SITE_URL}/og-image.png`,
-      width: 1200,
-      height: 630,
-      alt: page.title?.text || undefined,
-    },
-  ])
-
-  useEffect(() => {
-    const image = page.image?.images?.[0].variants?.find((i) => i.width > 1200)
+  const images = useMemo(() => {
+    const res = []
+    const image = page.image?.images?.[0].variants?.find(
+      (i) => i.width >= 1200 && i.url?.includes('png'),
+    )
     if (image) {
-      images.current.push({
+      res.push({
         url: image.url,
         width: image.width,
         height: image.height || image.width,
         alt: page.title?.text || undefined,
       })
     }
+    return res
   }, [page])
 
   const renderBlock = (
@@ -134,7 +129,7 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
           title: page.title?.text || undefined,
           description: page.intro?.plainText?.join('. ') || undefined,
           site_name: page.title?.text || undefined,
-          images: images.current,
+          images,
         }}
       />
       <div className="py-12 space-y-12 md:py-24 md:space-y-24">

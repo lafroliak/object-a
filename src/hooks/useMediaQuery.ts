@@ -17,5 +17,5 @@ const QUERIES = {
 } as const
 
 export default function useMediaQuery(query: Query) {
-  return useMedia(QUERIES[query])
+  return useMedia(QUERIES[query], false)
 }
