@@ -169,10 +169,9 @@ export default function ProductPage({ page }: Props) {
                   <IfElse
                     predicate={content?.images?.reduce((res, i) => {
                       const m = i.variants?.find(
-                        async (v) =>
-                          v.url.includes(
-                            (await isWebpSupported()) ? 'webp' : 'png',
-                          ) && v.width === 1024,
+                        (v) =>
+                          v.url.includes(isWebpSupported() ? 'webp' : 'png') &&
+                          v.width === 1024,
                       )
                       if (m) {
                         return [...res, m]
@@ -204,9 +203,9 @@ export default function ProductPage({ page }: Props) {
                                     res
                                       ? res
                                       : i.variants?.find(
-                                          async (v) =>
+                                          (v) =>
                                             v.url.includes(
-                                              (await isWebpSupported())
+                                              isWebpSupported()
                                                 ? 'webp'
                                                 : 'png',
                                             ) && v.width === 500,
@@ -249,9 +248,9 @@ export default function ProductPage({ page }: Props) {
                     <IfElse
                       predicate={content?.images?.reduce((res, i) => {
                         const m = i.variants?.find(
-                          async (v) =>
+                          (v) =>
                             v.url.includes(
-                              (await isWebpSupported()) ? 'webp' : 'png',
+                              isWebpSupported() ? 'webp' : 'png',
                             ) && v.width === 1024,
                         )
                         if (m) {

@@ -1,28 +1,27 @@
 let support: boolean | undefined
 
-function hasWebP(): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    if (typeof window !== 'undefined') {
-      var img = new Image()
-      img.onload = () => {
-        resolve(true)
-      }
-      img.onerror = () => {
-        reject(false)
-      }
-      img.src = 'http://www.gstatic.com/webp/gallery/1.webp'
+function hasWebP(): boolean {
+  if (typeof window !== 'undefined') {
+    var img = new Image()
+    img.onload = () => {
+      return true
     }
-  })
+    img.onerror = () => {
+      return false
+    }
+    img.src = 'http://www.gstatic.com/webp/gallery/1.webp'
+  }
+  return false
 }
 
 /**
  * Check browser webp support
  * @returns {boolean}
  */
-export const isWebpSupported = async (): Promise<boolean> => {
+export const isWebpSupported = (): boolean => {
   if (typeof support !== 'undefined') return support
 
-  support = await hasWebP()
+  support = hasWebP()
 
   return support
 }

@@ -38,13 +38,13 @@ function ProductCard({ item, inverted, index = 0 }: Props) {
   const variant = variants ? variants.find((v) => v.isDefault) : defaultVariant
   const images = variant?.images
 
-  const placeholder = (images?.[0] || variant?.image)?.variants?.find(
-    async (img) => img.url.includes((await isWebpSupported()) ? 'webp' : 'png'),
+  const placeholder = (images?.[0] || variant?.image)?.variants?.find((img) =>
+    img.url.includes(isWebpSupported() ? 'webp' : 'png'),
   )
   const image = (images?.[0] || variant?.image)?.variants?.find(
-    async (img) =>
+    (img) =>
       img.width === (isSM ? 500 : 1024) &&
-      img.url.includes((await isWebpSupported()) ? 'webp' : 'png'),
+      img.url.includes(isWebpSupported() ? 'webp' : 'png'),
   )
 
   return (
