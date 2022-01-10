@@ -36,8 +36,9 @@ function ShowcaseCard({ item, isLink, withProducts, withSize }: Props) {
     defaultVariant?.images || variants?.find((v) => v.images)?.images
 
   const image = images?.[0]?.variants?.find(
-    (img) =>
-      img.width === 500 && img.url.includes(isWebpSupported() ? 'webp' : 'png'),
+    async (img) =>
+      img.width === 500 &&
+      img.url.includes((await isWebpSupported()) ? 'webp' : 'png'),
   )
   const isOutOfStock = variants?.every((v) => (v?.stock ?? 0) === 0)
   const size = withSize ? item.variants?.[0].attributes?.[0]?.value : null

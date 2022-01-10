@@ -24,9 +24,9 @@ function ModelsCard({ item }: Props) {
   const imagesContent =
     images && isImage(images.type, images.content) ? images.content : null
   const image = imagesContent?.images?.[0]?.variants?.find(
-    (img) =>
+    async (img) =>
       img.width === (isLG ? 768 : 500) &&
-      img.url.includes(isWebpSupported() ? 'webp' : 'png'),
+      img.url.includes((await isWebpSupported()) ? 'webp' : 'png'),
   )
 
   return (

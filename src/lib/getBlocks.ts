@@ -38,7 +38,7 @@ export const getBlocks = (page: Item | undefined) => {
             type: ComponentType.SingleLine,
           }
         })
-        .with({ name: 'Image' }, (itm) => {
+        .with({ name: 'OGImage' }, (itm) => {
           result.image = {
             ...(itm.content as ImageContent),
             type: ComponentType.Images,

@@ -72,15 +72,13 @@ function HomePage({ page }: InferGetStaticPropsType<typeof getStaticProps>) {
 
   const images = useMemo(() => {
     const res = []
-    const image = page.image?.images?.[0].variants?.find(
-      (i) => i.width >= 1200 && i.url?.includes('png'),
-    )
+    const image = page.image?.images?.[0]
     if (image) {
       res.push({
         url: image.url,
-        width: image.width,
-        height: image.height || image.width,
-        alt: page.title?.text || undefined,
+        width: 1200,
+        height: 630,
+        alt: page.title?.text || '',
       })
     }
     return res

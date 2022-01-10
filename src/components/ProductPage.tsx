@@ -9,6 +9,7 @@ import * as styles from '~layouts/CatalogueLayout.module.css'
 import { isImage } from '~lib/crystallize/isType'
 import {
   BooleanContent,
+  ImageContent,
   ImageVariant,
   Product,
   RichTextContent,
@@ -75,6 +76,18 @@ export default function ProductPage({ page }: Props) {
   }, [openedDrawer])
 
   const image = useMemo(() => {
+    const ogImage = (
+      page.components?.find((c) => c?.name === 'OGImage' && c?.content)
+        ?.content as ImageContent
+    ).images?.[0]?.url
+    if (ogImage) {
+      return {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+      }
+    }
+
     const component = page.components?.find(
       (c) => c?.name === 'Images' && c?.content,
     )
@@ -156,9 +169,10 @@ export default function ProductPage({ page }: Props) {
                   <IfElse
                     predicate={content?.images?.reduce((res, i) => {
                       const m = i.variants?.find(
-                        (v) =>
-                          v.url.includes(isWebpSupported() ? 'webp' : 'png') &&
-                          v.width === 1024,
+                        async (v) =>
+                          v.url.includes(
+                            (await isWebpSupported()) ? 'webp' : 'png',
+                          ) && v.width === 1024,
                       )
                       if (m) {
                         return [...res, m]
@@ -190,9 +204,9 @@ export default function ProductPage({ page }: Props) {
                                     res
                                       ? res
                                       : i.variants?.find(
-                                          (v) =>
+                                          async (v) =>
                                             v.url.includes(
-                                              isWebpSupported()
+                                              (await isWebpSupported())
                                                 ? 'webp'
                                                 : 'png',
                                             ) && v.width === 500,
@@ -235,9 +249,9 @@ export default function ProductPage({ page }: Props) {
                     <IfElse
                       predicate={content?.images?.reduce((res, i) => {
                         const m = i.variants?.find(
-                          (v) =>
+                          async (v) =>
                             v.url.includes(
-                              isWebpSupported() ? 'webp' : 'png',
+                              (await isWebpSupported()) ? 'webp' : 'png',
                             ) && v.width === 1024,
                         )
                         if (m) {
