@@ -79,7 +79,7 @@ export default function ProductPage({ page }: Props) {
     const ogImage = (
       page.components?.find((c) => c?.name === 'OGImage' && c?.content)
         ?.content as ImageContent
-    ).images?.[0]?.url
+    )?.images?.[0]?.url
     if (ogImage) {
       return {
         url: ogImage,
