@@ -1,6 +1,6 @@
 let support: boolean | undefined
 
-function hasWebP(): boolean {
+function hasWebP(): boolean | undefined {
   if (typeof window !== 'undefined') {
     var img = new Image()
     img.onload = () => {
@@ -11,7 +11,7 @@ function hasWebP(): boolean {
     }
     img.src = 'http://www.gstatic.com/webp/gallery/1.webp'
   }
-  return false
+  return undefined
 }
 
 /**
@@ -23,5 +23,5 @@ export const isWebpSupported = (): boolean => {
 
   support = hasWebP()
 
-  return support
+  return support || false
 }
